@@ -11,7 +11,7 @@
 
  import express from "express";
 
- abstract class DefaultController {
+ export default abstract class DefaultController {
 
      /**
       * Controller main path.
@@ -66,14 +66,12 @@
          return this.router;
      }
 
-     /**
-      * Initializes the controller's routes.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      */
+    /**
+     * Initializes the controller's routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
      protected initializeRoutes(): void {
-     }
+    }
  }
-
- export default DefaultController;

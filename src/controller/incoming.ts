@@ -9,10 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import express from "express";
 import DefaultController from "./controller";
 
-class IncomingController extends DefaultController{
+export default class IncomingController extends DefaultController {
 
     /**
      * The constructor.
@@ -31,7 +30,12 @@ class IncomingController extends DefaultController{
      * @since  1.0.0
      */
     public index(request: Record<string, any>, response: Record<string, any>): void {
-        response.sendStatus(200);
+
+        if (request.params.auth !== process.env.AUTH) {
+            response.status(403).send("Forbidden");
+        }
+
+        response.status(200).send();
     }
 
     /**
@@ -41,8 +45,6 @@ class IncomingController extends DefaultController{
      * @since  1.0.0
      */
     protected initializeRoutes(): void {
-        this.router.post(this.path, this.index);
+        this.router.post(this.path + "/:auth", this.index);
     }
 }
-
-export default IncomingController;
