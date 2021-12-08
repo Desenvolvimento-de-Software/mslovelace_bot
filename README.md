@@ -1,2 +1,2 @@
-# mslovelace_bot
+# Ada Lovelace
 Ada Lovelace Telegram BOT
