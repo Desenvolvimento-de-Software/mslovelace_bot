@@ -4,8 +4,9 @@
   "description": "Ada Lovelace Telegram Bot",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node ./dist/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node ./src/server.ts"
   },
   "repository": {
     "type": "git",
