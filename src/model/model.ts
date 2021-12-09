@@ -12,14 +12,13 @@
 import DB from "./mysql/db";
 
 export default abstract class DefaultModel extends DB {
-
-    /**
-     * The constructor.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    public constructor(table: string) {
-        super(table);
-    }
+  /**
+   * The constructor.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   */
+  public constructor(table: string) {
+    super(table);
+  }
 }
