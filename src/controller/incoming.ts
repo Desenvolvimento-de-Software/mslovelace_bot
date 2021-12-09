@@ -36,19 +36,58 @@ export default class IncomingController extends DefaultController {
             response.status(403).send("Forbidden");
         }
 
-        const user = new User();
-        user.select()
+        const select = new User();
+        select
+            .select()
             .where("user_id").equal(request.body.message.from.id)
             .and("chat_id").equal(request.body.message.chat.id)
+            .and("id").in([1, "abc", true, null])
             .groupBy("user_id")
             .orderBy("user_id", "DESC")
             .offset(0)
             .limit(1);
 
-        user.execute();
+        const insert = new User();
+        insert
+            .insert()
+            .set("user_id", 123)
+            .set("chat_id", "445")
+            .set("first_name", "Marcos")
+            .set("last_name", "Leandro")
+            .set("username", true)
+            .set("language_code", null);
+
+            const replace = new User();
+            replace
+                .replace()
+                .set("user_id", 123)
+                .set("chat_id", "445")
+                .set("first_name", "Marcos")
+                .set("last_name", "Leandro")
+                .set("username", true)
+                .set("language_code", null);
+
+            const update = new User();
+            update
+                .update()
+                .set("user_id", 123)
+                .set("chat_id", "445")
+                .set("first_name", "Marcos")
+                .set("last_name", "Leandro")
+                .set("username", true)
+                .set("language_code", null)
+                .where("id").equal(1)
+                .and("status").equal(0);
 
         const body = request.body;
-        response.status(200).send();
+        response.status(200).send(
+            [
+                select.execute(),
+                insert.execute(),
+                replace.execute(),
+                update.execute()
+            ].join("\n\n")
+        );
     }
 
     /**
