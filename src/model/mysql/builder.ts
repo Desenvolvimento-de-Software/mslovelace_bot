@@ -97,6 +97,14 @@ export default abstract class Builder {
         this.table = table;
     }
 
+    /**
+     * Returns an empty query, as this is an abstract class.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {string}
+     */
     public build(): string {
         return "";
     }
