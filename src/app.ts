@@ -15,85 +15,83 @@ import bodyParser from "body-parser";
 import DefaultController from "./controller/controller";
 
 class App {
+  /**
+   * Express application instance.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   *
+   * @var {express.Application}
+   */
+  private app: express.Application;
 
-    /**
-     * Express application instance.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @var {express.Application}
-     */
-    private app: express.Application;
+  /**
+   * Application port.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   *
+   * @var {number}
+   */
+  private port: number;
 
-    /**
-     * Application port.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @var {number}
-     */
-    private port: number;
+  /**
+   * The constructor.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   */
+  constructor(controllers: Array<DefaultController>) {
+    dotenv.config({
+      path: __dirname + "/.env",
+    });
 
-    /**
-     * The constructor.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    constructor(controllers: Array<DefaultController>) {
+    this.app = express();
+    this.port = (process.env.PORT || 8000) as number;
 
-        dotenv.config({
-            path : __dirname + "/.env"
-        });
+    this.initializeMiddlewares();
+    this.initializeControllers(controllers);
+  }
 
-        this.app  = express();
-        this.port = (process.env.PORT || 0) as number;
+  /**
+   * Starts to listen in the specified port.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   *
+   * @return {void}
+   */
+  public listen(): void {
+    this.app.listen(this.port, () => {
+      console.log(`App listening on the port http://localhost:${this.port}`);
+    });
+  }
 
-        this.initializeMiddlewares();
-        this.initializeControllers(controllers);
-    }
+  /**
+   * Initializes the middlewares.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   *
+   * @return {void}
+   */
+  private initializeMiddlewares(): void {
+    this.app.use(bodyParser.json());
+  }
 
-    /**
-     * Starts to listen in the specified port.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @return {void}
-     */
-    public listen(): void {
-        this.app.listen(this.port, () => {
-            console.log(`App listening on the port ${this.port}`);
-        });
-    }
-
-    /**
-     * Initializes the middlewares.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @return {void}
-     */
-    private initializeMiddlewares(): void {
-        this.app.use(bodyParser.json());
-    }
-
-    /**
-     * Initializes the controllers.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @return {void}
-     */
-    private initializeControllers(controllers: Array<DefaultController>): void {
-        controllers.forEach((controller) => {
-            this.app.use("/", controller.getRoutes());
-        });
-    }
+  /**
+   * Initializes the controllers.
+   *
+   * @author Marcos Leandro
+   * @since  1.0.0
+   *
+   * @return {void}
+   */
+  private initializeControllers(controllers: Array<DefaultController>): void {
+    controllers.forEach((controller) => {
+      this.app.use("/", controller.getRoutes());
+    });
+  }
 }
 
 export default App;
