@@ -10,6 +10,7 @@
  */
 
 import DefaultController from "./controller";
+import User from "../model/users";
 
 export default class IncomingController extends DefaultController {
 
@@ -35,6 +36,14 @@ export default class IncomingController extends DefaultController {
             response.status(403).send("Forbidden");
         }
 
+        const user = new User();
+        user.select()
+            .where("telegram_id").equal(request.body.message.from.id)
+            .and("user_id").equal(request.body.message.from.id);
+
+        user.execute();
+
+        const body = request.body;
         response.status(200).send();
     }
 
