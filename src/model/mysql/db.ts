@@ -11,6 +11,9 @@
 
 import mysql from "mysql";
 import Select from "./select";
+import Insert from "./insert";
+import Replace from "./replace";
+import Update from "./update";
 import Builder from "./builder";
 
 export default class DB {
@@ -138,20 +141,47 @@ export default class DB {
         return this.operation;
     }
 
-    // public insert(): DB {
-    //     return new Insert(this.table);
-    // }
+    /**
+     * Returns an insert query builder.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {Insert}
+     */
+    public insert(): Builder {
+        this.operation = new Insert(this.table);
+        return this.operation;
+    }
 
-    // public update(): DB {
-    //     return new Update(this.table);
-    // }
+    /**
+     * Returns a replace query builder.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {Replace}
+     */
+     public replace(): Builder {
+        this.operation = new Replace(this.table);
+        return this.operation;
+    }
+
+    /**
+     * Returns an update query builder.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {Update}
+     */
+    public update(): Builder {
+        this.operation = new Update(this.table);
+        return this.operation;
+    }
 
     // public delete(): DB {
     //     return new Delete(this.table);
-    // }
-
-    // public replace(): DB {
-    //     return new Replace(this.table);
     // }
 
     /**
@@ -167,10 +197,12 @@ export default class DB {
     }
 
     public execute(): any {
+
         if (this.operation) {
             const query = this.operation.build();
-            console.log(query);
+            return query;
         }
+
         return null;
     }
 

@@ -36,8 +36,7 @@ export default class Select extends Builder {
      * @returns {string}
      */
     public build(): string {
-        const query = `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
-        return query;
+        return `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
     }
 
     /**

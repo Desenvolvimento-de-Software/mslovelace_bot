@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import mysql from "mysql";
 import OrderInterface from "./interface/order";
 
 export default abstract class Builder {
@@ -87,22 +86,12 @@ export default abstract class Builder {
     protected queryLimit?: number;
 
     /**
-     * Active connection.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @property {mysql.Connection}
-     */
-    private static connection: mysql.Connection;
-
-    /**
      * The constructor.
      *
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param table {string}
+     * @param {string} table
      */
     constructor(table: string) {
         this.table = table;
@@ -110,6 +99,23 @@ export default abstract class Builder {
 
     public build(): string {
         return "";
+    }
+
+    /**
+     * Sets the fields to insert/replace/update statements.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {string} field
+     * @param {string} value
+     *
+     * @returns {Builder}
+     */
+    public set(field: string, value: any): Builder {
+        this.fields.push(field);
+        this.values.push(this.parseValue(value));
+        return this;
     }
 
     public where(field: string): Builder {
@@ -128,52 +134,52 @@ export default abstract class Builder {
     }
 
     public equal(value: any): Builder {
-        this.conditions.push("= " + value);
+        this.conditions.push("= " + this.parseValue(value));
         return this;
     }
 
     public notEqual(value: any): Builder {
-        this.conditions.push("<> " + value);
+        this.conditions.push("<> " + this.parseValue(value));
         return this;
     }
 
     public greaterThan(value: any): Builder {
-        this.conditions.push("> " + value);
+        this.conditions.push("> " + this.parseValue(value));
         return this;
     }
 
     public greaterThanOrEqual(value: any): Builder {
-        this.conditions.push(">= " + value);
+        this.conditions.push(">= " + this.parseValue(value));
         return this;
     }
 
     public lessThan(value: any): Builder {
-        this.conditions.push("< " + value);
+        this.conditions.push("< " + this.parseValue(value));
         return this;
     }
 
     public lessThanOrEqual(value: any): Builder {
-        this.conditions.push("<= " + value);
+        this.conditions.push("<= " + this.parseValue(value));
         return this;
     }
 
     public in(value: Array<any>): Builder {
-        this.conditions.push("in " + value);
+        this.conditions.push("in " + this.parseValue(value));
         return this;
     }
 
     public notIn(value: Array<any>): Builder {
-        this.conditions.push("not in " + value);
+        this.conditions.push("not in " + this.parseValue(value));
         return this;
     }
 
     public like(value: string): Builder {
-        this.conditions.push("like " + value);
+        this.conditions.push("like " + this.parseValue(value));
         return this;
     }
 
     public notLike(value: string): Builder {
-        this.conditions.push("not like " + value);
+        this.conditions.push("not like " + this.parseValue(value));
         return this;
     }
 
@@ -211,5 +217,41 @@ export default abstract class Builder {
     public limit(value: number): Builder {
         this.queryLimit = value;
         return this;
+    }
+
+    /**
+     * Parses the query value.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {any} value
+     *
+     * @returns {string|number}
+     */
+    protected parseValue(value: any): string|number {
+
+        if (Array.isArray(value)) {
+
+            let result = [];
+
+            for (let i = 0; i < value.length; i++) {
+                result.push(this.parseValue(value[i]));
+            }
+
+            return "(" + result.join(", ") + ")";
+        }
+
+        switch (typeof value) {
+
+            case "string":
+                return `'${value}'`;
+
+            case "object":
+                return JSON.stringify(value);
+
+            default:
+                return value;
+        }
     }
 }
