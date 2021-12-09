@@ -10,10 +10,8 @@
  */
 
 import App from "./app";
-import IncomingController from "./controller/incoming";
+import IncomingController from "@controller/incoming";
 
-const app = new App([
-    new IncomingController()
-]);
+const app = new App([new IncomingController()]);
 
 app.listen();

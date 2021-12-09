@@ -12,7 +12,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
-import DefaultController from "./controller/controller";
+import DefaultController from "@controller/controller";
 
 class App {
   /**
