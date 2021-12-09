@@ -38,8 +38,12 @@ export default class IncomingController extends DefaultController {
 
         const user = new User();
         user.select()
-            .where("telegram_id").equal(request.body.message.from.id)
-            .and("user_id").equal(request.body.message.from.id);
+            .where("user_id").equal(request.body.message.from.id)
+            .and("chat_id").equal(request.body.message.chat.id)
+            .groupBy("user_id")
+            .orderBy("user_id", "DESC")
+            .offset(0)
+            .limit(1);
 
         user.execute();
 

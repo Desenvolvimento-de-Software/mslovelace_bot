@@ -10,6 +10,7 @@
  */
 
 import mysql from "mysql";
+import OrderInterface from "./interface/order";
 
 export default abstract class Builder {
 
@@ -67,7 +68,7 @@ export default abstract class Builder {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected order: Array<string> = [];
+    protected order: Array<OrderInterface> = [];
 
     /**
      * Query offset.
@@ -185,13 +186,20 @@ export default abstract class Builder {
         this.conditions.push("not between " + min + " and " + max);
         return this;
     }
+
     public groupBy(field: string): Builder {
         this.group.push("group by " + field);
         return this;
     }
 
-    public orderBy(field: string, order: string): Builder {
-        // this.order.push({ field : order });
+    public orderBy(field: string, direction: string): Builder {
+
+        const order: OrderInterface = {
+            field     : field,
+            direction : direction
+        };
+
+        this.order.push(order);
         return this;
     }
 

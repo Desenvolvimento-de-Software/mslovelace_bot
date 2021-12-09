@@ -24,9 +24,7 @@ export default class Select extends Builder {
      */
     public constructor(table: string, fields?: Array<string>) {
         super(table);
-        if (fields) {
-            this.fields = fields;
-        }
+        this.fields = fields || ["*"];
     }
 
     /**
@@ -38,7 +36,7 @@ export default class Select extends Builder {
      * @returns {string}
      */
     public build(): string {
-        const query = `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()}`;
+        const query = `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
         return query;
     }
 
@@ -66,16 +64,17 @@ export default class Select extends Builder {
     }
 
     private parseLimit(): string {
+
         let limit = [];
 
-        if (this.offset.length) {
-            limit.push(this.offset);
+        if (this.queryOffset) {
+            limit.push(this.queryOffset);
         }
 
-        if (this.limit.length) {
-            limit.push(this.limit);
+        if (this.queryLimit) {
+            limit.push(this.queryLimit);
         }
 
-        return limit.length ? limit.join(", ") : "";
+        return limit.length ? "LIMIT " + limit.join(", ") : "";
     }
 }
