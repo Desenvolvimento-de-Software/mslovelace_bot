@@ -87,6 +87,14 @@ export default class DB {
      */
     protected queryLimit?: number;
 
+    /**
+     * Current operation.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @property {any}
+     */
     private operation?: Builder;
 
     /**

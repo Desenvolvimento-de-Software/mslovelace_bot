@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultController from "./controller";
-import User from "../model/users";
+import DefaultController from "@controller/controller";
+import User from "@model/users";
 
 export default class IncomingController extends DefaultController {
 
