@@ -10,12 +10,8 @@
  */
 
 import App from "./app";
-import Bot from "./bot";
 import IncomingController from "@controller/incoming";
 
 const app = new App([new IncomingController()]);
-const bot = new Bot(app);
-
-bot.init();
 
 app.listen();
