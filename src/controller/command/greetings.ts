@@ -55,8 +55,7 @@ export default class GreetingsCommand extends Command {
                 .setChatId(payload.message.chat.id)
                 .setText("Greetings activated");
 
-            const response = await sendMessage.post();
-            console.log(response);
+            sendMessage.post();
         }
     }
 
