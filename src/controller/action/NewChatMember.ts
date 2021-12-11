@@ -58,7 +58,7 @@ export default class NewChatMember extends Action {
         const chatMessages = new ChatMessages();
         chatMessages
             .select()
-            .where("chat_id").equal(1)
+            .where("chat_id").equal(chat.id)
             .offset(0)
             .limit(1);
 
