@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "@controller/command";
-import ChatHelper from "@helper/chat";
-import Chats from "@model/chats";
-import SendMessage from "@library/telegram/resource/sendmessage";
+import Command from "../command.js";
+import ChatHelper from "../../helper/chat.js";
+import Chats from "../../model/chats.js";
+import SendMessage from "../../library/telegram/resource/sendmessage.js";
 
 export default class GreetingsCommand extends Command {
 

@@ -9,13 +9,15 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "./app";
+import App from "./app.js";
+import path from "path";
 import dotenv from "dotenv";
-import DefaultController from "./controller/controller";
-import IncomingController from "./controller/incoming";
+import DefaultController from "./controller/controller.js";
+import IncomingController from "./controller/incoming.js";
 
+console.log( path.resolve());
 dotenv.config({
-    path : __dirname + "/.env"
+    path : path.resolve() + "/.env"
 });
 
 const app = new App([

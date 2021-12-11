@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "@library/telegram/telegrambotapi";
+import TelegramBotApi from "../library/telegram/telegrambotapi.js";
 import express from "express";
 
  export default class DefaultController {

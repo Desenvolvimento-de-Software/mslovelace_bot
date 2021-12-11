@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "@model/chats";
+import Chats from "../model/chats.js";
 
 export default class ChatHelper {
 

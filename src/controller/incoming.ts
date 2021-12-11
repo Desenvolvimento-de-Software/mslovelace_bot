@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultController from "@controller/controller";
-import UserHelper from "@helper/user";
-import ChatHelper from "@helper/chat";
-import RelUsersChats from "@model/relUsersChats";
-import GreetingsCommand from "@controller/command/greetings";
+import DefaultController from "./controller.js";
+import UserHelper from "../helper/user.js";
+import ChatHelper from "../helper/chat.js";
+import RelUsersChats from "../model/relUsersChats.js";
+import GreetingsCommand from "./command/greetings.js";
 
 export default class IncomingController extends DefaultController {
 

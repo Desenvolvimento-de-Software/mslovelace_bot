@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "@library/telegram/telegrambotapi";
-import {SendMessageType} from "@library/telegram/resource/type/sendmessage";
+import TelegramBotApi from "../../../library/telegram/telegrambotapi.js";
+import {SendMessageType} from "../../../library/telegram/resource/type/sendmessage.js";
 
 export default class SendMessage extends TelegramBotApi {
 
