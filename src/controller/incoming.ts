@@ -9,11 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultController from "./controller.js";
-import UserHelper from "../helper/user.js";
-import ChatHelper from "../helper/chat.js";
-import RelUsersChats from "../model/relUsersChats.js";
-import GreetingsCommand from "./command/greetings.js";
+import DefaultController from "./Controller.js";
+import GreetingsCommand from "./command/Greetings.js";
+import NewChatMember from "./action/NewChatMember.js";
 
 export default class IncomingController extends DefaultController {
 
@@ -63,7 +61,10 @@ export default class IncomingController extends DefaultController {
 
         const payload = request.body;
 
-        this.saveUserAndChat(payload);
+        this.saveUserAndChat(
+            payload.message.from,
+            payload.message.chat
+        );
 
         switch (true) {
 
@@ -141,49 +142,12 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     protected handleAction(payload: Record<string, any>): void {
-        console.log("handleAction");
-    }
 
-    /**
-     * Saves the user and group.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param payload
-     */
-    private async saveUserAndChat(payload: Record<string, any>): Promise<any> {
-
-        const user   = await UserHelper.getUserByTelegramId(payload.message.from.id);
-        const userId = (user === null ? await UserHelper.createUser(payload.message.from) : user.id);
-
-        this.warnNamechanging(user, payload);
-
-        const chat   = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-        const chatId = (chat === null ? await ChatHelper.createChat(payload.message.chat) : chat.id);
-
-        if (userId && chatId) {
-
-            const relUserChat = new RelUsersChats();
-            relUserChat
-                .replace()
-                .set("user_id", userId)
-                .set("chat_id", chatId);
-
-            relUserChat.execute();
+        for (let action in this.actions) {
+            if (payload.message.hasOwnProperty(action)) {
+                (new this.actions[action]).run(payload);
+            }
         }
-    }
-
-    /**
-     * Warns if the users has changed their name.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param user
-     * @param payload
-     */
-    private warnNamechanging(user: Object, payload: Record<string, any>): void {
     }
 
     /**
@@ -193,6 +157,7 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     private initializeActions(): void {
+        this.actions["new_chat_member"] = NewChatMember;
     }
 
     /**
@@ -202,6 +167,6 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     private initializeCommands(): void {
-        this.commands["greetings"] = new GreetingsCommand();
+        this.commands["greetings"] = GreetingsCommand;
     }
 }

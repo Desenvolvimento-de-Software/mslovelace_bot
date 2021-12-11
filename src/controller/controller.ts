@@ -9,7 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../library/telegram/telegrambotapi.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import RelUsersChats from "../model/RelUsersChats.js";
+import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import express from "express";
 
  export default class DefaultController {
@@ -68,6 +71,50 @@ import express from "express";
      */
     public getRoutes(): express.Router {
        return this.router;
+    }
+
+    /**
+     * Saves the user and group.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param payload
+     */
+    protected async saveUserAndChat(userObject: Record<string, any>, chatObject: Record<string, any>): Promise<any> {
+
+        const user   = await UserHelper.getUserByTelegramId(userObject.id);
+        const userId = (user === null ? await UserHelper.createUser(userObject) : user.id);
+
+        if (user) {
+            this.warnNamechanging(user, userObject);
+        }
+
+        const chat   = await ChatHelper.getChatByTelegramId(chatObject.id);
+        const chatId = (chat === null ? await ChatHelper.createChat(chatObject) : chat.id);
+
+        if (userId && chatId) {
+
+            const relUserChat = new RelUsersChats();
+            relUserChat
+                .replace()
+                .set("user_id", userId)
+                .set("chat_id", chatId);
+
+            relUserChat.execute();
+        }
+    }
+
+    /**
+     * Warns if the users has changed their name.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param user
+     * @param payload
+     */
+    protected warnNamechanging(user: Object, userObject: Record<string, any>): void {
     }
 
     /**

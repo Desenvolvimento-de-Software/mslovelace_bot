@@ -9,7 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-export default class Command {
+import DefaultController from "./Controller.js";
+
+export default class Command extends DefaultController{
 
     /**
      * The constructor.
@@ -18,5 +20,6 @@ export default class Command {
      * @siunce  1.0.0
      */
     public constructor() {
+        super();
     }
 }

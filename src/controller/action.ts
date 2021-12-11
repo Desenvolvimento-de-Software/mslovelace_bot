@@ -9,7 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-export default class Action {
+import DefaultController from "./Controller.js";
+
+export default class Action extends DefaultController {
 
     /**
      * The constructor.
@@ -17,6 +19,7 @@ export default class Action {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    constructor() {
+    public constructor() {
+        super();
     }
 }

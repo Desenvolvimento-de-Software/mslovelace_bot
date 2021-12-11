@@ -9,17 +9,22 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultModel from "./Model.js";
-
-export default class Users extends DefaultModel {
+export default class Text {
 
     /**
-     * The constructor.
+     * Formats the text with the given parameters.
      *
      * @author Marcos Leandro
      * @since  1.0.0
+     *
+     * @param text
+     * @param args
+     *
+     * @returns {string}
      */
-    public constructor() {
-        super("users");
+    public static format(text: string, ...args: any[]): string {
+        return text.replace(/{(\d+)}/g, function(match, number) {
+            return typeof args[number] != "undefined" ? args[number] : match;
+        });
     }
 }

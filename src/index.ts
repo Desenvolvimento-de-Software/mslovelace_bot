@@ -12,8 +12,8 @@
 import App from "./app.js";
 import path from "path";
 import dotenv from "dotenv";
-import DefaultController from "./controller/controller.js";
-import IncomingController from "./controller/incoming.js";
+import DefaultController from "./controller/Controller.js";
+import IncomingController from "./controller/Incoming.js";
 
 console.log( path.resolve());
 dotenv.config({

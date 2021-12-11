@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Insert from "./insert.js";
+import Insert from "./Insert.js";
 
 export default class Replace extends Insert {
 

@@ -11,7 +11,7 @@
 
 import express from "express";
 import bodyParser from "body-parser";
-import DefaultController from "./controller/controller.js";
+import DefaultController from "./controller/Controller.js";
 
 class App {
 

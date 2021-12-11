@@ -9,16 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DB from "./mysql/DB.js";
+import DefaultModel from "./Model.js";
 
-export default abstract class DefaultModel extends DB {
-  /**
-   * The constructor.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   */
-  public constructor(table: string) {
-    super(table);
-  }
-}
+export default class Chats extends DefaultModel {
+
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    public constructor() {
+        super("chat_messages");
+    }
+ }
