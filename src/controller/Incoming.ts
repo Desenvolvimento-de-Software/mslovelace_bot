@@ -125,7 +125,7 @@ export default class IncomingController extends DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected handleCommand(payload: Record<string, any>): void {
+    protected async handleCommand(payload: Record<string, any>): Promise<void> {
 
         const instruction = payload.message.text.replace("/", "").split(" ");
         const command     = instruction[0];
@@ -144,7 +144,7 @@ export default class IncomingController extends DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected handleAction(payload: Record<string, any>): void {
+    protected async handleAction(payload: Record<string, any>): Promise<void> {
 
         for (let action in this.actions) {
             if (payload.message.hasOwnProperty(action)) {
