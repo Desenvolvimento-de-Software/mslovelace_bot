@@ -78,6 +78,27 @@ export default class GreetingsCommand extends Command {
      * @param payload
      */
     public async off(payload: Record<string, any>): Promise<void> {
-        console.log("Disabling the greetings");
+
+        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        const update = new Chats();
+        update
+            .update()
+            .set("greetings", false)
+            .where("id").equal(chat.id);
+
+        const result = await update.execute();
+        if (result.affectedRows > 0) {
+
+            const sendMessage = new SendMessage();
+            sendMessage
+                .setChatId(payload.message.chat.id)
+                .setText("Greetings deactivated");
+
+            sendMessage.post();
+        }
     }
 }
