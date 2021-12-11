@@ -27,6 +27,16 @@ export default class GreetingsCommand extends Command {
     }
 
     /**
+     * Command main route.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    public index(): void {
+        return;
+    }
+
+    /**
      * Activates the greetings message.
      *
      * @author Marcos Leandro
@@ -67,7 +77,7 @@ export default class GreetingsCommand extends Command {
      *
      * @param payload
      */
-    off(payload: Record<string, any>): void {
+    public async off(payload: Record<string, any>): Promise<void> {
         console.log("Disabling the greetings");
     }
 }

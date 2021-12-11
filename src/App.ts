@@ -73,7 +73,7 @@ class App {
      * @return {void}
      */
     private initializeMiddlewares(): void {
-        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.json({ type : "*/*" }));
     }
 
     /**

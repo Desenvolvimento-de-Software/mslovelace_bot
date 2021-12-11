@@ -60,6 +60,9 @@ export default class IncomingController extends DefaultController {
         }
 
         const payload = request.body;
+        if (!payload.message) {
+            return;
+        }
 
         this.saveUserAndChat(
             payload.message.from,
@@ -131,7 +134,8 @@ export default class IncomingController extends DefaultController {
 
         if (typeof this.commands[command] !== "undefined") {
             const className = this.commands[command];
-            className[method](payload, ...args); //.apply(this, [payload, ...args]);
+            console.log(method, className[method], className);
+            className[method](payload, ...args);
         }
     }
 

@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "./app.js";
+import App from "./App.js";
 import path from "path";
 import dotenv from "dotenv";
 import DefaultController from "./controller/Controller.js";
