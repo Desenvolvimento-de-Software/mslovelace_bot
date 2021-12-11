@@ -9,13 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "./app";
-import DefaultController from "@controller/controller";
-import IncomingController from "@controller/incoming";
+import DefaultModel from "@model/model";
 
-const app = new App([
-    new DefaultController(),
-    new IncomingController()
-]);
+export default class Chats extends DefaultModel {
 
-app.listen();
+     /**
+      * The constructor.
+      *
+      * @author Marcos Leandro
+      * @since  1.0.0
+      */
+    public constructor() {
+        super("chats");
+    }
+}
