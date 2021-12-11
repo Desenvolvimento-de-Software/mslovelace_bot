@@ -67,6 +67,10 @@ class App {
     });
   }
 
+  public use(ctx: any): void {
+    this.app.use(ctx);
+  }
+
   /**
    * Initializes the middlewares.
    *
