@@ -63,12 +63,8 @@ class App {
    */
   public listen(): void {
     this.app.listen(this.port, () => {
-      console.log(`App listening on the port http://localhost:${this.port}`);
+      console.log(`App listening on the port ${this.port}`);
     });
-  }
-
-  public use(ctx: any): void {
-    this.app.use(ctx);
   }
 
   /**

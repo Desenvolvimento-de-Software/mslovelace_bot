@@ -10,7 +10,9 @@
  */
 
 import DefaultController from "@controller/controller";
-import User from "@model/users";
+import UserHelper from "@helper/user";
+import ChatHelper from "@helper/chat";
+import RelUsersChats from "@model/relUsersChats";
 
 export default class IncomingController extends DefaultController {
 
@@ -30,64 +32,27 @@ export default class IncomingController extends DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    public index(request: Record<string, any>, response: Record<string, any>): void {
+    public index(request: Record<string, any>, response: Record<string, any>) {
 
         if (request.params.auth !== process.env.AUTH) {
-            response.status(403).send("Forbidden");
+            response.status(401).send("Forbidden");
         }
 
-        const select = new User();
-        select
-            .select()
-            .where("user_id").equal(request.body.message.from.id)
-            .and("chat_id").equal(request.body.message.chat.id)
-            .and("id").in([1, "abc", true, null])
-            .groupBy("user_id")
-            .orderBy("user_id", "DESC")
-            .offset(0)
-            .limit(1);
+        const payload = request.body;
 
-        const insert = new User();
-        insert
-            .insert()
-            .set("user_id", 123)
-            .set("chat_id", "445")
-            .set("first_name", "Marcos")
-            .set("last_name", "Leandro")
-            .set("username", true)
-            .set("language_code", null);
+        this.saveUserAndChat(payload);
 
-            const replace = new User();
-            replace
-                .replace()
-                .set("user_id", 123)
-                .set("chat_id", "445")
-                .set("first_name", "Marcos")
-                .set("last_name", "Leandro")
-                .set("username", true)
-                .set("language_code", null);
+        switch (true) {
 
-            const update = new User();
-            update
-                .update()
-                .set("user_id", 123)
-                .set("chat_id", "445")
-                .set("first_name", "Marcos")
-                .set("last_name", "Leandro")
-                .set("username", true)
-                .set("language_code", null)
-                .where("id").equal(1)
-                .and("status").equal(0);
+            case this.isCommand(payload):
+                this.handleCommand(payload);
+                break;
 
-        const body = request.body;
-        response.status(200).send(
-            [
-                select.execute(),
-                insert.execute(),
-                replace.execute(),
-                update.execute()
-            ].join("\n\n")
-        );
+            default:
+                this.handleAction(payload);
+        }
+
+        response.status(200).send();
     }
 
     /**
@@ -97,6 +62,81 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     protected initializeRoutes(): void {
-        this.router.post(this.path + "/:auth", this.index);
+        this.router.post(this.path + "/:auth", this.index.bind(this));
+    }
+
+    /**
+     * Returns whether the incoming message is a command or not.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected isCommand(payload: Record<string, any>): boolean {
+        return (
+            typeof payload.message.entities !== "undefined" &&
+            payload.message.entities[0].type === "bot_command"
+        );
+    }
+
+    /**
+     * Handles the incoming command.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected handleCommand(payload: Record<string, any>): void {
+        console.log("handleCommand");
+    }
+
+    /**
+     * Handles the incoming action.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected handleAction(payload: Record<string, any>): void {
+        console.log("handleAction");
+    }
+
+    /**
+     * Saves the user and group.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param payload
+     */
+    private async saveUserAndChat(payload: Record<string, any>): Promise<any> {
+
+        const user   = await UserHelper.getUserByTelegramId(payload.message.from.id);
+        const userId = (user === null ? await UserHelper.createUser(payload.message.from) : user.id);
+
+        this.warnNamechanging(user, payload);
+
+        const chat   = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const chatId = (chat === null ? await ChatHelper.createChat(payload.message.chat) : chat.id);
+
+        if (userId && chatId) {
+
+            const relUserChat = new RelUsersChats();
+            relUserChat
+                .replace()
+                .set("user_id", userId)
+                .set("chat_id", chatId);
+
+            relUserChat.execute();
+        }
+    }
+
+    /**
+     * Warns if the users has changed their name.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param user
+     * @param payload
+     */
+    private warnNamechanging(user: Object, payload: Record<string, any>): void {
     }
 }

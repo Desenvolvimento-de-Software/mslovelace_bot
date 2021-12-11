@@ -14,6 +14,7 @@ import Select from "./select";
 import Insert from "./insert";
 import Replace from "./replace";
 import Update from "./update";
+import Delete from "./delete";
 import Builder from "./builder";
 
 export default class DB {
@@ -124,7 +125,8 @@ export default class DB {
             host     : process.env.MYSQL_HOST,
             user     : process.env.MYSQL_USER,
             password : process.env.MYSQL_PASSWORD,
-            database : process.env.MYSQL_SCHEMA
+            database : process.env.MYSQL_SCHEMA,
+            charset  : process.env.MYSQL_CHARSET
         });
 
         this.table = table;
@@ -180,9 +182,18 @@ export default class DB {
         return this.operation;
     }
 
-    // public delete(): DB {
-    //     return new Delete(this.table);
-    // }
+    /**
+     * Returns a delete query builder.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {Update}
+     */
+    public delete(): Builder {
+        this.operation = new Delete(this.table);
+        return this.operation;
+    }
 
     /**
      * Returns the active table.
@@ -196,18 +207,33 @@ export default class DB {
         return this.table;
     }
 
+    /**
+     * Perform an operation from the query builder.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns
+     */
     public execute(): any {
 
         if (this.operation) {
             const query = this.operation.build();
-            return query;
+            return this.query(query);
         }
 
         return null;
     }
 
+    /**
+     * Executes the given query.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
     public async query(query: string): Promise<any> {
-        return new Promise((resolve, reject) => {
+
+        return await new Promise((resolve, reject) => {
             DB.connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);

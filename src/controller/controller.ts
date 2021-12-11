@@ -11,60 +11,62 @@
 
  import express from "express";
 
- export default abstract class DefaultController {
+ export default class DefaultController {
 
-     /**
-      * Controller main path.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      *
-      * @var {string}
-      */
-     protected path: string;
+    /**
+     * Controller main path.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {string}
+     */
+    protected path: string;
 
-     /**
-      * Controller routes.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      *
-      * @var {express.Router}
-      */
-     protected router = express.Router();
+    /**
+     * Controller routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {express.Router}
+     */
+    protected router = express.Router();
 
-     /**
-      * The constructor.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      */
-     constructor(path: string) {
-         this.path = path;
-         this.initializeRoutes();
-     }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {string} path
+     */
+    constructor(path?: string) {
+        this.path = path || "/";
+        this.initializeRoutes();
+    }
 
-     /**
-      * Controller's main route.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      */
-     public index(request: Record<string, any>, response: Record<string, any>): void {
-         response.sendStatus(200);
-     }
+    /**
+     * Controller's main route.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    public index(request: Record<string, any>, response: Record<string, any>): void {
+        response.sendStatus(403);
+    }
 
-     /**
-      * Returns the controller's routes.
-      *
-      * @author Marcos Leandro
-      * @since  1.0.0
-      *
-      * @returns {express.Router}
-      */
-     public getRoutes(): express.Router {
-         return this.router;
-     }
+    /**
+     * Returns the controller's routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {express.Router}
+     */
+    public getRoutes(): express.Router {
+       return this.router;
+    }
 
     /**
      * Initializes the controller's routes.
@@ -72,6 +74,7 @@
      * @author Marcos Leandro
      * @since  1.0.0
      */
-     protected initializeRoutes(): void {
+    protected initializeRoutes(): void {
+        this.router.all(this.path, this.index.bind(this));
     }
- }
+}
