@@ -13,8 +13,29 @@ import DefaultController from "@controller/controller";
 import UserHelper from "@helper/user";
 import ChatHelper from "@helper/chat";
 import RelUsersChats from "@model/relUsersChats";
+import GreetingsCommand from "@controller/command/greetings";
 
 export default class IncomingController extends DefaultController {
+
+    /**
+     * Actions object.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @type {Record<string, any>}
+     */
+    private actions: Record<string, any> = {};
+
+    /**
+     * Commands object.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @type {Record<string, any>}
+     */
+    private commands: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -24,6 +45,8 @@ export default class IncomingController extends DefaultController {
      */
     constructor() {
         super("/incoming");
+        this.initializeActions();
+        this.initializeCommands();
     }
 
     /**
@@ -32,7 +55,7 @@ export default class IncomingController extends DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    public index(request: Record<string, any>, response: Record<string, any>) {
+    public index(request: Record<string, any>, response: Record<string, any>): void {
 
         if (request.params.auth !== process.env.AUTH) {
             response.status(401).send("Forbidden");
@@ -56,6 +79,19 @@ export default class IncomingController extends DefaultController {
     }
 
     /**
+     * Forbidden action.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param request
+     * @param response
+     */
+    public forbidden(request: Record<string, any>, response: Record<string, any>): void {
+        response.status(401).send("Forbidden");
+    }
+
+    /**
      * Initializes the controller's routes.
      *
      * @author Marcos Leandro
@@ -63,6 +99,7 @@ export default class IncomingController extends DefaultController {
      */
     protected initializeRoutes(): void {
         this.router.post(this.path + "/:auth", this.index.bind(this));
+        this.router.all(this.path, this.forbidden.bind(this));
     }
 
     /**
@@ -85,7 +122,16 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     protected handleCommand(payload: Record<string, any>): void {
-        console.log("handleCommand");
+
+        const instruction = payload.message.text.replace("/", "").split(" ");
+        const command     = instruction[0];
+        const method      = (typeof instruction[1] !== "undefined" ? instruction[1] : "index");
+        const args        = instruction.length > 2 ? instruction.slice(2) : [];
+
+        if (typeof this.commands[command] !== "undefined") {
+            const className = this.commands[command];
+            className[method](payload, ...args); //.apply(this, [payload, ...args]);
+        }
     }
 
     /**
@@ -138,5 +184,24 @@ export default class IncomingController extends DefaultController {
      * @param payload
      */
     private warnNamechanging(user: Object, payload: Record<string, any>): void {
+    }
+
+    /**
+     * Initializes the BOT's actions.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    private initializeActions(): void {
+    }
+
+    /**
+     * Initializes the BOT's commands.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    private initializeCommands(): void {
+        this.commands["greetings"] = new GreetingsCommand();
     }
 }

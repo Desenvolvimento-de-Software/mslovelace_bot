@@ -8,3 +8,15 @@
  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
+
+export default class Action {
+
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    constructor() {
+    }
+}

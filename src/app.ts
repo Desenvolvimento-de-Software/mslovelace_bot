@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import DefaultController from "@controller/controller";
@@ -44,12 +43,8 @@ class App {
      */
     constructor(controllers: Array<DefaultController>) {
 
-        dotenv.config({
-            path: __dirname + "/.env",
-        });
-
-        this.app = express();
-        this.port = (process.env.PORT || 8000) as number;
+        this.app  = express();
+        this.port = (process.env.PORT || 3000) as number;
 
         this.initializeMiddlewares();
         this.initializeControllers(controllers);

@@ -10,8 +10,13 @@
  */
 
 import App from "./app";
-import DefaultController from "@controller/controller";
-import IncomingController from "@controller/incoming";
+import dotenv from "dotenv";
+import DefaultController from "./controller/controller";
+import IncomingController from "./controller/incoming";
+
+dotenv.config({
+    path : __dirname + "/.env"
+});
 
 const app = new App([
     new DefaultController(),

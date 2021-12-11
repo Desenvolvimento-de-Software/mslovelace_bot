@@ -9,7 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
- import express from "express";
+import TelegramBotApi from "@library/telegram/telegrambotapi";
+import express from "express";
 
  export default class DefaultController {
 
@@ -44,6 +45,7 @@
     constructor(path?: string) {
         this.path = path || "/";
         this.initializeRoutes();
+        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
     }
 
     /**
