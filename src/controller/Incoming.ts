@@ -134,8 +134,7 @@ export default class IncomingController extends DefaultController {
 
         if (typeof this.commands[command] !== "undefined") {
             const className = this.commands[command];
-            console.log(method, className[method], className);
-            className[method](payload, ...args);
+            (new className)[method](payload, ...args);
         }
     }
 
