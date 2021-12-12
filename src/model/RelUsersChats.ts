@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultModel from "@model/model";
+import DefaultModel from "./Model.js";
 
-export default class Users extends DefaultModel {
+export default class RelUsersChats extends DefaultModel {
 
     /**
      * The constructor.
@@ -20,6 +20,6 @@ export default class Users extends DefaultModel {
      * @since  1.0.0
      */
     public constructor() {
-        super("users");
+        super("rel_users_chats");
     }
 }

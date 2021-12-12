@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import OrderInterface from "./interface/order";
+import OrderInterface from "./interface/Order.js";
 
 export default abstract class Builder {
 

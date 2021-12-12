@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Builder from "./builder";
+import Builder from "./Builder.js";
 
-export default class Select extends Builder {
+export default class Delete extends Builder {
 
     /**
      * The constructor.
@@ -36,19 +36,7 @@ export default class Select extends Builder {
      * @returns {string}
      */
     public build(): string {
-        return `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
-    }
-
-    /**
-     * Parses and returns the query fields.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @returns {string}
-     */
-    private parseFields(): string {
-        return this.fields.join(", ");
+        return `DELETE FROM ${this.table} ${this.parseConditions()} ${this.parseOrder()} ${this.parseLimit()};`;
     }
 
     /**
@@ -59,20 +47,8 @@ export default class Select extends Builder {
      *
      * @returns {string}
      */
-    private parseConditions(): string {
+     private parseConditions(): string {
         return this.conditions.length ? this.conditions.join(" ") : "";
-    }
-
-    /**
-     * Parses and returns the query grouping.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @returns {string}
-     */
-    private parseGroup(): string {
-        return this.group.length ? this.group.join(", ") : "";
     }
 
     /**

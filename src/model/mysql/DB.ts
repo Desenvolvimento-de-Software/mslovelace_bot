@@ -10,12 +10,12 @@
  */
 
 import mysql from "mysql";
-import Select from "./select";
-import Insert from "./insert";
-import Replace from "./replace";
-import Update from "./update";
-import Delete from "./delete";
-import Builder from "./builder";
+import Select from "./Select.js";
+import Insert from "./Insert.js";
+import Replace from "./Replace.js";
+import Update from "./Update.js";
+import Delete from "./Delete.js";
+import Builder from "./Builder.js";
 
 export default class DB {
 

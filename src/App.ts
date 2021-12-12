@@ -9,10 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
-import DefaultController from "@controller/controller";
+import DefaultController from "./controller/Controller.js";
 
 class App {
   /**
@@ -42,15 +41,8 @@ class App {
    * @since  1.0.0
    */
   constructor(controllers: Array<DefaultController>) {
-    dotenv.config({
-      path: __dirname + "/.env",
-    });
-
     this.app = express();
     this.port = (process.env.PORT || 8000) as number;
-
-    this.initializeMiddlewares();
-    this.initializeControllers(controllers);
   }
 
   /**
@@ -63,7 +55,7 @@ class App {
    */
   public listen(): void {
     this.app.listen(this.port, () => {
-      console.log(`App listening on the port ${this.port}`);
+      console.log(`App listening on port ${this.port}`);
     });
   }
 
@@ -76,7 +68,7 @@ class App {
    * @return {void}
    */
   private initializeMiddlewares(): void {
-    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.json({ type: "*/*" }));
   }
 
   /**

@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Builder from "./builder";
+import Builder from "./Builder.js";
 
 export default class Insert extends Builder {
 
