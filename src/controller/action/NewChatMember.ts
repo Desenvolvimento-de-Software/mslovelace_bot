@@ -82,8 +82,16 @@ export default class NewChatMember extends Action {
             .setText(text)
             .setParseMode("HTML")
             .post();
+
+        this.setUserAsGreeted(user, chat);
     }
 
-    private setUserAsGreeted(user: Record<string, any>, chat: Record<string, any>): void {
+    /**
+     * Saves the user as greeted in chat.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    private async setUserAsGreeted(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
     }
 }
