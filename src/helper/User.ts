@@ -50,16 +50,17 @@ export default class UserHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async createUser(payload: Record<string, any>): Promise<any> {
+    public static async createUser(user: Record<string, any>): Promise<any> {
 
         const newUser = new Users();
         newUser
             .insert()
-            .set("user_id", payload.message.from.id)
-            .set("first_name", payload.message.from.first_name)
-            .set("last_name", payload.message.from.last_name)
-            .set("username", payload.message.from.username)
-            .set("language_code", payload.message.from.language_code);
+            .set("user_id", user.id)
+            .set("first_name", user.first_name || null)
+            .set("last_name", user.last_name || null)
+            .set("username", user.username || null)
+            .set("language_code", user.language_code || null)
+            .set("is_bot", user.is_bot || 0);
 
         try {
 

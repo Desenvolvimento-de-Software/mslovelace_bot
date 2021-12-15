@@ -50,14 +50,14 @@ export default class ChatHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async createChat(payload: Record<string, any>): Promise<any> {
+    public static async createChat(chat: Record<string, any>): Promise<any> {
 
         const newChat = new Chats();
         newChat
             .insert()
-            .set("chat_id", payload.message.chat.id)
-            .set("title", payload.message.chat.title)
-            .set("type", payload.message.chat.type)
+            .set("chat_id", chat.id)
+            .set("title", chat.title)
+            .set("type", chat.type)
             .set("joined", 1);
 
         try {

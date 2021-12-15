@@ -11,7 +11,6 @@
 
 import Action from "../Action.js";
 import ChatMessages from "../../model/ChatMessages.js";
-import Users from "../../model/Users.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
