@@ -12,5 +12,6 @@
 export default {
     defaultGreetings : "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador.",
     commandGreetingsActivated : "Saudações ativadas",
-    commandGreetingsDeactivated : "Saudações desativadas"
+    commandGreetingsDeactivated : "Saudações desativadas",
+    warnNameChanging : "<a href=\"tg://user?id={userid}\">{oldname}</a> mudou seu nome para <a href=\"tg://user?id={userid}\">{newname}</a>"
 };

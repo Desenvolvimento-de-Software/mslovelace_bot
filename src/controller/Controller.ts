@@ -14,6 +14,8 @@ import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import Lang from "../helper/Lang.js";
 import express from "express";
 
 export default class DefaultController {
@@ -87,16 +89,25 @@ export default class DefaultController {
         const user   = await UserHelper.getUserByTelegramId(userObject.id);
         const userId = user === null ? await UserHelper.createUser(userObject) : user.id;
 
-        if (user) {
-            this.warnNamechanging(user, userObject);
-        }
-
         const chat   = await ChatHelper.getChatByTelegramId(chatObject.id);
         const chatId = chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
 
+        UserHelper.updateUser(userObject);
+        ChatHelper.updateChat(chatObject);
+
+        if (user && chat) {
+            this.warnNamechanging(user, userObject, chat);
+        }
+
         if (userId && chatId) {
+
             const relUserChat = new RelUsersChats();
-            relUserChat.replace().set("user_id", userId).set("chat_id", chatId);
+
+            relUserChat
+                .replace()
+                .set("user_id", userId)
+                .set("chat_id", chatId);
+
             relUserChat.execute();
         }
     }
@@ -110,7 +121,29 @@ export default class DefaultController {
      * @param user
      * @param payload
      */
-    protected warnNamechanging(user: Object, userObject: Record<string, any>): void {
+    protected async warnNamechanging(user: Record<string, any>, userObject: Record<string, any>, chat: Record<string, any>): Promise<void> {
+
+        if (!chat.warn_name_changing) {
+            return;
+        }
+
+        if (user.first_name === userObject.first_name && user.last_name === userObject.last_name) {
+            return;
+        }
+
+        Lang.set(chat.language);
+
+        const text = Lang.get("warnNameChanging")
+            .replaceAll("{userid}", userObject.id)
+            .replaceAll("{oldname}", user.first_name + " " + user.last_name)
+            .replaceAll("{newname}", userObject.first_name + " " + userObject.last_name);
+
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(chat.chat_id)
+            .setText(text)
+            .setParseMode("HTML")
+            .post();
     }
 
     /**
