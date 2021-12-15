@@ -10,19 +10,9 @@
  */
 
 import App from "./App.js";
-import path from "path";
-import dotenv from "dotenv";
 import DefaultController from "./controller/Controller.js";
 import IncomingController from "./controller/Incoming.js";
 
-console.log( path.resolve());
-dotenv.config({
-    path : path.resolve() + "/.env"
-});
-
-const app = new App([
-    new DefaultController(),
-    new IncomingController()
-]);
+const app = new App([new DefaultController(), new IncomingController()]);
 
 app.listen();
