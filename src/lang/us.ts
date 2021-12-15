@@ -8,3 +8,7 @@
  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
+
+export default {
+    defaultGreetings : "Hey <a href=\"tg://user?id={userid}\">{username}</a>, welcome to this group! If you have any questions, please contact an admin."
+};
