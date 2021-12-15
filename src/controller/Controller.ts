@@ -13,121 +13,128 @@ import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
+import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
 import express from "express";
 
 export default class DefaultController {
-  /**
-   * Controller main path.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @var {string}
-   */
-  protected path: string;
 
-  /**
-   * Controller routes.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @var {express.Router}
-   */
-  protected router = express.Router();
+    /**
+     * Controller main path.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {string}
+     */
+    protected path: string;
 
-  /**
-   * The constructor.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @param {string} path
-   */
-  constructor(path?: string) {
-    this.path = path || "/";
-    this.initializeRoutes();
-    TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
-  }
+    /**
+     * Controller routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {express.Router}
+     */
+    protected router = express.Router();
 
-  /**
-   * Controller's main route.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   */
-  public index(
-    request: Record<string, any>,
-    response: Record<string, any>
-  ): void {
-    response.sendStatus(403);
-  }
-
-  /**
-   * Returns the controller's routes.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @returns {express.Router}
-   */
-  public getRoutes(): express.Router {
-    return this.router;
-  }
-
-  /**
-   * Saves the user and group.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @param payload
-   */
-  protected async saveUserAndChat(
-    userObject: Record<string, any>,
-    chatObject: Record<string, any>
-  ): Promise<any> {
-    const user = await UserHelper.getUserByTelegramId(userObject.id);
-    const userId =
-      user === null ? await UserHelper.createUser(userObject) : user.id;
-
-    if (user) {
-      this.warnNamechanging(user, userObject);
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {string} path
+     */
+    constructor(path?: string) {
+        this.path = path || "/";
+        this.initializeRoutes();
+        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
     }
 
-    const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
-    const chatId =
-      chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
-
-    if (userId && chatId) {
-      const relUserChat = new RelUsersChats();
-      relUserChat.replace().set("user_id", userId).set("chat_id", chatId);
-
-      relUserChat.execute();
+    /**
+     * Controller's main route.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    public index(request: Record<string, any>, response: Record<string, any>): void {
+        response.sendStatus(403);
     }
-  }
 
-  /**
-   * Warns if the users has changed their name.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @param user
-   * @param payload
-   */
-  protected warnNamechanging(
-    user: Object,
-    userObject: Record<string, any>
-  ): void {}
+    /**
+     * Returns the controller's routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @returns {express.Router}
+     */
+    public getRoutes(): express.Router {
+        return this.router;
+    }
 
-  /**
-   * Initializes the controller's routes.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   */
-  protected initializeRoutes(): void {
-    this.router.all(this.path, this.index.bind(this));
-  }
+    /**
+     * Saves the user and group.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param payload
+     */
+    protected async saveUserAndChat(userObject: Record<string, any>, chatObject: Record<string, any>): Promise<any> {
+
+        const user   = await UserHelper.getUserByTelegramId(userObject.id);
+        const userId = user === null ? await UserHelper.createUser(userObject) : user.id;
+
+        if (user) {
+            this.warnNamechanging(user, userObject);
+        }
+
+        const chat   = await ChatHelper.getChatByTelegramId(chatObject.id);
+        const chatId = chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
+
+        if (userId && chatId) {
+            const relUserChat = new RelUsersChats();
+            relUserChat.replace().set("user_id", userId).set("chat_id", chatId);
+            relUserChat.execute();
+        }
+    }
+
+    /**
+     * Warns if the users has changed their name.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param user
+     * @param payload
+     */
+    protected warnNamechanging(user: Object, userObject: Record<string, any>): void {
+    }
+
+    /**
+     * Deletes a message.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected async deleteMessage(messageId: number, chatId: number): Promise<void> {
+
+        const deleteMessage = new DeleteMessage();
+        deleteMessage
+            .setMessageId(messageId)
+            .setChatId(chatId)
+            .post();
+    }
+
+    /**
+     * Initializes the controller's routes.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected initializeRoutes(): void {
+        this.router.all(this.path, this.index.bind(this));
+    }
 }

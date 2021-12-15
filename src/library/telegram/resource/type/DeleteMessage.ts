@@ -9,17 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultController from "./Controller.js";
-
-export default class Command extends DefaultController {
-
-    /**
-     * The constructor.
-     *
-     * @author Marcos Leandro
-     * @siunce  1.0.0
-     */
-    public constructor() {
-        super();
-    }
-}
+export type DeleteMessageType = {
+    chat_id?    : number,
+    message_id? : number
+};

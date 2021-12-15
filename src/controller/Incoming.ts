@@ -128,6 +128,11 @@ export default class IncomingController extends DefaultController {
      */
     protected async handleCommand(payload: Record<string, any>): Promise<void> {
 
+        this.deleteMessage(
+            payload.message.message_id,
+            payload.message.chat.id
+        );
+
         const instruction = payload.message.text.replace("/", "").split(" ");
         const command     = instruction[0];
         const method      = (typeof instruction[1] !== "undefined" ? instruction[1] : "index");
