@@ -47,7 +47,7 @@ export default class GreetingsCommand extends Command {
      */
     public async on(payload: Record<string, any>): Promise<void> {
 
-        if (!this.isAdmin(payload, true)) {
+        if (!this.isAdmin(payload)) {
             return;
         }
 
