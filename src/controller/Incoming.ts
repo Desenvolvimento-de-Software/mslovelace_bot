@@ -139,8 +139,14 @@ export default class IncomingController extends DefaultController {
         const args        = instruction.length > 2 ? instruction.slice(2) : [];
 
         if (typeof this.commands[command] !== "undefined") {
+
             const className = this.commands[command];
-            (new className)[method](payload, ...args);
+
+            try {
+
+                (new className)[method](payload, ...args);
+
+            } catch (error) {}
         }
     }
 
