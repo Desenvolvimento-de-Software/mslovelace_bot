@@ -89,10 +89,10 @@ export default class UserHelper {
 
         currentUser
             .update()
-            .set("first_name", userObject.first_name)
-            .set("last_name", userObject.last_name)
-            .set("username", userObject.username)
-            .set("language_code", userObject.language_code)
+            .set("first_name", userObject.first_name || null)
+            .set("last_name", userObject.last_name || null)
+            .set("username", userObject.username || null)
+            .set("language_code", userObject.language_code || "us")
             .where('id').equal(user.id);
 
         try {

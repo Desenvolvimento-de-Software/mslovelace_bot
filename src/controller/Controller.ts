@@ -127,7 +127,10 @@ export default class DefaultController {
             return;
         }
 
-        if (user.first_name === userObject.first_name && user.last_name === userObject.last_name) {
+        const firstName = userObject.first_name || null;
+        const lastName  = userObject.last_name || null;
+
+        if (user.first_name === firstName && user.last_name === lastName) {
             return;
         }
 

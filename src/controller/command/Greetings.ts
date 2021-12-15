@@ -47,6 +47,10 @@ export default class GreetingsCommand extends Command {
      */
     public async on(payload: Record<string, any>): Promise<void> {
 
+        if (!this.isAdmin(payload, true)) {
+            return;
+        }
+
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
         if (!chat || !chat.id) {
             return;
@@ -81,6 +85,10 @@ export default class GreetingsCommand extends Command {
      * @param payload
      */
     public async off(payload: Record<string, any>): Promise<void> {
+
+        if (!this.isAdmin(payload)) {
+            return;
+        }
 
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
         if (!chat || !chat.id) {
