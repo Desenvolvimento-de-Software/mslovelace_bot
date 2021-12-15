@@ -40,8 +40,6 @@ export default class NewChatMember extends Action {
 
     const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
 
-    console.log("chat", chat);
-
     if (!chat) {
       return;
     }
@@ -54,7 +52,6 @@ export default class NewChatMember extends Action {
       payload.message.new_chat_member.id
     );
 
-    console.log("user", user);
     if (!user) {
       return;
     }
@@ -66,7 +63,7 @@ export default class NewChatMember extends Action {
       'Hey <a href="tg://user?id={userid}">{username}</a>, welcome to this group! If you have any questions, contact an admin.';
 
     const chatMessage = await chatMessages.execute();
-    if (chatMessage) {
+    if (chatMessage.length) {
       text = TextHelper.format(
         chatMessage[0].greetings,
         payload.message.new_chat_member.id,

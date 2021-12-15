@@ -44,8 +44,6 @@ class App {
     this.app = express();
     this.port = (process.env.PORT || 3000) as number;
 
-    console.log("port env", process.env.PORT);
-
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
   }
