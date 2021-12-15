@@ -59,8 +59,7 @@ export default class NewChatMember extends Action {
     const chatMessages = new ChatMessages();
     chatMessages.select().where("id").equal(chat.id).offset(0).limit(1);
 
-    let text =
-      'Hey <a href="tg://user?id={userid}">{username}</a>, welcome to this group! If you have any questions, contact an admin.';
+    let text = `Hey <a href="tg://user?id={userid}">{username}</a>, welcome to this group! If you have any questions, contact an admin.`;
 
     const chatMessage = await chatMessages.execute();
     if (chatMessage.length) {
