@@ -10,5 +10,7 @@
  */
 
 export default {
-    defaultGreetings : "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador."
+    defaultGreetings : "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador.",
+    commandGreetingsActivated : "Saudações ativadas",
+    commandGreetingsDeactivated : "Saudações desativadas"
 };

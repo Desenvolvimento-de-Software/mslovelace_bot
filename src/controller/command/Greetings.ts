@@ -13,6 +13,7 @@ import Command from "../Command.js";
 import ChatHelper from "../../helper/Chat.js";
 import Chats from "../../model/Chats.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
+import Lang from "../../helper/Lang.js";
 
 export default class GreetingsCommand extends Command {
 
@@ -51,6 +52,8 @@ export default class GreetingsCommand extends Command {
             return;
         }
 
+        Lang.set(chat.language);
+
         const update = new Chats();
         update
             .update()
@@ -63,7 +66,7 @@ export default class GreetingsCommand extends Command {
             const sendMessage = new SendMessage();
             sendMessage
                 .setChatId(payload.message.chat.id)
-                .setText("Greetings activated");
+                .setText(Lang.get("commandGreetingsActivated"));
 
             sendMessage.post();
         }
@@ -84,6 +87,8 @@ export default class GreetingsCommand extends Command {
             return;
         }
 
+        Lang.set(chat.language);
+
         const update = new Chats();
         update
             .update()
@@ -96,7 +101,7 @@ export default class GreetingsCommand extends Command {
             const sendMessage = new SendMessage();
             sendMessage
                 .setChatId(payload.message.chat.id)
-                .setText("Greetings deactivated");
+                .setText(Lang.get("commandGreetingsDeactivated"));
 
             sendMessage.post();
         }

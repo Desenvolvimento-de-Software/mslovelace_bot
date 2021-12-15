@@ -10,5 +10,7 @@
  */
 
 export default {
-    defaultGreetings : "Hey <a href=\"tg://user?id={userid}\">{username}</a>, welcome to this group! If you have any questions, please contact an admin."
+    defaultGreetings : "Hey <a href=\"tg://user?id={userid}\">{username}</a>, welcome to this group! If you have any questions, please contact an admin.",
+    commandGreetingsActivated : "Greetings activated",
+    commandGreetingsDeactivated : "Greetings deactivated"
 };
