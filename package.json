@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node -r dotenv/config ./dist/index.js",
     "build": "tsc --project ./",
-    "dev": "nodemon -e ts --exec 'npm run typescript'",
-    "typescript": "node --loader ts-node/esm -r dotenv/config -r tsconfig-paths/register src/index.ts"
+    "watch": "nodemon --watch './**/*.{ts,graphql}' --exec 'npm run watch-arg'",
+    "watch-arg": "node --experimental-specifier-resolution=node --loader ts-node/esm -r dotenv/config -r tsconfig-paths/register src/index.ts",
+    "dev": "tsc-watch --onSuccess \"npm run watch\""
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "@types/mysql": "^2.15.19",
     "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
+    "tsc-watch": "^4.5.0",
     "tsconfig-paths": "^3.12.0",
     "typescript": "^4.5.2"
   }
