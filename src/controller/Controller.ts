@@ -15,6 +15,7 @@ import RelUsersChats from "../model/RelUsersChats.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
+import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import Lang from "../helper/Lang.js";
 import express from "express";
 
@@ -175,7 +176,7 @@ export default class DefaultController {
      *
      * @return {boolean}
      */
-     protected async isAdmin(payload: Record<string, any>, report?: boolean): Promise<boolean> {
+     protected async isAdmin(payload: Record<string, any>): Promise<any> {
 
         if (payload.message.chat.type === "private") {
             return true;
@@ -185,20 +186,15 @@ export default class DefaultController {
         request.setChatId(payload.message.chat.id);
 
         const response = await request.post();
-        const json = await response.json();
+        const json     = await response.json();
 
         if (!json.hasOwnProperty("ok") || json.ok !== true) {
             return false;
         }
 
-        let admins = [];
+        let admins: Array<any> = [];
         for (let i = 0, length = json.result.length; i < length; i++) {
             admins.push(json.result[i].user.id);
-        }
-
-        if (!admins.includes(payload.message.from.id) && report === true) {
-            this.warnUserAboutReporting(payload);
-            this.reportUnauthorizedCommand(payload, json.result);
         }
 
         return admins.includes(payload.message.from.id);

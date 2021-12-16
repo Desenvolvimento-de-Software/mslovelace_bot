@@ -11,6 +11,7 @@
 
 import DefaultController from "./Controller.js";
 import GreetingsCommand from "./command/Greetings.js";
+import StartCommand from "./command/Start.js";
 import NewChatMember from "./action/NewChatMember.js";
 
 export default class IncomingController extends DefaultController {
@@ -134,7 +135,7 @@ export default class IncomingController extends DefaultController {
         );
 
         const instruction = payload.message.text.replace("/", "").split(" ");
-        const command     = instruction[0];
+        const command     = instruction[0].split("@")[0];
         const method      = (typeof instruction[1] !== "undefined" ? instruction[1] : "index");
         const args        = instruction.length > 2 ? instruction.slice(2) : [];
 
@@ -182,6 +183,9 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     private initializeCommands(): void {
-        this.commands["greetings"] = GreetingsCommand;
+        this.commands = {
+            greetings : GreetingsCommand,
+            start     : StartCommand
+        };
     }
 }

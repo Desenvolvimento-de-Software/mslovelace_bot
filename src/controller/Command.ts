@@ -10,8 +10,8 @@
  */
 
 import DefaultController from "./Controller.js";
-import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
+import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import Lang from "../helper/Lang.js";
 
 export default class Command extends DefaultController {
@@ -34,7 +34,7 @@ export default class Command extends DefaultController {
      *
      * @param  {Record<string, any>} payload
      */
-    protected warnUserAboutReporting(payload: Record<string, any>): void {
+    protected async warnUserAboutReporting(payload: Record<string, any>): Promise<void> {
 
         const username = payload.message.from.first_name.length ?
             payload.message.from.first_name :
@@ -50,6 +50,8 @@ export default class Command extends DefaultController {
             .setText(text)
             .setParseMode("HTML")
             .post();
+
+        this.reportUnauthorizedCommand(payload);
     }
 
     /**
@@ -61,7 +63,7 @@ export default class Command extends DefaultController {
      * @param  {Record<string, any>} payload
      * @param  {Array<number>}      admins
      */
-    protected async reportUnauthorizedCommand(payload: Record<string, any>, admins: Array<any>): Promise<void> {
+    protected async reportUnauthorizedCommand(payload: Record<string, any>): Promise<void> {
 
         const username = payload.message.from.first_name.length ?
             payload.message.from.first_name :
@@ -78,6 +80,17 @@ export default class Command extends DefaultController {
             .replaceAll("{chaturl}", payload.message.chat.username)
             .replaceAll("{content}", payload.message.text);
 
+        const request = new GetChatAdministrators();
+        request.setChatId(payload.message.chat.id);
+
+        const response = await request.post();
+        const json     = await response.json();
+
+        if (!json.hasOwnProperty("ok") || json.ok !== true) {
+            return;
+        }
+
+        const admins = json.result;
         for (let i = 0, length = admins.length; i < length; i++) {
 
             if (admins[i].is_bot) {

@@ -15,5 +15,6 @@ export default {
     commandGreetingsDeactivated : "Greetings deactivated",
     warnNameChanging : "<a href=\"tg://user?id={userid}\">{oldname}</a> changed their name to <a href=\"tg://user?id={userid}\">{newname}</a>",
     unauthorizedCommand : "<a href=\"tg://user?id={userid}\">{username}</a>, you are not supposed to send this command here.\nThis incident will be reported.",
-    unauthorizedCommandReport : "The user <a href=\"tg://user?id={userid}\">{username}</a> is trying to send an unauthorized command in <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>"
+    unauthorizedCommandReport : "The user <a href=\"tg://user?id={userid}\">{username}</a> is trying to send an unauthorized command in <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
+    groupStartMessage : "Hey <a href=\"tg://user?id={userid}\">{username}</a>! PM me if you want some help."
 };
