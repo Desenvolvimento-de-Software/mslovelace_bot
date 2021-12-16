@@ -61,10 +61,23 @@ export default class IncomingController extends DefaultController {
         }
 
         const payload = request.body;
-
         if (!payload.message) {
             response.status(200).send();
         }
+
+        this.handle(payload);
+        response.status(200).send();
+    }
+
+    /**
+     * Handles the incoming message.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {Record<string, any>} payload
+     */
+    public handle(payload: Record<string, any>): void {
 
         this.saveUserAndChat(
             payload.message.from,
@@ -80,8 +93,6 @@ export default class IncomingController extends DefaultController {
             default:
                 this.handleAction(payload);
         }
-
-        response.status(200).send();
     }
 
     /**
