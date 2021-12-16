@@ -165,6 +165,46 @@ export default class DefaultController {
     }
 
     /**
+     * Verifies if the user is one of the chat admins.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param  {number}  chatId
+     * @param  {boolean} report
+     *
+     * @return {boolean}
+     */
+     protected async isAdmin(payload: Record<string, any>, report?: boolean): Promise<boolean> {
+
+        if (payload.message.chat.type === "private") {
+            return true;
+        }
+
+        const request = new GetChatAdministrators();
+        request.setChatId(payload.message.chat.id);
+
+        const response = await request.post();
+        const json = await response.json();
+
+        if (!json.hasOwnProperty("ok") || json.ok !== true) {
+            return false;
+        }
+
+        let admins = [];
+        for (let i = 0, length = json.result.length; i < length; i++) {
+            admins.push(json.result[i].user.id);
+        }
+
+        if (!admins.includes(payload.message.from.id) && report === true) {
+            this.warnUserAboutReporting(payload);
+            this.reportUnauthorizedCommand(payload, json.result);
+        }
+
+        return admins.includes(payload.message.from.id);
+    }
+
+    /**
      * Initializes the controller's routes.
      *
      * @author Marcos Leandro
