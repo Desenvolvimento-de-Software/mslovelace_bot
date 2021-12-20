@@ -137,10 +137,28 @@ export default class DefaultController {
 
         Lang.set(chat.language);
 
+        let oldName;
+        if (userObject.first_name.length) {
+            oldName = user.first_name;
+        }
+
+        if (user.last_name.length) {
+            oldName += (oldName.length ? " " : "") + user.last_name;
+        }
+
+        let newName;
+        if (typeof userObject.first_name !== "undefined") {
+            newName = userObject.first_name;
+        }
+
+        if (typeof userObject.last_name !== "undefined") {
+            newName += (newName.length ? " " : "") + userObject.last_name;
+        }
+
         const text = Lang.get("warnNameChanging")
             .replaceAll("{userid}", userObject.id)
-            .replaceAll("{oldname}", user.first_name + " " + user.last_name)
-            .replaceAll("{newname}", userObject.first_name + " " + userObject.last_name);
+            .replaceAll("{oldname}", oldName)
+            .replaceAll("{newname}", newName);
 
         const sendMessage = new SendMessage();
         sendMessage

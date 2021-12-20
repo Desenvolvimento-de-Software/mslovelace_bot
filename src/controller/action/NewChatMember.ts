@@ -61,18 +61,18 @@ export default class NewChatMember extends Action {
             return;
         }
 
-        const chatMessages = new ChatMessages();
-        chatMessages.select().where("id").equal(chat.id).offset(0).limit(1);
-
         let text = Lang.get("defaultGreetings");
+
+        const chatMessages = new ChatMessages();
+        chatMessages
+            .select()
+            .where("chat_id").equal(chat.id)
+            .offset(0)
+            .limit(1);
 
         const chatMessage = await chatMessages.execute();
         if (chatMessage.length) {
-            text = TextHelper.format(
-                chatMessage[0].greetings,
-                payload.message.new_chat_member.id,
-                payload.message.new_chat_member.first_name
-            );
+            text = chatMessage[0].greetings;
         }
 
         text = text.replace("{userid}", payload.message.new_chat_member.id);
