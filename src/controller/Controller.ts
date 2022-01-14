@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import express from "express";
 import App from "../App.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
@@ -18,7 +19,6 @@ import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
 import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import Lang from "../helper/Lang.js";
-import express from "express";
 
 export default class DefaultController {
 
@@ -85,6 +85,68 @@ export default class DefaultController {
      */
     public getRoutes(): express.Router {
         return this.router;
+    }
+
+    /**
+     * Returns the user's Telegram ID.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {string} username
+     *
+     * @returns {Promise<number|null>}
+     */
+    protected async getUserId(payload: Record<string, any>): Promise<number|null> {
+
+        if (typeof payload.message?.reply_to_message?.from?.id !== "undefined") {
+            return payload.message.reply_to_message.from.id;
+        }
+
+        const message = payload.message.text || "";
+        const content = message.split(" ");
+
+        if (content.length < 2) {
+            return null;
+        }
+
+        if (payload.message?.entities?.length) {
+            for (let i = 0, length = payload.message?.entities?.length; i < length; i++) {
+
+                if (payload.message.entities[i].type === "mention") {
+                    return await this.getUserByMention(
+                        content[1].replace(/^@/, "")
+                    );
+                }
+            }
+        }
+
+        if (Number(content[1]) == content[1]) {
+            return Number(content[1]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the user's Telegram ID by its username.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {string} username
+     *
+     * @returns {Promise<number|null>}
+     */
+    protected async getUserByMention(username: string): Promise<number|null> {
+
+        const user = await UserHelper.getUserByUsername(username);
+
+        if (user) {
+            return user.user_id;
+        }
+
+        return null;
     }
 
     /**

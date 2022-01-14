@@ -11,8 +11,12 @@
 
 import App from "../../App.js";
 import Command from "../Command.js";
+import SendMessage from "../../library/telegram/resource/SendMessage.js";
+import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
+import ChatHelper from "../../helper/Chat.js";
+import Lang from "../../helper/Lang.js";
 
-export default class Warn extends Command {
+export default class Ban extends Command {
 
     /**
      * The constructor.
@@ -20,7 +24,7 @@ export default class Warn extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-     public constructor(app: App) {
+    public constructor(app: App) {
         super(app);
     }
 
@@ -38,5 +42,19 @@ export default class Warn extends Command {
             this.warnUserAboutReporting(payload);
             return;
         }
+
+        const userId = await this.getUserId(payload);
+        const chatId = payload.message.chat.id;
+
+        if (!userId || !chatId) {
+            return;
+        }
+
+        const ban = new BanChatMember();
+        ban
+            .setUserId(userId)
+            .setChatId(chatId);
+
+            console.log(await ban.post());
     }
 }

@@ -41,6 +41,33 @@ export default class UserHelper {
     }
 
     /**
+     * Returns the user by the username.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param userId
+     *
+     * @returns {Promise<any>}
+     */
+    public static async getUserByUsername(username: string): Promise<any> {
+
+        const users = new Users();
+
+        users
+            .select()
+            .where("username").equal(username);
+
+        const user = await users.execute();
+
+        if (user.length) {
+            return user[0];
+        }
+
+        return null;
+    }
+
+    /**
      * Creates the user in database.
      *
      * @author Marcos Leandro

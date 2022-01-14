@@ -11,11 +11,12 @@
 
 import App from "../../App.js";
 import Command from "../Command.js";
+import UnbanChatMember from "../../library/telegram/resource/UnbanChatMember.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
 
-export default class Start extends Command {
+export default class Kick extends Command {
 
     /**
      * The constructor.
@@ -35,31 +36,32 @@ export default class Start extends Command {
      *
      * @param payload
      */
-    public async index(payload: Record<string, any>): Promise<void> {
+     public async index(payload: Record<string, any>): Promise<void> {
 
-        const isAdmin = await this.isAdmin(payload);
-        const chat    = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-
-        Lang.set(chat.language || "us");
-
-        if (payload.message.chat.type !== "private" && !isAdmin) {
+        if (!this.isAdmin(payload)) {
+            this.warnUserAboutReporting(payload);
             return;
         }
 
-        if (payload.message.chat.type !== "private") {
+        const userId = await this.getUserId(payload);
+        const chatId = payload.message.chat.id;
 
-            const message = Lang.get("groupStartMessage")
-                .replace("{userid}", payload.message.from.id)
-                .replace("{username}", payload.message.from.first_name || payload.message.from.username);
-
-            const sendMessage = new SendMessage();
-            sendMessage
-                .setChatId(payload.message.chat.id)
-                .setText(message)
-                .setParseMode("HTML")
-                .post();
-
+        if (!userId || !chatId) {
             return;
         }
+
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(payload.message.chat.id)
+            .setText(`Removing ${userId} from ${chatId}`)
+            .setParseMode("HTML")
+            .post();
+
+        const unban = new UnbanChatMember();
+        unban
+            .setUserId(userId)
+            .setChatId(chatId)
+            .setOnlyIfBanned(false)
+            .post();
     }
 }

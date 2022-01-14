@@ -13,6 +13,9 @@ import App from "../App.js";
 import DefaultController from "./Controller.js";
 import GreetingsCommand from "./command/Greetings.js";
 import StartCommand from "./command/Start.js";
+import KickCommand from "./command/Kick.js";
+import BanCommand from "./command/Ban.js";
+import UnbanCommand from "./command/Unban.js";
 import NewChatMember from "./action/NewChatMember.js";
 
 export default class IncomingController extends DefaultController {
@@ -80,6 +83,7 @@ export default class IncomingController extends DefaultController {
      */
     public handle(payload: Record<string, any>): void {
 
+        this.app.log(JSON.stringify(payload));
         let message;
 
         if (typeof payload.message !== "undefined") {
@@ -160,8 +164,15 @@ export default class IncomingController extends DefaultController {
 
         const instruction = payload.message.text.replace("/", "").split(" ");
         const command     = instruction[0].split("@")[0];
-        const method      = (typeof instruction[1] !== "undefined" ? instruction[1] : "index");
-        const args        = instruction.length > 2 ? instruction.slice(2) : [];
+
+        const method = (
+            (
+                typeof instruction[1] !== "undefined" &&
+                this.commands[command].hasOwnProperty(instruction[1])
+            ) ? instruction[1] : "index"
+        );
+
+        const args = instruction.length > 2 ? instruction.slice(2) : [];
 
         if (typeof this.commands[command] !== "undefined") {
 
@@ -169,9 +180,11 @@ export default class IncomingController extends DefaultController {
 
             try {
 
-                (new className(this.app))[method](this.app, payload, ...args);
+                (new className(this.app))[method](payload, ...args);
 
-            } catch (error) {}
+            } catch (error: any) {
+                this.app.log(error.toString());
+            }
         }
     }
 
@@ -214,7 +227,10 @@ export default class IncomingController extends DefaultController {
     private initializeCommands(): void {
         this.commands = {
             greetings : GreetingsCommand,
-            start     : StartCommand
+            start     : StartCommand,
+            kick      : KickCommand,
+            ban       : BanCommand,
+            unban     : UnbanCommand
         };
     }
 }
