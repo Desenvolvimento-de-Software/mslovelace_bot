@@ -12,9 +12,11 @@
 import fs from "fs";
 import express from "express";
 import bodyParser from "body-parser";
+import IncomingController from "./controller/Incoming.js";
 import DefaultController from "./controller/Controller.js";
+import GetUpdates from "./library/telegram/resource/GetUpdates.js";
 
-class App {
+export default class App {
 
     /**
      * Express application instance.
@@ -47,10 +49,14 @@ class App {
         this.port = (process.env.PORT || 3000) as number;
 
         this.initializeMiddlewares();
+
+        if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "false") {
+            this.initializeLongPolling();
+        }
     }
 
     /**
-     * Adds the controllers.
+     * Starts to listen in the specified port.
      *
      * @author Marcos Leandro
      * @since  1.0.0
@@ -78,8 +84,30 @@ class App {
     }
 
     /**
-     * Initializes the middlewares.
+     * Saves an entry to the log.
      *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param content
+     */
+    public log(content: string): void {
+
+        const date = new Date();
+
+        const year  = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day   = (date.getDate()).toString().padStart(2, "0");
+
+        const filename = `${year}-${month}-${day}.log`;
+        fs.appendFileSync(
+            `./log/${filename}`,
+            `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} :: ${content}\n`
+        );
+    }
+
+    /**
+     * Initializes the middlewares.
      * @author Marcos Leandro
      * @since  1.0.0
      *
@@ -88,6 +116,42 @@ class App {
     private initializeMiddlewares(): void {
         this.app.use(bodyParser.json({ type: "*/*" }));
     }
-}
 
-export default App;
+    /**
+     * Makes the long polling to the Telegram API.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param  {number} offset
+     */
+    private async initializeLongPolling(offset?: number): Promise<void> {
+
+        const request = new GetUpdates();
+
+        if (typeof offset !== "undefined" && offset.toString().length) {
+            request.setOffset(offset);
+        }
+
+        const response = await request.post();
+        const json     = await response.json();
+
+        try {
+
+            let newOffset;
+
+            for (let i = 0, length = json.result.length; i < length; i++) {
+
+                const update = json.result[i];
+                newOffset    = update.update_id + 1;
+
+                (new IncomingController(this)).handle(update);
+            }
+
+            this.initializeLongPolling(newOffset);
+
+        } catch (err) {
+            this.initializeLongPolling();
+        }
+    }
+}

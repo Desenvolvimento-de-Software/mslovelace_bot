@@ -14,6 +14,10 @@ import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
+import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
+import Lang from "../helper/Lang.js";
 import express from "express";
 
 export default class DefaultController {
@@ -93,19 +97,28 @@ export default class DefaultController {
      */
     protected async saveUserAndChat(userObject: Record<string, any>, chatObject: Record<string, any>): Promise<any> {
 
-        const user = await UserHelper.getUserByTelegramId(userObject.id);
+        const user   = await UserHelper.getUserByTelegramId(userObject.id);
         const userId = user === null ? await UserHelper.createUser(userObject) : user.id;
-
-        if (user) {
-            this.warnNamechanging(user, userObject);
-        }
 
         const chat   = await ChatHelper.getChatByTelegramId(chatObject.id);
         const chatId = chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
 
+        UserHelper.updateUser(userObject);
+        ChatHelper.updateChat(chatObject);
+
+        if (user && chat) {
+            this.warnNamechanging(user, userObject, chat);
+        }
+
         if (userId && chatId) {
+
             const relUserChat = new RelUsersChats();
-            relUserChat.replace().set("user_id", userId).set("chat_id", chatId);
+
+            relUserChat
+                .replace()
+                .set("user_id", userId)
+                .set("chat_id", chatId);
+
             relUserChat.execute();
         }
     }
@@ -119,10 +132,101 @@ export default class DefaultController {
      * @param user
      * @param payload
      */
-    protected warnNamechanging(
-        user: Object,
-        userObject: Record<string, any>
-    ): void {}
+    protected async warnNamechanging(user: Record<string, any>, userObject: Record<string, any>, chat: Record<string, any>): Promise<void> {
+
+        if (!chat.warn_name_changing) {
+            return;
+        }
+
+        const firstName = userObject.first_name || null;
+        const lastName  = userObject.last_name || null;
+
+        if (user.first_name === firstName && user.last_name === lastName) {
+            return;
+        }
+
+        Lang.set(chat.language);
+
+        let oldName;
+        if (userObject.first_name.length) {
+            oldName = user.first_name;
+        }
+
+        if (user.last_name.length) {
+            oldName += (oldName.length ? " " : "") + user.last_name;
+        }
+
+        let newName;
+        if (typeof userObject.first_name !== "undefined") {
+            newName = userObject.first_name;
+        }
+
+        if (typeof userObject.last_name !== "undefined") {
+            newName += (newName.length ? " " : "") + userObject.last_name;
+        }
+
+        const text = Lang.get("warnNameChanging")
+            .replaceAll("{userid}", userObject.id)
+            .replaceAll("{oldname}", oldName)
+            .replaceAll("{newname}", newName);
+
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(chat.chat_id)
+            .setText(text)
+            .setParseMode("HTML")
+            .post();
+    }
+
+    /**
+     * Deletes a message.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected async deleteMessage(messageId: number, chatId: number): Promise<void> {
+
+        const deleteMessage = new DeleteMessage();
+        deleteMessage
+            .setMessageId(messageId)
+            .setChatId(chatId)
+            .post();
+    }
+
+    /**
+     * Verifies if the user is one of the chat admins.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param  {number}  chatId
+     * @param  {boolean} report
+     *
+     * @return {boolean}
+     */
+     protected async isAdmin(payload: Record<string, any>): Promise<any> {
+
+        if (payload.message.chat.type === "private") {
+            return true;
+        }
+
+        const request = new GetChatAdministrators();
+        request.setChatId(payload.message.chat.id);
+
+        const response = await request.post();
+        const json     = await response.json();
+
+        if (!json.hasOwnProperty("ok") || json.ok !== true) {
+            return false;
+        }
+
+        let admins: Array<any> = [];
+        for (let i = 0, length = json.result.length; i < length; i++) {
+            admins.push(json.result[i].user.id);
+        }
+
+        return admins.includes(payload.message.from.id);
+    }
 
     /**
      * Initializes the controller's routes.

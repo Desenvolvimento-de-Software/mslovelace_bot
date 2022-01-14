@@ -55,6 +55,14 @@ export default class TelegramBotApi {
         this.method = method;
     }
 
+    /**
+     * Sets the Telegram Bot token.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param  {string} token
+     */
     public static setToken(token: string): void {
         TelegramBotApi.token = token;
     }

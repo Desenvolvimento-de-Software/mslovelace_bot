@@ -80,17 +80,17 @@ export default class ChatHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async updateChat(payload: Record<string, any>): Promise<any> {
+    public static async updateChat(chatObject: Record<string, any>): Promise<any> {
 
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
         const currentChat = new Chats();
 
         currentChat
             .update()
-            .set("title", payload.message.chat.title)
-            .set("type", payload.message.chat.type)
+            .set("title", chatObject.title)
+            .set("type", chatObject.type)
             .set("joined", 1)
-            .where("chat_id").equal(payload.message.chat.id);
+            .where("chat_id").equal(chatObject.id);
 
         try {
             currentChat.execute();

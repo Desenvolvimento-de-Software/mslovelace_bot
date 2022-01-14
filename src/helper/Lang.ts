@@ -59,7 +59,6 @@ export default class Lang {
      */
     public static set(country: string) {
 
-        console.log(country);
         if (!Lang.langs.hasOwnProperty(country)) {
             throw new Error("Country not found.");
         }

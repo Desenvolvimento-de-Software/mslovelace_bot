@@ -82,18 +82,18 @@ export default class UserHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async updateUser(payload: Record<string, any>): Promise<any> {
+    public static async updateUser(userObject: Record<string, any>): Promise<any> {
 
-        const user = await UserHelper.getUserByTelegramId(payload.message.from.id);
+        const user = await UserHelper.getUserByTelegramId(userObject.id);
         const currentUser = new Users();
 
         currentUser
             .update()
-            .set("first_name", payload.message.from.first_name)
-            .set("last_name", payload.message.from.last_name)
-            .set("username", payload.message.from.username)
-            .set("language_code", payload.message.from.language_code)
-            .where('user_id').equal(payload.message.from.id);
+            .set("first_name", userObject.first_name || null)
+            .set("last_name", userObject.last_name || null)
+            .set("username", userObject.username || null)
+            .set("language_code", userObject.language_code || "us")
+            .where('id').equal(user.id);
 
         try {
             currentUser.execute();

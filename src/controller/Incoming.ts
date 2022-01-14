@@ -12,6 +12,7 @@
 import App from "../App.js";
 import DefaultController from "./Controller.js";
 import GreetingsCommand from "./command/Greetings.js";
+import StartCommand from "./command/Start.js";
 import NewChatMember from "./action/NewChatMember.js";
 
 export default class IncomingController extends DefaultController {
@@ -61,15 +62,39 @@ export default class IncomingController extends DefaultController {
         }
 
         const payload = request.body;
-
         if (!payload.message) {
             response.status(200).send();
         }
 
-        this.saveUserAndChat(
-            payload.message.from,
-            payload.message.chat
-        );
+        this.handle(payload);
+        response.status(200).send();
+    }
+
+    /**
+     * Handles the incoming message.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param {Record<string, any>} payload
+     */
+    public handle(payload: Record<string, any>): void {
+
+        let message;
+
+        if (typeof payload.message !== "undefined") {
+            message = payload.message;
+
+        } else if (typeof payload.edited_message !== "undefined") {
+            message = payload.edited_message;
+        }
+
+        if (message.length) {
+            this.saveUserAndChat(
+                message.from,
+                message.chat
+            );
+        }
 
         switch (true) {
 
@@ -80,8 +105,6 @@ export default class IncomingController extends DefaultController {
             default:
                 this.handleAction(payload);
         }
-
-        response.status(200).send();
     }
 
     /**
@@ -116,6 +139,7 @@ export default class IncomingController extends DefaultController {
      */
     protected isCommand(payload: Record<string, any>): boolean {
         return (
+            typeof payload.message !== "undefined" &&
             typeof payload.message.entities !== "undefined" &&
             payload.message.entities[0].type === "bot_command"
         );
@@ -129,14 +153,25 @@ export default class IncomingController extends DefaultController {
      */
     protected async handleCommand(payload: Record<string, any>): Promise<void> {
 
+        this.deleteMessage(
+            payload.message.message_id,
+            payload.message.chat.id
+        );
+
         const instruction = payload.message.text.replace("/", "").split(" ");
-        const command     = instruction[0];
+        const command     = instruction[0].split("@")[0];
         const method      = (typeof instruction[1] !== "undefined" ? instruction[1] : "index");
         const args        = instruction.length > 2 ? instruction.slice(2) : [];
 
         if (typeof this.commands[command] !== "undefined") {
+
             const className = this.commands[command];
-            (new className(this.app))[method](this.app, payload, ...args);
+
+            try {
+
+                (new className(this.app))[method](this.app, payload, ...args);
+
+            } catch (error) {}
         }
     }
 
@@ -147,6 +182,10 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     protected async handleAction(payload: Record<string, any>): Promise<void> {
+
+        if (typeof payload.message === "undefined") {
+            return;
+        }
 
         for (let action in this.actions) {
             if (payload.message.hasOwnProperty(action)) {
@@ -173,6 +212,9 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     private initializeCommands(): void {
-        this.commands["greetings"] = GreetingsCommand;
+        this.commands = {
+            greetings : GreetingsCommand,
+            start     : StartCommand
+        };
     }
 }
