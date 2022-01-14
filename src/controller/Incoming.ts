@@ -83,7 +83,6 @@ export default class IncomingController extends DefaultController {
      */
     public handle(payload: Record<string, any>): void {
 
-        this.app.log(JSON.stringify(payload));
         let message;
 
         if (typeof payload.message !== "undefined") {
