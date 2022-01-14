@@ -9,84 +9,85 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import fs from "fs";
 import express from "express";
 import bodyParser from "body-parser";
 import DefaultController from "./controller/Controller.js";
 
 class App {
-  /**
-   * Express application instance.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @var {express.Application}
-   */
-  private app: express.Application;
 
-  /**
-   * Application port.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @var {number}
-   */
-  private port: number;
+    /**
+     * Express application instance.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {express.Application}
+     */
+    private app: express.Application;
 
-  /**
-   * The constructor.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   */
-  constructor(controllers: Array<DefaultController>) {
-    this.app = express();
-    this.port = (process.env.PORT || 3000) as number;
+    /**
+     * Application port.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @var {number}
+     */
+    private port: number;
 
-    this.initializeMiddlewares();
-    this.initializeControllers(controllers);
-  }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    constructor() {
+        this.app  = express();
+        this.port = (process.env.PORT || 3000) as number;
 
-  /**
-   * Starts to listen in the specified port.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @return {void}
-   */
-  public listen(): void {
-    this.app.listen(this.port, () => {
-      console.log(`App listening on port ${this.port}`);
-    });
-  }
+        this.initializeMiddlewares();
+    }
 
-  /**
-   * Initializes the middlewares.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @return {void}
-   */
-  private initializeMiddlewares(): void {
-    this.app.use(bodyParser.json({ type: "*/*" }));
-  }
+    /**
+     * Adds the controllers.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @return {void}
+     */
+     public addControllers(controllers: Array<DefaultController>): void {
+        controllers.forEach((controller) => {
+            this.app.use("/", controller.getRoutes());
+        });
+    }
 
-  /**
-   * Initializes the controllers.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @return {void}
-   */
-  private initializeControllers(controllers: Array<DefaultController>): void {
-    controllers.forEach((controller) => {
-      this.app.use("/", controller.getRoutes());
-    });
-  }
+    /**
+     * Starts to listen in the specified port.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @return {void}
+     */
+    public listen(): void {
+        this.app.listen(this.port, () => {
+            console.log(`App listening on port ${this.port}`);
+        });
+    }
+
+    /**
+     * Initializes the middlewares.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @return {void}
+     */
+    private initializeMiddlewares(): void {
+        this.app.use(bodyParser.json({ type: "*/*" }));
+    }
 }
 
 export default App;

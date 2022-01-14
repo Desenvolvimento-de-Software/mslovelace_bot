@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import App from "../App.js";
 import DefaultController from "./Controller.js";
 import GreetingsCommand from "./command/Greetings.js";
 import NewChatMember from "./action/NewChatMember.js";
@@ -41,8 +42,8 @@ export default class IncomingController extends DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    constructor() {
-        super("/incoming");
+    constructor(app: App) {
+        super(app, "/incoming");
         this.initializeActions();
         this.initializeCommands();
     }
@@ -135,7 +136,7 @@ export default class IncomingController extends DefaultController {
 
         if (typeof this.commands[command] !== "undefined") {
             const className = this.commands[command];
-            (new className)[method](payload, ...args);
+            (new className(this.app))[method](this.app, payload, ...args);
         }
     }
 
@@ -149,7 +150,8 @@ export default class IncomingController extends DefaultController {
 
         for (let action in this.actions) {
             if (payload.message.hasOwnProperty(action)) {
-                (new this.actions[action]).run(payload);
+                const className = this.actions[action];
+                (new className(this.app)).run(payload);
             }
         }
     }

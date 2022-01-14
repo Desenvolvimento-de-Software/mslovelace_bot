@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import App from "../App.js";
 import DefaultController from "./Controller.js";
 
 export default class Action extends DefaultController {
@@ -19,7 +20,7 @@ export default class Action extends DefaultController {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor() {
-        super();
+    public constructor(app: App) {
+        super(app);
     }
 }

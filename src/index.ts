@@ -13,6 +13,11 @@ import App from "./App.js";
 import DefaultController from "./controller/Controller.js";
 import IncomingController from "./controller/Incoming.js";
 
-const app = new App([new DefaultController(), new IncomingController()]);
+const app = new App();
+
+app.addControllers([
+    new DefaultController(app),
+    new IncomingController(app)
+]);
 
 app.listen();
