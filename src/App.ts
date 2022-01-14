@@ -99,11 +99,12 @@ export default class App {
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const day   = (date.getDate()).toString().padStart(2, "0");
 
+        const hours   = (date.getHours()).toString().padStart(2, "0");
+        const minutes = (date.getMinutes()).toString().padStart(2, "0");
+        const seconds = (date.getSeconds()).toString().padStart(2, "0");
+
         const filename = `${year}-${month}-${day}.log`;
-        fs.appendFileSync(
-            `./log/${filename}`,
-            `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} :: ${content}\n`
-        );
+        fs.appendFileSync(`./log/${filename}`, `${hours}:${minutes}:${seconds} :: ${content}\n`);
     }
 
     /**
