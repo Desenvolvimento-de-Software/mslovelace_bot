@@ -10,7 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { DeleteMessageType } from "./type/DeleteMessage.js";
+import { DeleteMessageType } from "../type/DeleteMessage.js";
 
 export default class DeleteMessage extends TelegramBotApi {
 

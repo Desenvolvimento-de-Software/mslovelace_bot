@@ -10,7 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { UnbanChatMemberType } from "./type/UnbanChatMember.js";
+import { UnbanChatMemberType } from "../type/UnbanChatMember.js";
 
 export default class UnbanChatMember extends TelegramBotApi {
 

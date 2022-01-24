@@ -10,7 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { SendMessageType } from "./type/SendMessage.js";
+import { SendMessageType } from "../type/SendMessage.js";
 
 export default class SendMessage extends TelegramBotApi {
 

@@ -10,6 +10,8 @@
  */
 
 export default {
+    startMessage : "Hey! My name is Ada Lovelace. I used to be a programmer. The first programmer in the history, in fact.\n\nNow I'm here to help you get around and keep the order in your groups.\nI have lots of features, such as greetings, a warning system, a flood control system and even more!\n\n",
+    startButton : "Add me to your group",
     defaultGreetings : "Hey <a href=\"tg://user?id={userid}\">{username}</a>, welcome to this group! If you have any questions, please contact an admin.",
     commandGreetingsActivated : "Greetings activated",
     commandGreetingsDeactivated : "Greetings deactivated",
