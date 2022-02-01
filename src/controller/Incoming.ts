@@ -17,6 +17,7 @@ import KickCommand from "./command/Kick.js";
 import BanCommand from "./command/Ban.js";
 import UnbanCommand from "./command/Unban.js";
 import NewChatMember from "./action/NewChatMember.js";
+import LeftChatMember from "./action/LeftChatMember.js";
 
 export default class IncomingController extends DefaultController {
 
@@ -214,7 +215,10 @@ export default class IncomingController extends DefaultController {
      * @since  1.0.0
      */
     private initializeActions(): void {
-        this.actions["new_chat_member"] = NewChatMember;
+        this.actions = {
+            new_chat_member  : NewChatMember,
+            left_chat_member : LeftChatMember
+        };
     }
 
     /**

@@ -52,6 +52,12 @@ export default class NewChatMember extends Action {
             return;
         }
 
+        if (parseInt(chat.remove_event_messages) === 0) {
+            return;
+        }
+
+        this.deleteMessage(payload.message.message_id, payload.message.chat.id);
+
         Lang.set(chat.language || "us");
 
         const user = await UserHelper.getUserByTelegramId(
