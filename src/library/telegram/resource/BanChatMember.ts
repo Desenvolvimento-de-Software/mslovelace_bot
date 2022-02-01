@@ -10,7 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { BanChatMemberType } from "./type/BanChatMember.js";
+import { BanChatMemberType } from "../type/BanChatMember.js";
 
 export default class BanChatMember extends TelegramBotApi {
 

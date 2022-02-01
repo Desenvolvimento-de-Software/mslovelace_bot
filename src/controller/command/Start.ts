@@ -14,6 +14,8 @@ import Command from "../Command.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
+import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class Start extends Command {
 
@@ -61,5 +63,23 @@ export default class Start extends Command {
 
             return;
         }
+
+        const button: InlineKeyboardButton = {
+            text : Lang.get("startButton"),
+            url  : "http://t.me/mslovelace_bot?startgroup=botstart"
+        };
+
+        const markup: InlineKeyboardMarkup = {
+            inline_keyboard : [[button]]
+        };
+
+        const message     = Lang.get("startMessage");
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(payload.message.chat.id)
+            .setText(message)
+            .setParseMode("HTML")
+            .setReplyMarkup(markup)
+            .post();
     }
 }

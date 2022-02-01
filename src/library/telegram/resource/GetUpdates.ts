@@ -10,7 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { GetUpdatesType } from "./type/GetUpdates.js";
+import { GetUpdatesType } from "../type/GetUpdates.js";
 
 export default class GetUpdates extends TelegramBotApi {
 
