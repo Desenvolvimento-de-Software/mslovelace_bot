@@ -66,6 +66,7 @@ export default class IncomingController extends DefaultController {
         }
 
         const payload = request.body;
+
         if (!payload.message) {
             response.status(200).send();
         }
