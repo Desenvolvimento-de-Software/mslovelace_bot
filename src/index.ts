@@ -13,6 +13,13 @@ import App from "./App.js";
 import DefaultController from "./controller/Controller.js";
 import IncomingController from "./controller/Incoming.js";
 
+console.log("    _       _         _                   _");
+console.log("   / \\   __| | __ _  | |    _____   _____| | __ _  ___ ___");
+console.log("  / _ \\ / _` |/ _` | | |   / _ \\ \\ / / _ \\ |/ _` |/ __/ _ \\");
+console.log(" / ___ \\ (_| | (_| | | |__| (_) \\ V /  __/ | (_| | (_|  __/");
+console.log("/_/   \\_\\__,_|\\__,_| |_____\\___/ \\_/ \\___|_|\\__,_|\\___\\___|");
+console.log("");
+
 const app = new App();
 
 app.addControllers([
