@@ -134,10 +134,10 @@ export default class App {
             request.setOffset(offset);
         }
 
-        const response = await request.post();
-        const json     = await response.json();
-
         try {
+
+            const response = await request.post();
+            const json     = await response.json();
 
             let newOffset;
 
