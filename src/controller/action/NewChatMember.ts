@@ -17,6 +17,8 @@ import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
 import TextHelper from "../../helper/Text.js";
 import Lang from "../../helper/Lang.js";
+import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
+import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
 
 export default class NewChatMember extends Action {
 
@@ -66,6 +68,10 @@ export default class NewChatMember extends Action {
             return;
         }
 
+        if (chat.restrict_new_users) {
+            this.restrictUser(user, chat);
+        }
+
         let text = Lang.get("defaultGreetings");
 
         const chatMessages = new ChatMessages();
@@ -94,6 +100,40 @@ export default class NewChatMember extends Action {
             .post();
 
         this.setUserAsGreeted(user, chat);
+    }
+
+    /**
+     * Restricts the user for the next 24 hours.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param user
+     * @param chat
+     *
+     * @return void
+     */
+    private async restrictUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+
+        const untilDate = Math.floor(Date.now() / 1000) + 86400;
+        const chatPermissions: ChatPermissionsType = {
+            can_send_messages         : true,
+            can_send_media_messages   : false,
+            can_send_polls            : false,
+            can_send_other_messages   : false,
+            can_add_web_page_previews : false,
+            can_change_info           : false,
+            can_invite_users          : false,
+            can_pin_messages          : false
+        };
+
+        const restrictChatMember = new RestrictChatMember();
+        restrictChatMember
+            .setUserId(user.user_id)
+            .setChatId(chat.chat_id)
+            .setChatPermissions(chatPermissions)
+            .setUntilDate(untilDate)
+            .post();
     }
 
     /**

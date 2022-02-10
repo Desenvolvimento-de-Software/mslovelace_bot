@@ -15,6 +15,7 @@ import GreetingsCommand from "./command/Greetings.js";
 import StartCommand from "./command/Start.js";
 import KickCommand from "./command/Kick.js";
 import BanCommand from "./command/Ban.js";
+import RestrictCommand from "./command/Restrict.js";
 import UnbanCommand from "./command/Unban.js";
 import NewChatMember from "./action/NewChatMember.js";
 import LeftChatMember from "./action/LeftChatMember.js";
@@ -183,8 +184,8 @@ export default class IncomingController extends DefaultController {
 
                 (new className(this.app))[method](payload, ...args);
 
-            } catch (error: any) {
-                this.app.log(error.toString());
+            } catch (err: any) {
+                this.app.log(err.toString());
             }
         }
     }
@@ -234,7 +235,8 @@ export default class IncomingController extends DefaultController {
             start     : StartCommand,
             kick      : KickCommand,
             ban       : BanCommand,
-            unban     : UnbanCommand
+            unban     : UnbanCommand,
+            restrict  : RestrictCommand
         };
     }
 }

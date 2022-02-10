@@ -11,12 +11,10 @@
 
 import App from "../../App.js";
 import Command from "../Command.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
+import Chats from "../../model/Chats.js";
 import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
 
-export default class Ban extends Command {
+export default class Restrict extends Command {
 
     /**
      * The constructor.
@@ -24,7 +22,7 @@ export default class Ban extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(app: App) {
+     public constructor(app: App) {
         super(app);
     }
 
@@ -43,17 +41,24 @@ export default class Ban extends Command {
             return;
         }
 
-        const userId = await this.getUserId(payload);
         const chatId = payload.message.chat.id;
+        const chat   = await ChatHelper.getChatByTelegramId(chatId);
 
-        if (!userId || !chatId) {
+        if (!chatId || !chat) {
             return;
         }
 
-        const ban = new BanChatMember();
-        ban
-            .setUserId(userId)
-            .setChatId(chatId)
-            .post();
+        const chats = new Chats();
+        chats
+            .update()
+            .set("restrict_new_users", 1)
+            .where("id").equal(chat.id);
+
+        try {
+            chats.execute();
+
+        } catch (err: any) {
+            this.app.log(err.toString());
+        }
     }
 }
