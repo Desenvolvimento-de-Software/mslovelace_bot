@@ -2,5 +2,6 @@
 dist/*
 package-lock.json
 .env
+!log/.gitkeep
 log/*
 node_modules
