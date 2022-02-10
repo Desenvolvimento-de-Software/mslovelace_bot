@@ -112,6 +112,10 @@ export default class UserHelper {
     public static async updateUser(userObject: Record<string, any>): Promise<any> {
 
         const user = await UserHelper.getUserByTelegramId(userObject.id);
+        if (!user) {
+            return;
+        }
+
         const currentUser = new Users();
 
         currentUser

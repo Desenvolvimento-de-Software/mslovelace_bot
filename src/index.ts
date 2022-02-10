@@ -28,3 +28,6 @@ app.addControllers([
 ]);
 
 app.listen();
+if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "false") {
+    app.initializeLongPolling();
+}

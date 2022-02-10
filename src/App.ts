@@ -49,10 +49,6 @@ export default class App {
         this.port = (process.env.PORT || 3000) as number;
 
         this.initializeMiddlewares();
-
-        if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "false") {
-            this.initializeLongPolling();
-        }
     }
 
     /**
@@ -81,6 +77,45 @@ export default class App {
         this.app.listen(this.port, () => {
             console.log(`Listening on port ${this.port}`);
         });
+    }
+
+    /**
+     * Makes the long polling to the Telegram API.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param  {number} offset
+     */
+     public async initializeLongPolling(offset?: number): Promise<void> {
+
+        const request = new GetUpdates();
+
+        if (typeof offset !== "undefined" && offset.toString().length) {
+            request.setOffset(offset);
+        }
+
+        try {
+
+            const response = await request.post();
+            const json     = await response.json();
+
+            let newOffset;
+
+            for (let i = 0, length = json.result.length; i < length; i++) {
+
+                const update = json.result[i];
+                newOffset    = update.update_id + 1;
+
+                (new IncomingController(this)).handle(update);
+            }
+
+            this.initializeLongPolling(newOffset);
+
+        } catch (err) {
+            console.log(err);
+            this.initializeLongPolling();
+        }
     }
 
     /**
@@ -116,43 +151,5 @@ export default class App {
      */
     private initializeMiddlewares(): void {
         this.app.use(bodyParser.json({ type: "*/*" }));
-    }
-
-    /**
-     * Makes the long polling to the Telegram API.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param  {number} offset
-     */
-    private async initializeLongPolling(offset?: number): Promise<void> {
-
-        const request = new GetUpdates();
-
-        if (typeof offset !== "undefined" && offset.toString().length) {
-            request.setOffset(offset);
-        }
-
-        try {
-
-            const response = await request.post();
-            const json     = await response.json();
-
-            let newOffset;
-
-            for (let i = 0, length = json.result.length; i < length; i++) {
-
-                const update = json.result[i];
-                newOffset    = update.update_id + 1;
-
-                (new IncomingController(this)).handle(update);
-            }
-
-            this.initializeLongPolling(newOffset);
-
-        } catch (err) {
-            this.initializeLongPolling();
-        }
     }
 }
