@@ -38,7 +38,7 @@ export default class Kick extends Command {
      */
      public async index(payload: Record<string, any>): Promise<void> {
 
-        if (!this.isAdmin(payload)) {
+        if (!await this.isAdmin(payload)) {
             this.warnUserAboutReporting(payload);
             return;
         }

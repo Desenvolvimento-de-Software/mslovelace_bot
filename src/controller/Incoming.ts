@@ -17,6 +17,7 @@ import KickCommand from "./command/Kick.js";
 import BanCommand from "./command/Ban.js";
 import RestrictCommand from "./command/Restrict.js";
 import UnbanCommand from "./command/Unban.js";
+import CheckRestriction from "./action/CheckRestriction.js";
 import NewChatMember from "./action/NewChatMember.js";
 import LeftChatMember from "./action/LeftChatMember.js";
 
@@ -218,6 +219,8 @@ export default class IncomingController extends DefaultController {
      */
     private initializeActions(): void {
         this.actions = {
+            photo            : CheckRestriction,
+            entities         : CheckRestriction,
             new_chat_member  : NewChatMember,
             left_chat_member : LeftChatMember
         };

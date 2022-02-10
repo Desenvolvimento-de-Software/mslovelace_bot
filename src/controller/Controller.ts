@@ -179,7 +179,8 @@ export default class DefaultController {
             relUserChat
                 .replace()
                 .set("user_id", userId)
-                .set("chat_id", chatId);
+                .set("chat_id", chatId)
+                .set("date", Math.floor(Date.now() / 1000));
 
             relUserChat.execute();
         }
