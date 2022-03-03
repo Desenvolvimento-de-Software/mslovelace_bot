@@ -12,6 +12,7 @@
 import App from "../App.js";
 import DefaultController from "./Controller.js";
 import GreetingsCommand from "./command/Greetings.js";
+import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
 import KickCommand from "./command/Kick.js";
 import BanCommand from "./command/Ban.js";
@@ -171,6 +172,7 @@ export default class IncomingController extends DefaultController {
         const method = (
             (
                 typeof instruction[1] !== "undefined" &&
+                typeof this.commands[command] !== "undefined" &&
                 this.commands[command].hasOwnProperty(instruction[1])
             ) ? instruction[1] : "index"
         );
@@ -234,12 +236,13 @@ export default class IncomingController extends DefaultController {
      */
     private initializeCommands(): void {
         this.commands = {
-            greetings : GreetingsCommand,
-            start     : StartCommand,
-            kick      : KickCommand,
             ban       : BanCommand,
-            unban     : UnbanCommand,
-            restrict  : RestrictCommand
+            greetings : GreetingsCommand,
+            kick      : KickCommand,
+            restrict  : RestrictCommand,
+            send      : SendCommand,
+            start     : StartCommand,
+            unban     : UnbanCommand
         };
     }
 }
