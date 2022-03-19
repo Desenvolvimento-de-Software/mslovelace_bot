@@ -35,7 +35,7 @@ export default class LeftChatMember extends Action {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
-
+        this.app.log(JSON.stringify(payload));
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
 
         if (!chat) {

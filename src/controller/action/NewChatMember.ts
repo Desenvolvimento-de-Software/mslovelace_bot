@@ -72,6 +72,10 @@ export default class NewChatMember extends Action {
             this.restrictUser(user, chat);
         }
 
+        if (parseInt(chat.greetings) === 0 || parseInt(chat.greetings) === NaN) {
+            return;
+        }
+
         let text = Lang.get("defaultGreetings");
 
         const chatMessages = new ChatMessages();
