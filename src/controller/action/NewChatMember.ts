@@ -12,10 +12,10 @@
 import App from "../../App.js";
 import Action from "../Action.js";
 import ChatMessages from "../../model/ChatMessages.js";
+import DeleteMessage from "../../library/telegram/resource/DeleteMessage.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
-import TextHelper from "../../helper/Text.js";
 import Lang from "../../helper/Lang.js";
 import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
 import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
@@ -100,8 +100,23 @@ export default class NewChatMember extends Action {
         sendMessage
             .setChatId(payload.message.chat.id)
             .setText(text)
-            .setParseMode("HTML")
-            .post();
+            .setParseMode("HTML");
+
+        const response = await sendMessage.post();
+        const json     = await response.json();
+
+        if (json.result?.message_id) {
+
+            setTimeout(() => {
+
+                const deleteMessage = new DeleteMessage();
+                deleteMessage
+                    .setChatId(payload.message.chat.id)
+                    .setMessageId(json.result.message_id)
+                    .post();
+
+            }, 600000); /* 10 minutes */
+        }
 
         this.setUserAsGreeted(user, chat);
     }

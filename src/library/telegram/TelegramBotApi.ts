@@ -35,7 +35,7 @@ export default class TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-     protected static token: string;
+    protected static token: string;
 
     /**
      * Request payload.
@@ -43,7 +43,7 @@ export default class TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-     protected payload: any;
+    protected payload: any;
 
     /**
      * The constructor.

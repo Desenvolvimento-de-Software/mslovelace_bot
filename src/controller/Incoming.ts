@@ -11,6 +11,7 @@
 
 import App from "../App.js";
 import DefaultController from "./Controller.js";
+import AskCommand from "./command/Ask.js";
 import GreetingsCommand from "./command/Greetings.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
@@ -236,6 +237,7 @@ export default class IncomingController extends DefaultController {
      */
     private initializeCommands(): void {
         this.commands = {
+            ask       : AskCommand,
             ban       : BanCommand,
             greetings : GreetingsCommand,
             kick      : KickCommand,
