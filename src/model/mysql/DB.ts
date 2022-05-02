@@ -207,8 +207,8 @@ export default class DB {
      */
     public execute(): any {
         if (this.operation) {
-        const query = this.operation.build();
-        return this.query(query);
+            const query = this.operation.build();
+            return this.query(query);
         }
 
         return null;

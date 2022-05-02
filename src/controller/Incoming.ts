@@ -98,11 +98,9 @@ export default class IncomingController extends DefaultController {
             message = payload.edited_message;
         }
 
-        if (message && message.length) {
-            this.saveUserAndChat(
-                message.from,
-                message.chat
-            );
+        if (message) {
+            this.saveUserAndChat(message.from, message.chat);
+            this.saveMessage(payload);
         }
 
         switch (true) {

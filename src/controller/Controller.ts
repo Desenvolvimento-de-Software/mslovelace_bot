@@ -14,6 +14,7 @@ import App from "../App.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
+import UsersMessages from "../model/UsersMessages.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
@@ -184,6 +185,52 @@ export default class DefaultController {
 
             relUserChat.execute();
         }
+    }
+
+    /**
+     * Saves the message.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param payload
+     */
+    protected async saveMessage(payload: Record<string, any>): Promise<any> {
+
+        const user = await UserHelper.getUserByTelegramId(payload.message.from.id);
+        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+
+        if (!user || !chat) {
+            return;
+        }
+
+        let replyTo = null;
+
+        if (payload.message.reply_to_message) {
+
+            const messages = new UsersMessages();
+            messages
+                .select()
+                .where("chat_id").equal(chat.id)
+                .and("message_id").equal(payload.message.reply_to_message.message_id);
+
+            const originalMessage = await messages.execute();
+            if (originalMessage.length) {
+                replyTo = originalMessage[0].id;
+            }
+        }
+
+        const message = new UsersMessages();
+        message
+            .insert()
+            .set("user_id", user.id)
+            .set("chat_id", chat.id)
+            .set("reply_to", replyTo)
+            .set("message_id", payload.message.message_id)
+            .set("content", payload.message?.text || null)
+            .set("date", payload.message.date);
+
+        message.execute();
     }
 
     /**
