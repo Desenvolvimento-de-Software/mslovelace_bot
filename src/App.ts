@@ -11,7 +11,6 @@
 
 import fs from "fs";
 import express from "express";
-import bodyParser from "body-parser";
 import IncomingController from "./controller/Incoming.js";
 import DefaultController from "./controller/Controller.js";
 import GetUpdates from "./library/telegram/resource/GetUpdates.js";
@@ -150,6 +149,7 @@ export default class App {
      * @return {void}
      */
     private initializeMiddlewares(): void {
-        this.app.use(bodyParser.json({ type: "*/*" }));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended : true }));
     }
 }
