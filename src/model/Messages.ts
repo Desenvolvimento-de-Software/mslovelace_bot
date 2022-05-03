@@ -11,7 +11,7 @@
 
 import DefaultModel from "./Model.js";
 
-export default class UsersMessages extends DefaultModel {
+export default class Messages extends DefaultModel {
 
     /**
      * The constructor.
@@ -20,6 +20,6 @@ export default class UsersMessages extends DefaultModel {
      * @since  1.0.0
      */
     public constructor() {
-        super("users_messages");
+        super("messages");
     }
 }

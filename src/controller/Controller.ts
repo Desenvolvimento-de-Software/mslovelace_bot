@@ -14,7 +14,7 @@ import App from "../App.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
-import UsersMessages from "../model/UsersMessages.js";
+import Messages from "../model/Messages.js";
 import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import DeleteMessage from "../library/telegram/resource/DeleteMessage.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
@@ -208,7 +208,7 @@ export default class DefaultController {
 
         if (payload.message.reply_to_message) {
 
-            const messages = new UsersMessages();
+            const messages = new Messages();
             messages
                 .select()
                 .where("chat_id").equal(chat.id)
@@ -220,7 +220,7 @@ export default class DefaultController {
             }
         }
 
-        const message = new UsersMessages();
+        const message = new Messages();
         message
             .insert()
             .set("user_id", user.id)

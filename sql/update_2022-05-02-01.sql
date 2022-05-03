@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `users_messages` (
+CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(10) UNSIGNED NOT NULL,
   `chat_id` int(10) unsigned NOT NULL,
@@ -11,11 +11,11 @@ CREATE TABLE IF NOT EXISTS `users_messages` (
   UNIQUE KEY `idx_message_id` (`message_id` ASC) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `users_messages`
-ADD CONSTRAINT `fk_users_messages_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+ALTER TABLE `messages`
+ADD CONSTRAINT `fk_messages_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
-ALTER TABLE `users_messages`
-ADD CONSTRAINT `fk_users_messages_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`);
+ALTER TABLE `messages`
+ADD CONSTRAINT `fk_messages_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`);
 
-ALTER TABLE `users_messages`
+ALTER TABLE `messages`
 ADD CONSTRAINT `fk_users_messages_reply_to` FOREIGN KEY (`reply_to`) REFERENCES `users_messages`(`id`);
