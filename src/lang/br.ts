@@ -20,6 +20,6 @@ export default {
     unauthorizedCommand : "<a href=\"tg://user?id={userid}\">{username}</a>, você não está autorizado a enviar este comando aqui.\nEste incidente será reportado.",
     unauthorizedCommandReport : "O usuário <a href=\"tg://user?id={userid}\">{username}</a> está tentando enviar um comando não autorizado em <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
     groupStartMessage : "Olá <a href=\"tg://user?id={userid}\">{username}</a>! Me chame no privado se precisar de ajuda.",
-    askToAskRegex : /(algu[eé]m)\s(a[kqu]+[ií]\s|me\s)?([doesnt]+ grupo\s)?(sabe|manja|entende|conhece|pode|ajuda)(.*)\??/i,
+    askToAskRegex : /(algu[eé]m)\s(a[kqu]+[ií]\s)?([doesnt]+ grupo\s)?(.*)?(ajuda|duvida|sabe|manja|entende|conhece)(.*)\??/i,
     askToAskLink : "https://dontasktoask.com/pt-br"
 };

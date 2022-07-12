@@ -49,7 +49,7 @@ export default class AskToAsk extends Action {
             return;
         }
 
-        if (payload.message.reply_to_message || payload.message.text.length > 40) {
+        if (payload.message.reply_to_message || payload.message.text.length > 50) {
             return;
         }
 
