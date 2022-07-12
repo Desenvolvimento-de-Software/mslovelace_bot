@@ -37,6 +37,10 @@ export default class AskToAsk extends Action {
      */
      public async run(payload: Record<string, any>): Promise<void> {
 
+        if (await this.isAdmin(payload)) {
+            return;
+        }
+
         const chat = await ChatHelper.getChatByTelegramId(
             payload.message.chat.id
         );
