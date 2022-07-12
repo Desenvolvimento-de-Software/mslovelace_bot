@@ -64,13 +64,18 @@ export default class Start extends Command {
             return;
         }
 
-        const button: InlineKeyboardButton = {
+        const helpButton: InlineKeyboardButton = {
+            text: Lang.get("helpButton"),
+            callback_data: "help"
+        };
+
+        const groupAddButton: InlineKeyboardButton = {
             text : Lang.get("startButton"),
             url  : "http://t.me/mslovelace_bot?startgroup=botstart"
         };
 
         const markup: InlineKeyboardMarkup = {
-            inline_keyboard : [[button]]
+            inline_keyboard : [[helpButton, groupAddButton]]
         };
 
         const message     = Lang.get("startMessage");

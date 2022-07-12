@@ -12,6 +12,7 @@
 import App from "../App.js";
 import DefaultController from "./Controller.js";
 import AskCommand from "./command/Ask.js";
+import AskToAskAction from "./action/AskToAsk.js";
 import GreetingsCommand from "./command/Greetings.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
@@ -87,7 +88,7 @@ export default class IncomingController extends DefaultController {
      *
      * @param {Record<string, any>} payload
      */
-    public handle(payload: Record<string, any>): void {
+     public async handle(payload: Record<string, any>): Promise<void> {
 
         let message;
 
@@ -99,7 +100,7 @@ export default class IncomingController extends DefaultController {
         }
 
         if (message) {
-            this.saveUserAndChat(message.from, message.chat);
+            await this.saveUserAndChat(message.from, message.chat);
             this.saveMessage(payload);
         }
 
@@ -223,7 +224,8 @@ export default class IncomingController extends DefaultController {
             photo            : CheckRestriction,
             entities         : CheckRestriction,
             new_chat_member  : NewChatMember,
-            left_chat_member : LeftChatMember
+            left_chat_member : LeftChatMember,
+            text             : AskToAskAction
         };
     }
 

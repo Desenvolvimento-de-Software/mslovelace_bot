@@ -57,6 +57,7 @@ export default class DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      *
+     * @param {App}    app
      * @param {string} path
      */
     public constructor(app: App, path?: string) {
@@ -71,6 +72,9 @@ export default class DefaultController {
      *
      * @author Marcos Leandro
      * @since  1.0.0
+     *
+     * @param {express.Request}  request
+     * @param {express.Response} response
      */
     public index(request: Record<string, any>, response: Record<string, any>): void {
         response.sendStatus(403);
@@ -94,7 +98,7 @@ export default class DefaultController {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param {string} username
+     * @param {Record<string, any>} payload
      *
      * @returns {Promise<number|null>}
      */
@@ -175,10 +179,32 @@ export default class DefaultController {
 
         if (userId && chatId) {
 
-            const relUserChat = new RelUsersChats();
+            let relUserChat;
 
+            relUserChat = new RelUsersChats();
             relUserChat
-                .replace()
+                .select()
+                .where("user_id").equal(userId)
+                .and("chat_id").equal(chatId)
+                .offset(0)
+                .limit(1);
+
+            const row = await relUserChat.execute();
+            if (row.length) {
+                relUserChat = new RelUsersChats();
+                relUserChat
+                    .update()
+                    .set("joined", 1)
+                    .where("user_id").equal(userId)
+                    .and("chat_id").equal(chatId);
+
+                relUserChat.execute();
+                return;
+            }
+
+            relUserChat = new RelUsersChats();
+            relUserChat
+                .insert()
                 .set("user_id", userId)
                 .set("chat_id", chatId)
                 .set("date", Math.floor(Date.now() / 1000));

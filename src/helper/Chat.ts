@@ -52,11 +52,12 @@ export default class ChatHelper {
      */
     public static async createChat(chat: Record<string, any>): Promise<any> {
 
+        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
         const newChat = new Chats();
         newChat
             .insert()
             .set("chat_id", chat.id)
-            .set("title", chat.title)
+            .set("title", title)
             .set("type", chat.type)
             .set("joined", 1);
 
@@ -85,9 +86,11 @@ export default class ChatHelper {
         const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
         const currentChat = new Chats();
 
+        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
+
         currentChat
             .update()
-            .set("title", chatObject.title)
+            .set("title", title)
             .set("type", chatObject.type)
             .set("joined", 1)
             .where("chat_id").equal(chatObject.id);
