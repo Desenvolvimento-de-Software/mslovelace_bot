@@ -16,7 +16,7 @@ import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
 import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
 
-export default class Ban extends Command {
+export default class Ask extends Command {
 
     /**
      * Ask-to-ask main route.
@@ -34,7 +34,7 @@ export default class Ban extends Command {
         const sendMessage = new SendMessage();
         sendMessage
             .setChatId(payload.message.chat.id)
-            .setText("https://dontasktoask.com/");
+            .setText(Lang.get("askToAskLink"));
 
         if (payload.message?.reply_to_message?.message_id) {
             sendMessage.setReplyToMessageId(payload.message.reply_to_message.message_id);

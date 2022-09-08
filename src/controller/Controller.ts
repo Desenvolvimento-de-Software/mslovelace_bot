@@ -164,10 +164,10 @@ export default class DefaultController {
      */
     protected async saveUserAndChat(userObject: Record<string, any>, chatObject: Record<string, any>): Promise<any> {
 
-        const user   = await UserHelper.getUserByTelegramId(userObject.id);
+        const user = await UserHelper.getUserByTelegramId(userObject.id);
         const userId = user === null ? await UserHelper.createUser(userObject) : user.id;
 
-        const chat   = await ChatHelper.getChatByTelegramId(chatObject.id);
+        const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
         const chatId = chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
 
         UserHelper.updateUser(userObject);
@@ -222,6 +222,10 @@ export default class DefaultController {
      * @param payload
      */
     protected async saveMessage(payload: Record<string, any>): Promise<any> {
+
+        if (!payload.message || !payload.message.from) {
+            return;
+        }
 
         const user = await UserHelper.getUserByTelegramId(payload.message.from.id);
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);

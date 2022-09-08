@@ -11,10 +11,7 @@
 
 import App from "../../App.js";
 import Command from "../Command.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
 
 export default class Ban extends Command {
 
@@ -51,9 +48,6 @@ export default class Ban extends Command {
         }
 
         const ban = new BanChatMember();
-        ban
-            .setUserId(userId)
-            .setChatId(chatId)
-            .post();
+        ban.setUserId(userId).setChatId(chatId).post();
     }
 }

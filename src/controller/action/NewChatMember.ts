@@ -42,23 +42,23 @@ export default class NewChatMember extends Action {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
+        this.app.log(JSON.stringify(payload));
         this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
 
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-
         if (!chat) {
             return;
         }
 
-        if (chat.grouped_greetings) {
-            return;
-        }
+        Lang.set(chat.language || "us");
 
         if (parseInt(chat.remove_event_messages) === 1) {
             this.deleteMessage(payload.message.message_id, payload.message.chat.id);
         }
 
-        Lang.set(chat.language || "us");
+        if (chat.grouped_greetings) {
+            return;
+        }
 
         const user = await UserHelper.getUserByTelegramId(
             payload.message.new_chat_member.id
@@ -103,22 +103,17 @@ export default class NewChatMember extends Action {
             .setParseMode("HTML");
 
         const response = await sendMessage.post();
-        const json     = await response.json();
+        const json = await response.json();
 
+        this.app.log(JSON.stringify(json));
         if (json.result?.message_id) {
 
             setTimeout(() => {
-
-                const deleteMessage = new DeleteMessage();
-                deleteMessage
-                    .setChatId(payload.message.chat.id)
-                    .setMessageId(json.result.message_id)
-                    .post();
-
+                const messageId = Number(json.result.message_id);
+                const chatId = Number(payload.message.chat.id);
+                this.deleteMessage(messageId, chatId);
             }, 600000); /* 10 minutes */
         }
-
-        this.setUserAsGreeted(user, chat);
     }
 
     /**
@@ -153,15 +148,5 @@ export default class NewChatMember extends Action {
             .setChatPermissions(chatPermissions)
             .setUntilDate(untilDate)
             .post();
-    }
-
-    /**
-     * Saves the user as greeted in chat.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    private async setUserAsGreeted(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
-
     }
 }

@@ -12,7 +12,6 @@
 import App from "../../App.js";
 import Command from "../Command.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import ChatHelper from "../../helper/Chat.js";
 
 export default class Unban extends Command {
 
@@ -41,8 +40,6 @@ export default class Unban extends Command {
             return;
         }
 
-        console.log(payload);
-        console.log(payload.message.entities);
         let message = payload.message?.text || "";
         message = message.replace(/\/send\s?\/?/g, "");
 

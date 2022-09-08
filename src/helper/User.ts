@@ -87,6 +87,7 @@ export default class UserHelper {
             .set("last_name", user.last_name || null)
             .set("username", user.username || null)
             .set("language_code", user.language_code || null)
+            .set("is_channel", user.id > 0 ? 1 : 0)
             .set("is_bot", user.is_bot || 0);
 
         try {
