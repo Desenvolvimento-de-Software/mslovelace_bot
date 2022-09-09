@@ -12,15 +12,24 @@
 import App from "../../App.js";
 import Action from "../Action.js";
 import ChatMessages from "../../model/ChatMessages.js";
-import DeleteMessage from "../../library/telegram/resource/DeleteMessage.js";
+import Shield from "../../model/Shield.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
 import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
+import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
 import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
 
 export default class NewChatMember extends Action {
+
+    /**
+     * Telegram payload.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-09
+     */
+    private payload: Record<string,any> = {};
 
     /**
      * The constructor.
@@ -42,9 +51,7 @@ export default class NewChatMember extends Action {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
-        this.app.log(JSON.stringify(payload));
-        this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
-
+        this.payload = payload;
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
         if (!chat) {
             return;
@@ -56,9 +63,12 @@ export default class NewChatMember extends Action {
             this.deleteMessage(payload.message.message_id, payload.message.chat.id);
         }
 
-        if (chat.grouped_greetings) {
+        if (await this.shield()) {
             return;
         }
+
+        this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
+        this.greetings(chat);
 
         const user = await UserHelper.getUserByTelegramId(
             payload.message.new_chat_member.id
@@ -70,6 +80,67 @@ export default class NewChatMember extends Action {
 
         if (chat.restrict_new_users) {
             this.restrictUser(user, chat);
+        }
+    }
+
+    /**
+     * Executes the AdaShield to see if the user is a registered spammer.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-09
+     *
+     * @return
+     */
+    private async shield(): Promise<boolean> {
+
+        const userId = this.payload.message.new_chat_member.id;
+        const shield = new Shield();
+        shield
+            .select(["telegram_user_id"])
+            .where("telegram_user_id")
+            .equal(userId);
+
+        const result = await shield.execute();
+        if (!result.length) {
+            return false;
+        }
+
+        const chatId = this.payload.message.chat.id;
+        const ban = new BanChatMember();
+        const response = await ban.setUserId(userId).setChatId(chatId).post();
+        if (!response) {
+            return false;
+        }
+
+        const message = Lang.get("adaShieldMessage")
+            .replace("{userid}", userId)
+            .replace(
+                "{username}",
+                this.payload.message.new_chat_member.first_name || this.payload.message.new_chat_member.username
+            );
+
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(chatId)
+            .setText(message)
+            .setParseMode("HTML")
+            .post();
+
+        return true;
+    }
+
+    /**
+     * Shows the welcome emssage.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-09
+     *
+     * @param chat Chat object.
+     */
+    private async greetings(chat: Record<string, any>) {
+
+        if (chat.grouped_greetings) {
+            return;
         }
 
         if (parseInt(chat.greetings) === 0 || parseInt(chat.greetings) === NaN) {
@@ -90,15 +161,15 @@ export default class NewChatMember extends Action {
             text = chatMessage[0].greetings;
         }
 
-        text = text.replace("{userid}", payload.message.new_chat_member.id);
+        text = text.replace("{userid}", this.payload.message.new_chat_member.id);
         text = text.replace(
             "{username}",
-            payload.message.new_chat_member.first_name || payload.message.new_chat_member.username
+            this.payload.message.new_chat_member.first_name || this.payload.message.new_chat_member.username
         );
 
         const sendMessage = new SendMessage();
         sendMessage
-            .setChatId(payload.message.chat.id)
+            .setChatId(this.payload.message.chat.id)
             .setText(text)
             .setParseMode("HTML");
 
@@ -110,7 +181,7 @@ export default class NewChatMember extends Action {
 
             setTimeout(() => {
                 const messageId = Number(json.result.message_id);
-                const chatId = Number(payload.message.chat.id);
+                const chatId = Number(this.payload.message.chat.id);
                 this.deleteMessage(messageId, chatId);
             }, 600000); /* 10 minutes */
         }

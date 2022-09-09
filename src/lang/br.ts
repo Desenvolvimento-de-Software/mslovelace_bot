@@ -21,5 +21,6 @@ export default {
     unauthorizedCommandReport : "O usuário <a href=\"tg://user?id={userid}\">{username}</a> está tentando enviar um comando não autorizado em <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
     groupStartMessage : "Olá <a href=\"tg://user?id={userid}\">{username}</a>! Me chame no privado se precisar de ajuda.",
     askToAskRegex : /^(algu[eé]?m|preciso)\s(tem|a[kqu]+[ií]\s)?([doesnt]+ grupo\s)?(.*)?(ajuda|duvida|sabe|manja|entende|conhe[cs]|usa|help|m[aã]o|for[cç]a|me[xch]+e)(.*)\??/i,
-    askToAskLink : "https://dontasktoask.com/pt-br"
+    askToAskLink : "https://dontasktoask.com/pt-br",
+    adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: AdaShield."
 };
