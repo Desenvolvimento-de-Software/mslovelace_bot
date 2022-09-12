@@ -67,6 +67,10 @@ export default class AdaShield extends Command {
      */
     public async on(payload: Record<string, any>): Promise<void> {
 
+        if (!this.isAdmin(payload)) {
+            return;
+        }
+
         try {
 
             const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
@@ -87,6 +91,10 @@ export default class AdaShield extends Command {
      * @param payload
      */
     public async off(payload: Record<string, any>): Promise<void> {
+
+        if (!this.isAdmin(payload)) {
+            return;
+        }
 
         try {
 
