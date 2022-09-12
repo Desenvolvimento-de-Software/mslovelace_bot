@@ -19,6 +19,7 @@ import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
 import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
 import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
+import Check from "../../library/combot/resource/Check.js";
 import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
 
 export default class NewChatMember extends Action {
@@ -84,49 +85,131 @@ export default class NewChatMember extends Action {
     }
 
     /**
+     * Executes the AdaShield and CAS verifications.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-12
+     *
+     * @returns shield status.
+     */
+    private async shield(): Promise<boolean> {
+
+        const userId = this.payload.message.new_chat_member.id;
+
+        try {
+
+            let lang = "adaShieldMessage";
+            if (!(await this.adaShield(userId))) {
+
+                lang = "casMessage";
+
+                if (!(await this.cas(userId))) {
+                    return false;
+                }
+            }
+
+            const chatId = this.payload.message.chat.id;
+            const ban = new BanChatMember();
+            const response = await ban.setUserId(userId).setChatId(chatId).post();
+            if (!response) {
+                return false;
+            }
+
+            const message = Lang.get(lang)
+                .replace("{userid}", userId)
+                .replace(
+                    "{username}",
+                    this.payload.message.new_chat_member.first_name || this.payload.message.new_chat_member.username
+                );
+
+            const sendMessage = new SendMessage();
+            sendMessage
+                .setChatId(chatId)
+                .setText(message)
+                .setParseMode("HTML")
+                .post();
+
+            return true;
+
+        } catch (err: any) {
+            this.app.log(err.toString());
+        }
+
+        return false;
+    }
+
+    /**
      * Executes the AdaShield to see if the user is a registered spammer.
      *
      * @author Marcos Leandro
      * @since  2022-09-09
      *
+     * @param userId
+     *
      * @return
      */
-    private async shield(): Promise<boolean> {
+    private async adaShield(userId: number): Promise<boolean> {
 
-        const userId = this.payload.message.new_chat_member.id;
-        const shield = new Shield();
-        shield
-            .select(["telegram_user_id"])
-            .where("telegram_user_id")
-            .equal(userId);
+        try {
 
-        const result = await shield.execute();
-        if (!result.length) {
-            return false;
+            const shield = new Shield();
+            shield
+                .select(["telegram_user_id"])
+                .where("telegram_user_id")
+                .equal(userId);
+
+            const result = await shield.execute();
+            if (!result.length) {
+                return false;
+            }
+
+            return true;
+
+        } catch (err: any) {
+            this.app.log(err.toString());
         }
 
-        const chatId = this.payload.message.chat.id;
-        const ban = new BanChatMember();
-        const response = await ban.setUserId(userId).setChatId(chatId).post();
-        if (!response) {
-            return false;
+        return false;
+    }
+
+    /**
+     * Executes the Combot Anti-SPAM (CAS) to see if the user is a registered spammer.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-09
+     *
+     * @param userId
+     *
+     * @return
+     */
+    private async cas(userId: number): Promise<boolean> {
+
+        try {
+
+            const casCheck = new Check(userId);
+            const response = await casCheck.get();
+            const json = await response.json();
+
+            const result = (!!json?.ok) || false;
+            if (!result) {
+                return false;
+            }
+
+            const shield = new Shield();
+            shield
+                .insert()
+                .set("telegram_user_id", userId)
+                .set("date", Math.floor(Date.now() / 1000))
+                .set("reason", "CAS");
+
+            shield.execute();
+            return true;
+
+        } catch (err: any) {
+            this.app.log(err.toString());
         }
 
-        const message = Lang.get("adaShieldMessage")
-            .replace("{userid}", userId)
-            .replace(
-                "{username}",
-                this.payload.message.new_chat_member.first_name || this.payload.message.new_chat_member.username
-            );
-
-        const sendMessage = new SendMessage();
-        sendMessage
-            .setChatId(chatId)
-            .setText(message)
-            .setParseMode("HTML")
-            .post();
-
-        return true;
+        return false;
     }
 
     /**

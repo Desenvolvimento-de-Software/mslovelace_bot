@@ -22,5 +22,9 @@ export default {
     groupStartMessage : "Olá <a href=\"tg://user?id={userid}\">{username}</a>! Me chame no privado se precisar de ajuda.",
     askToAskRegex : /^(algu[eé]?m|preciso)\s(tem|a[kqu]+[ií]\s)?([doesnt]+ grupo\s)?(.*)?(ajuda|duvida|sabe|manja|entende|conhe[cs]|usa|help|m[aã]o|for[cç]a|me[xch]+e)(.*)\??/i,
     askToAskLink : "https://dontasktoask.com/pt-br",
-    adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: AdaShield."
+    adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: AdaShield.",
+    casMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: <a href=\"https://cas.chat/\">CAS</a>.",
+    adaShieldStatus : "Status do AdaShield: {status}",
+    textEnabled : "ativado",
+    textDisabled : "desativado"
 };

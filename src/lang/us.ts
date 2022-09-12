@@ -22,5 +22,9 @@ export default {
     groupStartMessage : "Hey <a href=\"tg://user?id={userid}\">{username}</a>! PM me if you want some help.",
     askToAskRegex : /(Any)\s(.*)\s(expert\s|dev\s)?(can\s)?(here|help)(.*)\??/i,
     askToAskLink : "https://dontasktoask.com",
-    adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banned. Reason: AdaShield banned."
+    adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banned. Reason: AdaShield banned.",
+    casMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banned. Reason: <a href=\"https://cas.chat/\">CAS banned</a>.",
+    adaShieldStatus : "AdaShield status: {status}",
+    textEnabled : "enabled",
+    textDisabled : "disabled"
 };
