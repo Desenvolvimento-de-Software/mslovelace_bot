@@ -19,6 +19,18 @@ import Lang from "../../helper/Lang.js";
 export default class Ask extends Command {
 
     /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-12
+     *
+     * @param app App instance.
+     */
+    public constructor(app: App) {
+        super(app);
+    }
+
+    /**
      * Ask-to-ask main route.
      *
      * @author Marcos Leandro

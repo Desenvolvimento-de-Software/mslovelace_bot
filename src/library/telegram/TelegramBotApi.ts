@@ -9,7 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
+import {RequestType} from "./type/RequestType.js";
 
 export default class TelegramBotApi {
 
@@ -136,11 +137,14 @@ export default class TelegramBotApi {
             "Content-Length" : body.length.toString()
         };
 
-        const params = {
-            method  : method,
-            headers : headers,
-            body    : body
+        const params: RequestType = {
+            method : method,
+            headers : headers
         };
+
+        if (["PUT", "POST"].includes(method)) {
+            params.body = body;
+        }
 
         return fetch(url, params);
     }

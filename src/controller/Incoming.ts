@@ -11,6 +11,7 @@
 
 import App from "../App.js";
 import DefaultController from "./Controller.js";
+import AdaShieldCommand from "./command/AdaShield.js";
 import AskCommand from "./command/Ask.js";
 import AskToAskAction from "./action/AskToAsk.js";
 import GreetingsCommand from "./command/Greetings.js";
@@ -167,29 +168,26 @@ export default class IncomingController extends DefaultController {
         );
 
         const instruction = payload.message.text.replace("/", "").split(" ");
-        const command     = instruction[0].split("@")[0];
+        const command = instruction[0].split("@")[0];
 
-        const method = (
-            (
-                typeof instruction[1] !== "undefined" &&
-                typeof this.commands[command] !== "undefined" &&
-                this.commands[command].hasOwnProperty(instruction[1])
-            ) ? instruction[1] : "index"
-        );
+        if (!this.commands.hasOwnProperty(command)) {
+            return;
+        }
+
+        const commandInstance = new this.commands[command](this.app);
+
+        let method = "index";
+        if (typeof instruction[1] !== "undefined" && typeof commandInstance[instruction[1]] === "function") {
+            method = instruction[1];
+        }
 
         const args = instruction.length > 2 ? instruction.slice(2) : [];
 
-        if (typeof this.commands[command] !== "undefined") {
+        try {
+            commandInstance[method](payload, ...args);
 
-            const className = this.commands[command];
-
-            try {
-
-                (new className(this.app))[method](payload, ...args);
-
-            } catch (err: any) {
-                this.app.log(err.toString());
-            }
+        } catch (err: any) {
+            this.app.log(err.toString());
         }
     }
 
@@ -221,11 +219,11 @@ export default class IncomingController extends DefaultController {
      */
     private initializeActions(): void {
         this.actions = {
-            photo            : CheckRestriction,
-            entities         : CheckRestriction,
-            new_chat_member  : NewChatMember,
+            photo : CheckRestriction,
+            entities : CheckRestriction,
+            new_chat_member : NewChatMember,
             left_chat_member : LeftChatMember,
-            text             : AskToAskAction
+            text : AskToAskAction
         };
     }
 
@@ -237,14 +235,15 @@ export default class IncomingController extends DefaultController {
      */
     private initializeCommands(): void {
         this.commands = {
-            ask       : AskCommand,
-            ban       : BanCommand,
+            adashield : AdaShieldCommand,
+            ask : AskCommand,
+            ban : BanCommand,
             greetings : GreetingsCommand,
-            kick      : KickCommand,
-            restrict  : RestrictCommand,
-            send      : SendCommand,
-            start     : StartCommand,
-            unban     : UnbanCommand
+            kick : KickCommand,
+            restrict : RestrictCommand,
+            send : SendCommand,
+            start : StartCommand,
+            unban : UnbanCommand
         };
     }
 }
