@@ -113,8 +113,15 @@ export default class IncomingController extends DefaultController {
         }
 
         if (message) {
-            await this.saveUserAndChat(message.from, message.chat);
-            this.saveMessage(payload);
+
+            try {
+
+                await this.saveUserAndChat(message.from, message.chat);
+                this.saveMessage(payload);
+
+            } catch (err: any) {
+                this.app.log(err.toString());
+            }
         }
 
         switch (true) {

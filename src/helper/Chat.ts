@@ -10,6 +10,7 @@
  */
 
 import Chats from "../model/Chats.js";
+import ChatConfigs from "../model/ChatConfigs.js";
 
 export default class ChatHelper {
 
@@ -72,14 +73,15 @@ export default class ChatHelper {
             .set("type", chat.type)
             .set("joined", 1);
 
-        try {
+        const result = await newChat.execute();
+        const chatId = result.insertId;
 
-            const result = await newChat.execute();
-            return result.insertId;
+        const newChatConfig = new ChatConfigs();
+        newChatConfig
+            .insert()
+            .set("chat_id", chatId);
 
-        } catch (err) {
-            return null;
-        }
+        newChatConfig.execute();
     }
 
     /**
