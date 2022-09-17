@@ -14,6 +14,7 @@ import DefaultController from "./Controller.js";
 import AdaShieldCommand from "./command/AdaShield.js";
 import AskCommand from "./command/Ask.js";
 import AskToAskAction from "./action/AskToAsk.js";
+import CaptchaConfirmation from "./callback/CaptchaConfirmation.js";
 import GreetingsCommand from "./command/Greetings.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
@@ -48,6 +49,16 @@ export default class IncomingController extends DefaultController {
     private commands: Record<string, any> = {};
 
     /**
+     * Callbacks object.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-16
+     *
+     * @type {Record<string, any>}
+     */
+    private callbacks: Record<string, any> = {};
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
@@ -57,6 +68,7 @@ export default class IncomingController extends DefaultController {
         super(app, "/incoming");
         this.initializeActions();
         this.initializeCommands();
+        this.initializeCallbacks();
     }
 
     /**
@@ -113,6 +125,7 @@ export default class IncomingController extends DefaultController {
 
             default:
                 this.handleAction(payload);
+                this.handleCallback(payload);
         }
     }
 
@@ -212,6 +225,25 @@ export default class IncomingController extends DefaultController {
     }
 
     /**
+     * Handles the callbacks.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected async handleCallback(payload: Record<string, any>): Promise<void> {
+
+        if (typeof payload.callback_query === "undefined") {
+            return;
+        }
+
+        const data = JSON.parse(payload.callback_query.data);
+        if (this.callbacks.hasOwnProperty(data.callback)) {
+            const className = this.callbacks[data.callback];
+            (new className(this.app)).run(payload, data.data);
+        }
+    }
+
+    /**
      * Initializes the BOT's actions.
      *
      * @author Marcos Leandro
@@ -243,7 +275,19 @@ export default class IncomingController extends DefaultController {
             restrict : RestrictCommand,
             send : SendCommand,
             start : StartCommand,
-            unban : UnbanCommand
+            unban : UnbanCommand,
         };
+    }
+
+    /**
+     * Initializes the BOT's callbacks.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-16
+     */
+    private initializeCallbacks(): void {
+        this.callbacks = {
+            captchaconfirmation : CaptchaConfirmation
+        }
     }
 }

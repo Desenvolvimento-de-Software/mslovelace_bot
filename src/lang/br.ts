@@ -26,5 +26,6 @@ export default {
     casMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: <a href=\"https://cas.chat/\">CAS</a>.",
     adaShieldStatus : "Status do AdaShield: {status}",
     textEnabled : "ativado",
-    textDisabled : "desativado"
+    textDisabled : "desativado",
+    captchaButton : "Pressione aqui para confirmar que não é um robô"
 };

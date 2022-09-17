@@ -11,6 +11,8 @@
 
 import App from "../../App.js";
 import Action from "../Action.js";
+import RelUsersChats from "../../model/RelUsersChats.js";
+import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
 
 export default class LeftChatMember extends Action {
@@ -35,10 +37,22 @@ export default class LeftChatMember extends Action {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
+        const user = await UserHelper.getUserByTelegramId(payload.message.left_chat_member.id);
         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-        if (!chat) {
+
+        if (!user || !chat) {
             return;
         }
+
+        const relUserChat = new RelUsersChats();
+        relUserChat
+            .update()
+            .set("joined", 0)
+            .set("checked", 0)
+            .where("user_id").equal(user.user_id)
+            .and("chat_id").equal(chat.chat_id);
+
+        relUserChat.execute();
 
         if (parseInt(chat.remove_event_messages) === 0) {
             return;

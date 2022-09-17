@@ -25,14 +25,25 @@ export default class ChatHelper {
      */
     public static async getChatByTelegramId(chatId: number): Promise<any> {
 
-        const chats = new Chats();
+        const fields = [
+            "chats.*",
+            "chat_configs.greetings",
+            "chat_configs.goodbye",
+            "chat_configs.warn_name_changing",
+            "chat_configs.remove_event_messages",
+            "chat_configs.restrict_new_users",
+            "chat_configs.captcha",
+            "chat_configs.warn_ask_to_ask",
+            "chat_configs.adashield"
+        ];
 
+        const chats = new Chats();
         chats
-            .select()
-            .where("chat_id").equal(chatId);
+            .select(fields)
+            .innerJoin("chat_configs", "chat_configs.chat_id = chats.id")
+            .where("chats.chat_id").equal(chatId);
 
         const chat = await chats.execute();
-
         if (chat.length) {
             return chat[0];
         }

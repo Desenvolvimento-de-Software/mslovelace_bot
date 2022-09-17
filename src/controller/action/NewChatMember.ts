@@ -12,6 +12,7 @@
 import App from "../../App.js";
 import Action from "../Action.js";
 import ChatMessages from "../../model/ChatMessages.js";
+import RelUsersChats from "../../model/RelUsersChats.js";
 import Shield from "../../model/Shield.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import UserHelper from "../../helper/User.js";
@@ -21,6 +22,8 @@ import RestrictChatMember from "../../library/telegram/resource/RestrictChatMemb
 import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
 import Check from "../../library/combot/resource/Check.js";
 import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
+import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class NewChatMember extends Action {
 
@@ -69,7 +72,6 @@ export default class NewChatMember extends Action {
         }
 
         this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
-        this.greetings(chat);
 
         const user = await UserHelper.getUserByTelegramId(
             payload.message.new_chat_member.id
@@ -79,9 +81,80 @@ export default class NewChatMember extends Action {
             return;
         }
 
-        if (chat.restrict_new_users) {
+        this.greetings(user, chat);
+
+        if (chat.captcha) {
+            this.captcha(user, chat);
+
+        } else if (chat.restrict_new_users) {
             this.restrictUser(user, chat);
         }
+    }
+
+    /**
+     * Allow the user to post anything.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-16
+     *
+     * @param user
+     * @param chat
+     *
+     * @return void
+     */
+     public async allowUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+
+        const chatPermissions: ChatPermissionsType = {
+            can_send_messages         : true,
+            can_send_media_messages   : true,
+            can_send_polls            : true,
+            can_send_other_messages   : true,
+            can_add_web_page_previews : true,
+            can_change_info           : true,
+            can_invite_users          : true,
+            can_pin_messages          : true
+        };
+
+        const restrictChatMember = new RestrictChatMember();
+        restrictChatMember
+            .setUserId(user.user_id)
+            .setChatId(chat.chat_id)
+            .setChatPermissions(chatPermissions)
+            .post();
+    }
+
+    /**
+     * Restricts the user for the next 24 hours.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param user
+     * @param chat
+     *
+     * @return void
+     */
+    public async restrictUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+
+        const untilDate = Math.floor(Date.now() / 1000) + 86400;
+        const chatPermissions: ChatPermissionsType = {
+            can_send_messages         : true,
+            can_send_media_messages   : false,
+            can_send_polls            : false,
+            can_send_other_messages   : false,
+            can_add_web_page_previews : false,
+            can_change_info           : false,
+            can_invite_users          : false,
+            can_pin_messages          : false
+        };
+
+        const restrictChatMember = new RestrictChatMember();
+        restrictChatMember
+            .setUserId(user.user_id)
+            .setChatId(chat.chat_id)
+            .setChatPermissions(chatPermissions)
+            .setUntilDate(untilDate)
+            .post();
     }
 
     /**
@@ -218,9 +291,10 @@ export default class NewChatMember extends Action {
      * @author Marcos Leandro
      * @since  2022-09-09
      *
+     * @param user User object.
      * @param chat Chat object.
      */
-    private async greetings(chat: Record<string, any>) {
+    private async greetings(user: Record<string, any>, chat: Record<string, any>) {
 
         if (chat.grouped_greetings) {
             return;
@@ -256,6 +330,25 @@ export default class NewChatMember extends Action {
             .setText(text)
             .setParseMode("HTML");
 
+        if (chat.captcha === 1) {
+
+            const captchaButton: InlineKeyboardButton = {
+                text: Lang.get("captchaButton"),
+                callback_data: JSON.stringify({
+                    callback : "captchaconfirmation",
+                    data : {
+                        userId : this.payload.message.new_chat_member.id
+                    }
+                })
+            };
+
+            const markup: InlineKeyboardMarkup = {
+                inline_keyboard : [[captchaButton]]
+            };
+
+            sendMessage.setReplyMarkup(markup)
+        }
+
         const response = await sendMessage.post();
         const json = await response.json();
 
@@ -263,29 +356,32 @@ export default class NewChatMember extends Action {
         if (json.result?.message_id) {
 
             setTimeout(() => {
+
                 const messageId = Number(json.result.message_id);
                 const chatId = Number(this.payload.message.chat.id);
                 this.deleteMessage(messageId, chatId);
-            }, 600000); /* 10 minutes */
+
+                if (chat.captcha === 1) {
+                    this.checkUserForBan(user, chat);
+                }
+
+            }, 300000); /* 5 minutes */
         }
     }
 
     /**
-     * Restricts the user for the next 24 hours.
+     * Executes the captcha routins.
      *
      * @author Marcos Leandro
-     * @since  1.0.0
+     * @since  2022-09-16
      *
      * @param user
      * @param chat
-     *
-     * @return void
      */
-    private async restrictUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+    private async captcha(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
 
-        const untilDate = Math.floor(Date.now() / 1000) + 86400;
         const chatPermissions: ChatPermissionsType = {
-            can_send_messages         : true,
+            can_send_messages         : false,
             can_send_media_messages   : false,
             can_send_polls            : false,
             can_send_other_messages   : false,
@@ -300,7 +396,45 @@ export default class NewChatMember extends Action {
             .setUserId(user.user_id)
             .setChatId(chat.chat_id)
             .setChatPermissions(chatPermissions)
-            .setUntilDate(untilDate)
             .post();
+    }
+
+    /**
+     * Checks if the user checked the captcha. If not, uses the banhammer.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-16
+     *
+     * @param user User object.
+     * @param chat Chat object.
+     */
+    private async checkUserForBan(user: Record<string, any>, chat: Record<string, any>) {
+
+        const relUsersChats = new RelUsersChats();
+        relUsersChats
+            .select(['checked'])
+            .where("user_id").equal(user.id)
+            .and("chat_id").equal(chat.id);
+
+        try {
+
+            const rel = await relUsersChats.execute();
+            if (!rel.length) {
+                return;
+            }
+
+            if (Number(rel[0].checked) === 1) {
+                return;
+            }
+
+            const ban = new BanChatMember();
+            ban
+                .setUserId(user.user_id)
+                .setChatId(chat.chat_id)
+                .post();
+
+        } catch (err: any) {
+            this.app.log(err.toString());
+        }
     }
 }

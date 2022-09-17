@@ -36,7 +36,7 @@ export default class Select extends Builder {
      * @returns {string}
      */
     public build(): string {
-        return `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
+        return `SELECT ${this.parseFields()} FROM ${this.table} ${this.parseJoins()} ${this.parseConditions()} ${this.parseGroup()} ${this.parseOrder()} ${this.parseLimit()};`;
     }
 
     /**
@@ -49,6 +49,24 @@ export default class Select extends Builder {
      */
     private parseFields(): string {
         return this.fields.join(", ");
+    }
+
+    /**
+     * Parses and returns the query joins.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-16
+     *
+     * @return {string}
+     */
+    private parseJoins(): string {
+
+        let joins = [];
+        for (let [key, value] of Object.entries(this.joins)) {
+            joins.push(`${value.type} ${value.table} on ${value.condition}`);
+        }
+
+        return joins.length ? joins.join(" ") : "";
     }
 
     /**

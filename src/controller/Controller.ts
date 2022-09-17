@@ -195,6 +195,7 @@ export default class DefaultController {
                 relUserChat
                     .update()
                     .set("joined", 1)
+                    .set("checked", 0)
                     .where("user_id").equal(userId)
                     .and("chat_id").equal(chatId);
 
@@ -260,7 +261,22 @@ export default class DefaultController {
             .set("content", payload.message?.text || null)
             .set("date", payload.message.date);
 
-        message.execute();
+        try {
+            message.execute();
+
+        } catch (err) {
+
+            const message = new Messages();
+            message
+                .insert()
+                .set("user_id", user.id)
+                .set("chat_id", chat.id)
+                .set("message_id", payload.message.message_id)
+                .set("content", payload.message?.text || null)
+                .set("date", payload.message.date);
+
+            message.execute();
+        }
     }
 
     /**
