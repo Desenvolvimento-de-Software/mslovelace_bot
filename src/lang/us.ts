@@ -29,5 +29,6 @@ export default {
     textDisabled : "disabled",
     captchaButton : "Press here to confirm you are not a robot",
     emptyGreetingsMessage : "There is no greetings message configured.",
-    greetingsMessageDemo : "The current greetings message is:\n\n{greetings}"
+    greetingsMessageDemo : "The current greetings message is:\n\n{greetings}",
+    pongMessage : "Hey! It's me!"
 };

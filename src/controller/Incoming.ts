@@ -11,10 +11,14 @@
 
 import App from "../App.js";
 import DefaultController from "./Controller.js";
+import AskToAskAction from "./action/AskToAsk.js";
+import CheckRestriction from "./action/CheckRestriction.js";
+import NewChatMember from "./action/NewChatMember.js";
+import LeftChatMember from "./action/LeftChatMember.js";
+import Ping from "./action/Ping.js";
+import CaptchaConfirmation from "./callback/CaptchaConfirmation.js";
 import AdaShieldCommand from "./command/AdaShield.js";
 import AskCommand from "./command/Ask.js";
-import AskToAskAction from "./action/AskToAsk.js";
-import CaptchaConfirmation from "./callback/CaptchaConfirmation.js";
 import GreetingsCommand from "./command/Greetings.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
@@ -22,9 +26,6 @@ import KickCommand from "./command/Kick.js";
 import BanCommand from "./command/Ban.js";
 import RestrictCommand from "./command/Restrict.js";
 import UnbanCommand from "./command/Unban.js";
-import CheckRestriction from "./action/CheckRestriction.js";
-import NewChatMember from "./action/NewChatMember.js";
-import LeftChatMember from "./action/LeftChatMember.js";
 
 export default class IncomingController extends DefaultController {
 
@@ -36,7 +37,7 @@ export default class IncomingController extends DefaultController {
      *
      * @type {Record<string, any>}
      */
-    private actions: Record<string, any> = {};
+    private actions: Record<string, Array<any>> = {};
 
     /**
      * Commands object.
@@ -225,8 +226,9 @@ export default class IncomingController extends DefaultController {
 
         for (let action in this.actions) {
             if (payload.message.hasOwnProperty(action)) {
-                const className = this.actions[action];
-                (new className(this.app)).run(payload);
+                this.actions[action].map((classname) => {
+                    (new classname(this.app)).run(payload);
+                })
             }
         }
     }
@@ -258,11 +260,11 @@ export default class IncomingController extends DefaultController {
      */
     private initializeActions(): void {
         this.actions = {
-            photo : CheckRestriction,
-            entities : CheckRestriction,
-            new_chat_member : NewChatMember,
-            left_chat_member : LeftChatMember,
-            text : AskToAskAction
+            photo : [CheckRestriction],
+            entities : [CheckRestriction, Ping],
+            new_chat_member : [NewChatMember],
+            left_chat_member : [LeftChatMember],
+            text : [AskToAskAction]
         };
     }
 
