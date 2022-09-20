@@ -352,7 +352,6 @@ export default class NewChatMember extends Action {
         const response = await sendMessage.post();
         const json = await response.json();
 
-        this.app.log(JSON.stringify(json));
         if (json.result?.message_id) {
 
             setTimeout(() => {

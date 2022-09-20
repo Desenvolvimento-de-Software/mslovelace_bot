@@ -27,5 +27,7 @@ export default {
     adaShieldStatus : "Status do AdaShield: {status}",
     textEnabled : "ativado",
     textDisabled : "desativado",
-    captchaButton : "Pressione aqui para confirmar que não é um robô"
+    captchaButton : "Pressione aqui para confirmar que não é um robô",
+    emptyGreetingsMessage : "Não existe uma mensagem de boas-vindas configurada.",
+    greetingsMessageDemo : "A mensagem de saudação atual é:\n\n{greetings}"
 };

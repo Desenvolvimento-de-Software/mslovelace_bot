@@ -13,6 +13,7 @@ import App from "../../App.js";
 import Command from "../Command.js";
 import ChatHelper from "../../helper/Chat.js";
 import Chats from "../../model/Chats.js";
+import ChatMessages from "../../model/ChatMessages.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import Lang from "../../helper/Lang.js";
 
@@ -34,8 +35,48 @@ export default class GreetingsCommand extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public index(): void {
-        return;
+    public async index(payload: Record<string, any>): Promise<void> {
+
+        if (!await this.isAdmin(payload)) {
+            return;
+        }
+
+        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        Lang.set(chat.language);
+
+        const chatMessages = new ChatMessages();
+        chatMessages
+            .select()
+            .where("chat_id").equal(chat.id);
+
+        const result = await chatMessages.execute();
+        const sendMessage = new SendMessage();
+        sendMessage.setChatId(chat.chat_id).setParseMode("HTML");
+
+        if (!result.length) {
+
+            sendMessage
+                .setText(Lang.get("emptyGreetingsMessage"))
+                .post();
+
+            return;
+        }
+
+        let greetingsDemo = Lang.get("greetingsMessageDemo");
+        greetingsDemo = greetingsDemo.replace("{greetings}", result[0].greetings);
+        greetingsDemo = greetingsDemo.replace("{userid}", payload.message.from.id);
+        greetingsDemo = greetingsDemo.replace(
+            "{username}",
+            payload.message.from.first_name || payload.message.from.username
+        );
+
+        sendMessage
+            .setText(greetingsDemo)
+            .post();
     }
 
     /**
@@ -48,7 +89,7 @@ export default class GreetingsCommand extends Command {
      */
     public async on(payload: Record<string, any>): Promise<void> {
 
-        if (!this.isAdmin(payload)) {
+        if (!await this.isAdmin(payload)) {
             return;
         }
 
