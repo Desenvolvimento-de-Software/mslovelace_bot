@@ -41,7 +41,7 @@ export default class ChatHelper {
         const chats = new Chats();
         chats
             .select(fields)
-            .innerJoin("chat_configs", "chat_configs.chat_id = chats.id")
+            .leftOuterJoin("chat_configs", "chat_configs.chat_id = chats.id")
             .where("chats.chat_id").equal(chatId);
 
         const chat = await chats.execute();
