@@ -19,12 +19,13 @@ import Ping from "./action/Ping.js";
 import CaptchaConfirmation from "./callback/CaptchaConfirmation.js";
 import AdaShieldCommand from "./command/AdaShield.js";
 import AskCommand from "./command/Ask.js";
+import BanCommand from "./command/Ban.js";
 import GreetingsCommand from "./command/Greetings.js";
+import KickCommand from "./command/Kick.js";
+import NpmCommand from "./command/Npm.js";
+import RestrictCommand from "./command/Restrict.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
-import KickCommand from "./command/Kick.js";
-import BanCommand from "./command/Ban.js";
-import RestrictCommand from "./command/Restrict.js";
 import UnbanCommand from "./command/Unban.js";
 
 export default class IncomingController extends DefaultController {
@@ -281,6 +282,7 @@ export default class IncomingController extends DefaultController {
             ban : BanCommand,
             greetings : GreetingsCommand,
             kick : KickCommand,
+            npm : NpmCommand,
             restrict : RestrictCommand,
             send : SendCommand,
             start : StartCommand,

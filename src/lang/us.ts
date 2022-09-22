@@ -30,5 +30,17 @@ export default {
     captchaButton : "Press here to confirm you are not a robot",
     emptyGreetingsMessage : "There is no greetings message configured.",
     greetingsMessageDemo : "The current greetings message is:\n\n{greetings}",
-    pongMessage : "Hey! It's me!"
+    pongMessage : "Hey! It's me!",
+    npmPackageName : "📜 <code>{name}</code>\n",
+    npmPackageVersion : "📂 <code>{version}</code>\n",
+    npmPackageDescription : "📝 {description}\n",
+    npmPackageDate : "📆 <code>{date}</code>\n",
+    npmPackageLinks : "🔗 Links:\n",
+    npmPackageLink : " • <a href=\"{linkurl}\">{linkname}</a>\n",
+    npmAuthor : "👤 Author:\n",
+    npmPublisher : "👤 Publisher:\n",
+    npmMaintainers : "👥 Maintainers:\n",
+    npmPerson : " • {person}\n",
+    npmPackageKeywords : "🏷 Keywords:\n",
+    npmPackageInstall : "⌨️ Install:\n<code>npm install {package}</code>"
 };
