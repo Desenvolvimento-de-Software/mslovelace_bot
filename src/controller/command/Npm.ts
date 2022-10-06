@@ -151,6 +151,8 @@ export default class Npm extends Command {
         }
 
         message += Lang.get("npmPackageInstall").replace("{package}", library.name);
+        message += "\n\n";
+        message += Lang.get("playgroundLink").replace("{package}", library.name);
 
         const sendMessage = new SendMessage();
         sendMessage

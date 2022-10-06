@@ -42,5 +42,6 @@ export default {
     npmMaintainers : "👥 Maintainers:\n",
     npmPerson : " • {person}\n",
     npmPackageKeywords : "🏷 Keywords:\n",
-    npmPackageInstall : "⌨️ Install:\n<code>npm install {package}</code>"
+    npmPackageInstall : "⌨️ Install:\n<code>npm install {package}</code>",
+    playgroundLink : "🧪 Playground:\nhttps://npm.runkit.com/{package}"
 };
