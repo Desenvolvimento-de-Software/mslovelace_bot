@@ -275,7 +275,11 @@ export default class DefaultController {
                 .set("content", payload.message?.text || null)
                 .set("date", payload.message.date);
 
-            message.execute();
+            try {
+                message.execute();
+            } catch (err: any) {
+                this.app.log(err.toStirng());
+            }
         }
     }
 

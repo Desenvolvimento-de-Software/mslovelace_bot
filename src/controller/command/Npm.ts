@@ -12,6 +12,7 @@
 import App from "../../App.js";
 import Command from "../Command.js";
 import ChatHelper from "../../helper/Chat.js";
+import NpmPackage from "../../helper/NpmPackage.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import Lang from "../../helper/Lang.js";
 import { exec } from "child_process";
@@ -103,61 +104,12 @@ export default class Npm extends Command {
         }
 
         const library = json[0];
-
-        let message;
-        message  = Lang.get("npmPackageDescription").replace("{description}", library.description + "\n");
-        message += Lang.get("npmPackageName").replace("{name}", library.name);
-        message += Lang.get("npmPackageVersion").replace("{version}", library.version);
-        message += Lang.get("npmPackageDate").replace("{date}", library.date);
-
-        if (library.links) {
-            message += "\n" + Lang.get("npmPackageLinks");
-            for (let key in library.links) {
-                message += Lang.get("npmPackageLink")
-                    .replace("{linkname}", key)
-                    .replace("{linkurl}", library.links[key]);
-            }
-        }
-
-        message += "\n";
-        if (library.author) {
-            message += Lang.get("npmAuthor");
-            message += Lang.get("npmPerson").replace("{person}", this.formatPerson(library.author)) + "\n";
-        }
-
-        if (library.publisher) {
-            message += Lang.get("npmPublisher");
-            message += Lang.get("npmPerson").replace("{person}", this.formatPerson(library.publisher)) + "\n";
-        }
-
-        if (library.maintainers?.length) {
-            message += Lang.get("npmMaintainers");
-            for (let maintainer of library.maintainers) {
-                message += Lang.get("npmPerson").replace("{person}", this.formatPerson(maintainer));
-            }
-        }
-
-        message += "\n";
-        if (library.keywords?.length) {
-
-            message += Lang.get("npmPackageKeywords");
-
-            let keywords = [];
-            for (let keyword of library.keywords) {
-                keywords.push(`<code>${keyword}</code>`);
-            }
-
-            message += keywords.join(", ") + "\n\n";
-        }
-
-        message += Lang.get("npmPackageInstall").replace("{package}", library.name);
-        message += "\n\n";
-        message += Lang.get("playgroundLink").replace("{package}", library.name);
+        const npmPackage = new NpmPackage(library);
 
         const sendMessage = new SendMessage();
         sendMessage
             .setChatId(this.payload.message.chat.id)
-            .setText(message)
+            .setText(npmPackage.getMessage())
             .setDisableWebPagePreview(true)
             .setParseMode("HTML");
 
@@ -166,21 +118,6 @@ export default class Npm extends Command {
         }
 
         sendMessage.post();
-    }
 
-    /**
-     * Formats the person.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-21
-     *
-     * @param person
-     *
-     * @return string
-     */
-    private formatPerson(person: Record<string, string>): string {
-        const name = person.name || person.username || "Unknown";
-        const email = person.email || null;
-        return email ? `<a href="mailto:${email}">${name}</a>` : name;
     }
 }
