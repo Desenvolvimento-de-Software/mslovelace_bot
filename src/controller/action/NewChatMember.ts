@@ -20,6 +20,7 @@ import ChatHelper from "../../helper/Chat.js";
 import Lang from "../../helper/Lang.js";
 import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
 import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
+import UnbanChatMember from "../../library/telegram/resource/UnbanChatMember.js";
 import Check from "../../library/combot/resource/Check.js";
 import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
 import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
@@ -361,7 +362,7 @@ export default class NewChatMember extends Action {
                 this.deleteMessage(messageId, chatId);
 
                 if (chat.captcha === 1) {
-                    this.checkUserForBan(user, chat);
+                    this.checkUserForKick(user, chat);
                 }
 
             }, 300000); /* 5 minutes */
@@ -399,7 +400,7 @@ export default class NewChatMember extends Action {
     }
 
     /**
-     * Checks if the user checked the captcha. If not, uses the banhammer.
+     * Checks if the user checked the captcha. If not, them.
      *
      * @author Marcos Leandro
      * @since  2022-09-16
@@ -407,7 +408,7 @@ export default class NewChatMember extends Action {
      * @param user User object.
      * @param chat Chat object.
      */
-    private async checkUserForBan(user: Record<string, any>, chat: Record<string, any>) {
+    private async checkUserForKick(user: Record<string, any>, chat: Record<string, any>) {
 
         const relUsersChats = new RelUsersChats();
         relUsersChats
@@ -426,8 +427,8 @@ export default class NewChatMember extends Action {
                 return;
             }
 
-            const ban = new BanChatMember();
-            ban
+            const kick = new UnbanChatMember();
+            kick
                 .setUserId(user.user_id)
                 .setChatId(chat.chat_id)
                 .post();
