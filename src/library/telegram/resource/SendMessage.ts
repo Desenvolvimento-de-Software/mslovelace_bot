@@ -11,6 +11,7 @@
 
 import TelegramBotApi from "../TelegramBotApi.js";
 import { SendMessageType } from "../type/SendMessage.js";
+import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
 
 export default class SendMessage extends TelegramBotApi {
 
@@ -143,11 +144,11 @@ export default class SendMessage extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param  {Object} replyMarkup
+     * @param  {InlineKeyboardMarkup} replyMarkup
      *
      * @return {SendMessage}
      */
-    public setReplyMarkup(replyMarkup: Object): SendMessage {
+    public setReplyMarkup(replyMarkup: InlineKeyboardMarkup): SendMessage {
         this.payload.reply_markup = replyMarkup;
         return this;
     }

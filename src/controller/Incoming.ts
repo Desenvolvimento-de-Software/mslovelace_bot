@@ -16,7 +16,7 @@ import CheckRestriction from "./action/CheckRestriction.js";
 import NewChatMember from "./action/NewChatMember.js";
 import LeftChatMember from "./action/LeftChatMember.js";
 import Ping from "./action/Ping.js";
-import CaptchaConfirmation from "./callback/CaptchaConfirmation.js";
+import CaptchaConfirmationCallback from "./callback/CaptchaConfirmation.js";
 import AdaShieldCommand from "./command/AdaShield.js";
 import AskCommand from "./command/Ask.js";
 import BanCommand from "./command/Ban.js";
@@ -27,6 +27,8 @@ import RestrictCommand from "./command/Restrict.js";
 import SendCommand from "./command/Send.js";
 import StartCommand from "./command/Start.js";
 import UnbanCommand from "./command/Unban.js";
+import YarnCallback from "./callback/Yarn.js";
+import YarnCommand from "./command/Yarn.js";
 
 export default class IncomingController extends DefaultController {
 
@@ -287,6 +289,7 @@ export default class IncomingController extends DefaultController {
             send : SendCommand,
             start : StartCommand,
             unban : UnbanCommand,
+            yarn : YarnCommand
         };
     }
 
@@ -298,7 +301,8 @@ export default class IncomingController extends DefaultController {
      */
     private initializeCallbacks(): void {
         this.callbacks = {
-            captchaconfirmation : CaptchaConfirmation
+            captchaconfirmation : CaptchaConfirmationCallback,
+            yarn : YarnCallback
         }
     }
 }

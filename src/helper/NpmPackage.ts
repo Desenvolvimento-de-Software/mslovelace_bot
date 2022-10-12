@@ -9,25 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import JsPackage from "./JsPackage.js";
 import Lang from "./Lang.js";
 
-export default class NpmPackage {
-
-    /**
-     * Loaded package.
-     *
-     * @author Marcos Leandro
-     * @since  2022-10-06
-     */
-    private package: Record<string, any>;
-
-    /**
-     * Message array from loaded package.
-     *
-     * @author Marcos Leandro
-     * @since  2022-10-06
-     */
-    private message: Array<string> = [];
+export default class NpmPackage extends JsPackage {
 
     /**
      * The constructor.
@@ -38,7 +23,9 @@ export default class NpmPackage {
      * @param record
      */
     public constructor(record: Record<string, any>) {
-        this.package = record;
+        
+        super(record);
+
         this.addDescription();
         this.addDetails();
         this.addLinks();
@@ -50,23 +37,13 @@ export default class NpmPackage {
     }
 
     /**
-     * Returns the resulting package message.
-     *
-     * @author Marcos Leandro
-     * @since  2022-10-06
-     */
-    public getMessage(): string {
-        return this.message.join("\n");
-    }
-
-    /**
      * Adds the package description.
      *
      * @author Marcos Leandro
      * @since  2022-10-06
      */
     private addDescription() {
-        this.message.push(Lang.get("npmPackageDescription").replace("{description}", this.package.description));
+        this.message.push(Lang.get("packageDescription").replace("{description}", this.package.description));
         this.message.push("");
     }
 
@@ -80,7 +57,7 @@ export default class NpmPackage {
 
         const countBefore = this.message.length;
         for (let detail of ["name", "version", "date"]) {
-            const langIndex = "npmPackage" + detail[0].toUpperCase() + detail.substring(1);
+            const langIndex = "package" + detail[0].toUpperCase() + detail.substring(1);
             !this.package.hasOwnProperty(detail) || this.message.push(Lang.get(langIndex).replace(`\{${detail}\}`, this.package[detail]));
         }
 
@@ -99,11 +76,11 @@ export default class NpmPackage {
             return;
         }
 
-        this.message.push(Lang.get("npmPackageLinks"));
+        this.message.push(Lang.get("packageLinks"));
 
         for (let key in this.package.links) {
 
-            const link = Lang.get("npmPackageLink")
+            const link = Lang.get("packageLink")
                 .replace("{linkname}", key)
                 .replace("{linkurl}", this.package.links[key]);
 
@@ -126,8 +103,8 @@ export default class NpmPackage {
         }
 
         const person = this.formatPerson(this.package.author);
-        this.message.push(Lang.get("npmAuthor"));
-        this.message.push(Lang.get("npmPerson").replace("{person}", person));
+        this.message.push(Lang.get("packageAuthor"));
+        this.message.push(Lang.get("packagePerson").replace("{person}", person));
         this.message.push("");
     }
 
@@ -144,8 +121,8 @@ export default class NpmPackage {
         }
 
         const person = this.formatPerson(this.package.publisher);
-        this.message.push(Lang.get("npmPublisher"));
-        this.message.push(Lang.get("npmPerson").replace("{person}", person));
+        this.message.push(Lang.get("packagePublisher"));
+        this.message.push(Lang.get("packagePerson").replace("{person}", person));
         this.message.push("");
     }
 
@@ -161,10 +138,10 @@ export default class NpmPackage {
             return;
         }
 
-        this.message.push(Lang.get("npmMaintainers"));
+        this.message.push(Lang.get("packageMaintainers"));
         for (let maintainer of this.package.maintainers) {
             const person = this.formatPerson(maintainer);
-            this.message.push(Lang.get("npmPerson").replace("{person}", person));
+            this.message.push(Lang.get("packagePerson").replace("{person}", person));
         }
 
         this.message.push("");
@@ -182,7 +159,7 @@ export default class NpmPackage {
             return;
         }
 
-        this.message.push(Lang.get("npmPackageKeywords"));
+        this.message.push(Lang.get("packageKeywords"));
 
         let keywords = [];
         for (let keyword of this.package.keywords) {
@@ -204,21 +181,5 @@ export default class NpmPackage {
         this.message.push(Lang.get("npmPackageInstall").replace("{package}", this.package.name));
         this.message.push("");
         this.message.push(Lang.get("playgroundLink").replace("{package}", this.package.name));
-    }
-
-    /**
-     * Formats the person.
-     *
-     * @author Marcos Leandro
-     * @since  2022-10-06
-     *
-     * @param person
-     *
-     * @return string
-     */
-     private formatPerson(person: Record<string, string>): string {
-        const name = person.name || person.username || "Unknown";
-        const email = person.email || null;
-        return email ? `<a href="mailto:${email}">${name}</a>` : name;
     }
 }

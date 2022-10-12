@@ -308,11 +308,11 @@ export default class DefaultController {
         Lang.set(chat.language);
 
         let oldName;
-        if (userObject.first_name.length) {
+        if (userObject.first_name?.length) {
             oldName = user.first_name;
         }
 
-        if (user.last_name.length) {
+        if (user.last_name?.length) {
             oldName += (oldName.length ? " " : "") + user.last_name;
         }
 

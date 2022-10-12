@@ -347,7 +347,7 @@ export default class NewChatMember extends Action {
                 inline_keyboard : [[captchaButton]]
             };
 
-            sendMessage.setReplyMarkup(markup)
+            sendMessage.setReplyMarkup(markup);
         }
 
         const response = await sendMessage.post();

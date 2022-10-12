@@ -12,18 +12,18 @@
 import App from "../../App.js";
 import Command from "../Command.js";
 import ChatHelper from "../../helper/Chat.js";
-import NpmPackage from "../../helper/NpmPackage.js";
+import YarnPackage from "../../helper/YarnPackage.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import Lang from "../../helper/Lang.js";
 import { exec } from "child_process";
 
-export default class Npm extends Command {
+export default class Yarn extends Command {
 
     /**
      * Telegram peyload.
      *
      * @author Marcos Leandro
-     * @since  2022-09-21
+     * @since  2022-10-11
      */
     private payload: Record<string, any> = {};
 
@@ -31,7 +31,7 @@ export default class Npm extends Command {
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since  2022-09-21
+     * @since  2022-10-11
      *
      * @param app
      */
@@ -43,9 +43,9 @@ export default class Npm extends Command {
      * Command main route.
      *
      * @author Marcos Leandro
-     * @since 2022-09-21
+     * @since 2022-10-11
      */
-     public async index(payload: Record<string, any>): Promise<void> {
+    public async index(payload: Record<string, any>): Promise<void> {
 
         const text = payload.message.text.split(/\s+/);
         if (!text.length || text.length < 2) {
@@ -63,11 +63,24 @@ export default class Npm extends Command {
         }
 
         Lang.set(chat.language || "us");
+        this.getPackage(payload, library);
+    }
+
+    /**
+     * Gets the package from yarn.
+     * 
+     * @author Marcos Leandro
+     * @since  2022-10-11
+     *
+     * @param library 
+     */
+    public async getPackage(payload: Record<string, any>, library: String): Promise<void> {
+
         this.payload = payload;
 
         try {
 
-            exec(`npm search --json ${library}`, (error: any, stdout: string, stderr: string) => {
+            exec(`yarn info --json ${library}`, (error: any, stdout: string, stderr: string) => {
                 this.processResponse(error, stdout, stderr);
             });
 
@@ -80,7 +93,7 @@ export default class Npm extends Command {
      * Processes the shell response.
      *
      * @author Marcos Leandro
-     * @since  2022-09-21
+     * @since  2022-10-11
      *
      * @param error
      * @param stdout
@@ -98,20 +111,25 @@ export default class Npm extends Command {
             return;
         }
 
-        const json = await JSON.parse(stdout);
-        if (!json.length) {
+        const library = await JSON.parse(stdout);
+        if (!library) {
             return;
         }
 
-        const library = json[0];
-        const npmPackage = new NpmPackage(library);
+        const yarnPackage = new YarnPackage(library);
         const sendMessage = new SendMessage();
 
         sendMessage
             .setChatId(this.payload.message.chat.id)
-            .setText(npmPackage.getMessage())
+            .setText(yarnPackage.getMessage())
             .setDisableWebPagePreview(true)
             .setParseMode("HTML");
+
+        const dependencies =  yarnPackage.getDependencies();
+        if (dependencies) {
+            sendMessage.setReplyMarkup(dependencies);
+        }
+            
 
         if (this.payload.message?.reply_to_message?.message_id) {
             sendMessage.setReplyToMessageId(this.payload.message.reply_to_message.message_id);
@@ -120,3 +138,4 @@ export default class Npm extends Command {
         sendMessage.post();
     }
 }
+ 
