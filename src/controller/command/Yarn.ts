@@ -13,6 +13,7 @@ import App from "../../App.js";
 import Command from "../Command.js";
 import ChatHelper from "../../helper/Chat.js";
 import YarnPackage from "../../helper/YarnPackage.js";
+import EditMessageText from "../../library/telegram/resource/EditMessageText.js";
 import SendMessage from "../../library/telegram/resource/SendMessage.js";
 import Lang from "../../helper/Lang.js";
 import { exec } from "child_process";
@@ -68,11 +69,11 @@ export default class Yarn extends Command {
 
     /**
      * Gets the package from yarn.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param library 
+     * @param library
      */
     public async getPackage(payload: Record<string, any>, library: String): Promise<void> {
 
@@ -117,19 +118,34 @@ export default class Yarn extends Command {
         }
 
         const yarnPackage = new YarnPackage(library);
-        const sendMessage = new SendMessage();
+        if (this.payload.data) {
+            return this.updateMessage(yarnPackage);
+        }
 
+        return this.sendNewMessage(yarnPackage);
+    }
+
+    /**
+     * Sends a new message.
+     *
+     * @author Marcos Leandro
+     * @since  2022-10-20
+     *
+     * @param yarnPackage
+     */
+    async sendNewMessage(yarnPackage: YarnPackage): Promise<void> {
+
+        const sendMessage = new SendMessage();
         sendMessage
             .setChatId(this.payload.message.chat.id)
             .setText(yarnPackage.getMessage())
             .setDisableWebPagePreview(true)
             .setParseMode("HTML");
 
-        const dependencies =  yarnPackage.getDependencies();
+        const dependencies = yarnPackage.getDependencies();
         if (dependencies) {
             sendMessage.setReplyMarkup(dependencies);
         }
-            
 
         if (this.payload.message?.reply_to_message?.message_id) {
             sendMessage.setReplyToMessageId(this.payload.message.reply_to_message.message_id);
@@ -137,5 +153,31 @@ export default class Yarn extends Command {
 
         sendMessage.post();
     }
+
+    /**
+     * Edits the existing message.
+     *
+     * @author Marcos Leandro
+     * @since  2022-10-20
+     *
+     * @param yarnPackage
+     */
+    async updateMessage(yarnPackage: YarnPackage): Promise<void> {
+
+        const messageId = this.payload.message.message_id;
+        const sendMessage = new EditMessageText();
+        sendMessage
+            .setChatId(this.payload.message.chat.id)
+            .setMessageId(messageId)
+            .setText(yarnPackage.getMessage())
+            .setDisableWebPagePreview(true)
+            .setParseMode("HTML");
+
+        const dependencies = yarnPackage.getDependencies();
+        if (dependencies) {
+            sendMessage.setReplyMarkup(dependencies);
+        }
+
+        sendMessage.post();
+    }
 }
- 
