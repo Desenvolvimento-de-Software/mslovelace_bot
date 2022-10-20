@@ -19,10 +19,10 @@ export default class YarnPackage extends JsPackage {
 
     /**
      * The constructor.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
-     * 
+     *
      * @param  record
      */
     public constructor(record: Record<string, any>) {
@@ -41,10 +41,10 @@ export default class YarnPackage extends JsPackage {
 
     /**
      * Returns the package dependencies.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
-     * 
+     *
      * @return Markup buttons.
      */
     public getDependencies(): InlineKeyboardMarkup|null {
@@ -131,7 +131,7 @@ export default class YarnPackage extends JsPackage {
 
     /**
      * Adds the package links.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      */
