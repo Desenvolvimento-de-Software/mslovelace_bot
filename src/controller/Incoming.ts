@@ -13,6 +13,7 @@ import App from "../App.js";
 import DefaultController from "./Controller.js";
 import AskToAskAction from "./action/AskToAsk.js";
 import CheckRestriction from "./action/CheckRestriction.js";
+import Context from "../library/Context.js";
 import NewChatMember from "./action/NewChatMember.js";
 import LeftChatMember from "./action/LeftChatMember.js";
 import Ping from "./action/Ping.js";
@@ -106,6 +107,9 @@ export default class IncomingController extends DefaultController {
      * @param {Record<string, any>} payload
      */
      public async handle(payload: Record<string, any>): Promise<void> {
+
+        const context = new Context(payload);
+        return;
 
         let message;
 

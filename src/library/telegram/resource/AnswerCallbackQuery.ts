@@ -34,7 +34,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the callback query ID.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
@@ -49,7 +49,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the answer text.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
@@ -64,11 +64,11 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines whether the alert will be shown or not.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */
@@ -79,11 +79,11 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the answer URL.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */
@@ -94,11 +94,11 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the answer cache time.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */

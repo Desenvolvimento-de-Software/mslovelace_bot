@@ -9,8 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { User } from "./User.js";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type ProximityAlertTriggered = {
+    traveler: User;
+    watcher: User;
+    distance: number;
 };

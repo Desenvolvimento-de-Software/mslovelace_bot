@@ -9,8 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { KeyboardButton } from "./KeyboardButton";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type ReplyKeyboardMarkup = {
+    keyboard: Array<KeyboardButton[]>;
+    isPersistent?: boolean;
+    resizeKeyboard?: boolean;
+    oneTimeKeyboard?: boolean;
+    inputFieldPlaceholder?: string;
+    selective?: boolean;
 };

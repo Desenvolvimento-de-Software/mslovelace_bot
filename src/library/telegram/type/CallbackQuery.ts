@@ -9,8 +9,15 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { Message } from "./Message";
+import { User } from "./User";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type CallbackQuery = {
+    id: string;
+    from: User;
+    message?: Message;
+    inlineMessageId?: string;
+    chatInstance: string;
+    data?: string;
+    gameShortName?: string;
 };

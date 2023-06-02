@@ -9,8 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { PhotoSize } from "./PhotoSize.js";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type VideoNote = {
+    fileId: string;
+    fileUniqueId: string;
+    length: number;
+    duration: number;
+    thumbnail?: PhotoSize;
+    fileSize?: number;
 };

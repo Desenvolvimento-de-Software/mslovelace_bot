@@ -9,8 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { PhotoSize } from "./PhotoSize.js";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type Audio = {
+    fileId: string;
+    fileUniqueId: string;
+    duration: number;
+    performer?: string;
+    title?: string;
+    fileName?: string;
+    mimeType?: string;
+    fileSize?: number;
+    thumbnail?: PhotoSize;
 };

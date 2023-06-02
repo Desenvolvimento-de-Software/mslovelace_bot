@@ -9,13 +9,20 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import { CallbackGame } from "./CallbackGame";
+import { LoginUrl } from "./LoginUrl";
+import { SwitchInlineQueryChosenChat } from "./SwitchInlineQueryChosenChat";
+import { WebAppInfo } from "./WebAppInfo";
+
 export type InlineKeyboardButton = {
-    text : String,
-    url? : String,
-    login_url? : String,
-    callback_data? : String,
-    switch_inline_query? : String,
-    switch_inline_query_current_chat? : String,
-    // callback_game? :CallbackGame?,
-    pay? : Boolean
+    text: string;
+    url?: string;
+    callbackData?: string;
+    webApp?: WebAppInfo;
+    loginUrl?: LoginUrl;
+    switchInlineQuery?: string;
+    switchInlineQueryCurrentChat?: string;
+    switchInlineQueryChosenChat?: SwitchInlineQueryChosenChat;
+    callbackGame?: CallbackGame;
+    pay?: boolean;
 };

@@ -9,8 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { User } from "./User";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type ChatMemberOwner = {
+    status: "creator";
+    user: User;
+    isAnonymous?: boolean;
+    customTitle?: string;
 };

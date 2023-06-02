@@ -9,19 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-export type ChatPermissions = {
-    canSendMessages?: boolean;
-    canSendAudios?: boolean;
-    canSendDocuments?: boolean;
-    canSendPhotos?: boolean;
-    canSendVideos?: boolean;
-    canSendVideoNotes?: boolean;
-    canSendVoiceNotes?: boolean;
-    canSendPolls?: boolean;
-    canSendOtherMessages?: boolean;
-    canAddWebPagePreviews?: boolean;
+export type ChatAdministrativeRights = {
+    isAnonymous?: boolean;
+    canManageChat?: boolean;
+    canDeleteMessages?: boolean;
+    canMessageVideoChats?: boolean;
+    canRestrictMembers?: boolean;
+    canPromoteMembers?: boolean;
     canChangeInfo?: boolean;
     canInviteUsers?: boolean;
+    canPostMessages?: boolean;
+    canEditMessages?: boolean;
     canPinMessages?: boolean;
     canManageTopics?: boolean;
 };

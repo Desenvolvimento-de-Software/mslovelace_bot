@@ -12,5 +12,5 @@
 import { InlineKeyboardButton } from "./InlineKeyboardButton";
 
 export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+    inline_keyboard: Array<Array<InlineKeyboardButton>>
 };

@@ -9,8 +9,15 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { Chat } from "./Chat";
+import { ChatInviteLink } from "./ChatInviteLink";
+import { User } from "./User";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type ChatJoinRequest = {
+    chat: Chat;
+    from: User;
+    userChatId: number;
+    date: number;
+    bio?: string;
+    inviteLink?: ChatInviteLink;
 };

@@ -301,7 +301,7 @@ export default class NewChatMember extends Action {
             return;
         }
 
-        if (parseInt(chat.greetings) === 0 || parseInt(chat.greetings) === NaN) {
+        if (parseInt(chat.greetings) === 0) {
             return;
         }
 

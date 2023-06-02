@@ -9,8 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { User } from "./User";
 
-export type InlineKeyboardMarkup = {
-    inlineKeyboard: Array<InlineKeyboardButton[]>;
+export type ChatInviteLink = {
+    inviteLink: string;
+    creator: User;
+    createsJoinRequest: boolean;
+    isPrimary: boolean;
+    isRevoked: boolean;
+    name?: string;
+    expireDate?: number;
+    memberLimit?: number;
+    pendingJoinRequestCount?: number;
 };
