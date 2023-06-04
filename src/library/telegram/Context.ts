@@ -35,9 +35,9 @@ export default class Context {
         this.type = this.parseType();
 
         const context = this.parseMessage();
-        this.chat = new Chat(context.chat);
+        this.chat = new Chat(context);
         this.message = new Message(context);
-        this.user = new User(context.from?);
+        this.user = new User(context);
     }
 
     /**
