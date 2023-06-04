@@ -10,7 +10,7 @@
  */
 
 import SendMessage from "../telegram/resource/SendMessage.js";
-import { Message as MessageType } from "@library/telegram/type/Message.js";
+import { Message as MessageType } from "../telegram/type/Message.js";
 
 
 export default class Message {
@@ -62,6 +62,14 @@ export default class Message {
         return sendMessage.post();
     }
 
+    /**
+     * Deletes the message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-03
+     *
+     * @return {Promise<Record<string, any>>}
+     */
     public async delete(): Promise<Record<string, any>> {
         return Promise.resolve({});
     }
