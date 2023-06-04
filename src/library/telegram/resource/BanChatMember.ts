@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { BanChatMemberType } from "../type/BanChatMember.js";
 
 export default class BanChatMember extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class BanChatMember extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: BanChatMemberType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

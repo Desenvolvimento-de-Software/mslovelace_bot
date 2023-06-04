@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { AnswerCallbackQueryType } from "../type/AnswerCallbackQuery.js";
 
 export default class AnswerCallbackQuery extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: AnswerCallbackQueryType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

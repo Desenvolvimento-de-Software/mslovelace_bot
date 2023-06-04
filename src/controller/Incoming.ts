@@ -10,7 +10,7 @@
  */
 
 import App from "../App.js";
-import DefaultController from "./Controller.js";
+import Controller from "./Controller.js";
 import AskToAskAction from "./action/AskToAsk.js";
 import CheckRestriction from "./action/CheckRestriction.js";
 import Context from "../library/Context.js";
@@ -31,7 +31,7 @@ import UnbanCommand from "./command/Unban.js";
 import YarnCallback from "./callback/Yarn.js";
 import YarnCommand from "./command/Yarn.js";
 
-export default class IncomingController extends DefaultController {
+export default class IncomingController extends Controller {
 
     /**
      * Actions object.
@@ -71,9 +71,9 @@ export default class IncomingController extends DefaultController {
      */
     constructor(app: App) {
         super(app, "/incoming");
-        this.initializeActions();
-        this.initializeCommands();
-        this.initializeCallbacks();
+        // this.initializeActions();
+        // this.initializeCommands();
+        // this.initializeCallbacks();
     }
 
     /**
@@ -85,18 +85,13 @@ export default class IncomingController extends DefaultController {
     public index(request: Record<string, any>, response: Record<string, any>): void {
 
         if (request.params.auth !== process.env.AUTH) {
-            response.status(401).send("Forbidden");
+            this.forbidden(request, response);
+            return;
         }
 
-        const payload = request.body;
-
-        if (!payload.message) {
-            response.status(200).send();
-        }
-
-        this.handle(payload);
+        this.handle(request.body);
         response.status(200).send();
-    }
+    };
 
     /**
      * Handles the incoming message.
@@ -109,39 +104,8 @@ export default class IncomingController extends DefaultController {
      public async handle(payload: Record<string, any>): Promise<void> {
 
         const context = new Context(payload);
+        console.log(context);
         return;
-
-        let message;
-
-        if (typeof payload.message !== "undefined") {
-            message = payload.message;
-
-        } else if (typeof payload.edited_message !== "undefined") {
-            message = payload.edited_message;
-        }
-
-        if (message) {
-
-            try {
-
-                await this.saveUserAndChat(message.from, message.chat);
-                this.saveMessage(payload);
-
-            } catch (err: any) {
-                this.app.log(err.toString());
-            }
-        }
-
-        switch (true) {
-
-            case this.isCommand(payload):
-                this.handleCommand(payload);
-                break;
-
-            default:
-                this.handleAction(payload);
-                this.handleCallback(payload);
-        }
     }
 
     /**
@@ -155,7 +119,7 @@ export default class IncomingController extends DefaultController {
      */
     public forbidden(request: Record<string, any>, response: Record<string, any>): void {
         response.status(401).send("Forbidden");
-    }
+    };
 
     /**
      * Initializes the controller's routes.
@@ -166,147 +130,5 @@ export default class IncomingController extends DefaultController {
     protected initializeRoutes(): void {
         this.router.post(this.path + "/:auth", this.index.bind(this));
         this.router.all(this.path, this.forbidden.bind(this));
-    }
-
-    /**
-     * Returns whether the incoming message is a command or not.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    protected isCommand(payload: Record<string, any>): boolean {
-        return (
-            typeof payload.message !== "undefined" &&
-            typeof payload.message.entities !== "undefined" &&
-            payload.message.entities[0].type === "bot_command"
-        );
-    }
-
-    /**
-     * Handles the incoming command.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    protected async handleCommand(payload: Record<string, any>): Promise<void> {
-
-        this.deleteMessage(
-            payload.message.message_id,
-            payload.message.chat.id
-        );
-
-        const instruction = payload.message.text.replace("/", "").split(" ");
-        const command = instruction[0].split("@")[0];
-
-        if (!this.commands.hasOwnProperty(command)) {
-            return;
-        }
-
-        const commandInstance = new this.commands[command](this.app);
-
-        let method = "index";
-        if (typeof instruction[1] !== "undefined" && typeof commandInstance[instruction[1]] === "function") {
-            method = instruction[1];
-        }
-
-        const args = instruction.length > 2 ? instruction.slice(2) : [];
-
-        try {
-            commandInstance[method](payload, ...args);
-
-        } catch (err: any) {
-            this.app.log(err.toString());
-        }
-    }
-
-    /**
-     * Handles the incoming action.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    protected async handleAction(payload: Record<string, any>): Promise<void> {
-
-        if (typeof payload.message === "undefined") {
-            return;
-        }
-
-        for (let action in this.actions) {
-            if (payload.message.hasOwnProperty(action)) {
-                this.actions[action].map((classname) => {
-                    (new classname(this.app)).run(payload);
-                })
-            }
-        }
-    }
-
-    /**
-     * Handles the callbacks.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    protected async handleCallback(payload: Record<string, any>): Promise<void> {
-
-        if (typeof payload.callback_query === "undefined") {
-            return;
-        }
-
-        const data = JSON.parse(payload.callback_query.data);
-        if (this.callbacks.hasOwnProperty(data.callback)) {
-            const className = this.callbacks[data.callback];
-            (new className(this.app)).run(payload, data.data);
-        }
-    }
-
-    /**
-     * Initializes the BOT's actions.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    private initializeActions(): void {
-        this.actions = {
-            photo : [CheckRestriction],
-            entities : [CheckRestriction, Ping],
-            new_chat_member : [NewChatMember],
-            left_chat_member : [LeftChatMember],
-            text : [AskToAskAction]
-        };
-    }
-
-    /**
-     * Initializes the BOT's commands.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    private initializeCommands(): void {
-        this.commands = {
-            adashield : AdaShieldCommand,
-            ask : AskCommand,
-            ban : BanCommand,
-            greetings : GreetingsCommand,
-            kick : KickCommand,
-            npm : NpmCommand,
-            restrict : RestrictCommand,
-            send : SendCommand,
-            start : StartCommand,
-            unban : UnbanCommand,
-            yarn : YarnCommand
-        };
-    }
-
-    /**
-     * Initializes the BOT's callbacks.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-16
-     */
-    private initializeCallbacks(): void {
-        this.callbacks = {
-            captchaconfirmation : CaptchaConfirmationCallback,
-            yarn : YarnCallback
-        }
     }
 }

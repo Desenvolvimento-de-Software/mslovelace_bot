@@ -10,8 +10,7 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { RestrictChatMemberType } from "../type/RestrictChatMember.js";
-import { ChatPermissionsType } from "../type/ChatPermissions.js";
+import { ChatPermissions } from "../type/ChatPermissions.js";
 
 export default class RestrictChatMember extends TelegramBotApi {
 
@@ -21,7 +20,7 @@ export default class RestrictChatMember extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: RestrictChatMemberType = {};
+    protected payload: Record<string, any> = {};
 
      /**
       * The constructor.
@@ -69,11 +68,11 @@ export default class RestrictChatMember extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param  {ChatPermissionsType} chatPermissions
+     * @param  {ChatPermissions} chatPermissions
      *
      * @return {RestrictChatMember}
      */
-    public setChatPermissions(chatPermissions: ChatPermissionsType): RestrictChatMember {
+    public setChatPermissions(chatPermissions: ChatPermissions): RestrictChatMember {
         this.payload.permissions = chatPermissions;
         return this;
     }

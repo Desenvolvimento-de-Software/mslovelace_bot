@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { EditMessageTextType } from "../type/EditMessageText.js";
 
 export default class EditMessageText extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class EditMessageText extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: EditMessageTextType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { SendMessageType } from "../type/SendMessage.js";
 import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
 
 export default class SendMessage extends TelegramBotApi {
@@ -21,7 +20,7 @@ export default class SendMessage extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: SendMessageType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

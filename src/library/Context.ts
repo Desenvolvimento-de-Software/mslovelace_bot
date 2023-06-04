@@ -9,18 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import SendMessage from "../library/telegram/resource/SendMessage.js";
-
-import { Message } from "../type/Message";
+import Message from "./context/Message.js";
+import { Message as MessageType } from "./telegram/type/Message.js";
 
 export default class Context {
 
-    // private updateId: number;
-    // private type: string;
-    // private action: string;
-    // private user: From;
-    // private chat: Chat;
-    // private message: Message;
+    public message: Message;
+    private context: MessageType;
+    private type: string;
     private payload: Record<string, any>;
 
     /**
@@ -32,17 +28,22 @@ export default class Context {
      * @param payload
      */
     public constructor(payload: Record<string, any>) {
-
         this.payload = this.snakeToCamelCase(payload);
         this.type = this.parseType();
-        this.message = this.parseMessage();
+        this.context = this.parseMessage();
+        this.message = new Message(this.context);
+    }
 
-        console.log(this.payload);
-        // this.updateId = this.payload.update_id;
-
-
-        // this.user = this.parseUser();
-        // this.chat = this.parseChat();
+    /**
+     * Returns the current context.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @returns
+     */
+    public getContext(): MessageType {
+        return this.context;
     }
 
     /**
@@ -57,74 +58,24 @@ export default class Context {
 
         switch (true) {
             case this.payload.hasOwnProperty("editedMessage"):
-                return "edited_message";
+                return "editedMessage";
 
             default:
                 return "message";
         }
     }
 
-    private parseMessage(): Message {
+    /**
+     * Returns the message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @return Message
+     */
+    private parseMessage(): MessageType {
+        return this.payload[this.type];
     }
-
-    /**
-     * Parses the user.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     *
-     * @returns
-     */
-    // private parseUser(): From {
-
-        // if (!this.payload[this.type].from) {
-            // throw new Error("Invalid payload: No user found.");
-        // }
-
-        // return <From> {
-            // id: this.payload[this.type].from.id,
-            // isBot: this.payload[this.type].from.is_bot,
-            // firstName: this.payload[this.type].from.first_name,
-            // lastName: this.payload[this.type].from.last_name,
-            // username: this.payload[this.type].from.username,
-            // languageCode: this.payload[this.type].from.language_code
-        // };
-    // }
-
-    /**
-     * Parses the chat.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     *
-     * @returns
-     */
-    // private parseChat(): Chat {
-
-        // if (!this.payload[this.type].chat) {
-        //     throw new Error("Invalid payload: No chat found.");
-        // }
-
-        // const chat = <Chat> {
-        //     id: this.payload[this.type].chat.id,
-        //     type: this.payload[this.type].chat.type,
-        //     title: this.payload[this.type].chat.title,
-        // };
-
-        // if (this.payload[this.type].chat.username) {
-        //     chat.username = this.payload[this.type].chat.username;
-        // }
-
-        // if (this.payload[this.type].chat.first_name) {
-        //     chat.firstName = this.payload[this.type].chat.first_name;
-        // }
-
-        // if (this.payload[this.type].chat.last_name) {
-        //     chat.lastName = this.payload[this.type].chat.last_name;
-        // }
-
-        // return chat;
-    // }
 
     /**
      * Converts the payload from snake_case to camelCase.

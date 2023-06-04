@@ -22,7 +22,7 @@ import RestrictChatMember from "../../library/telegram/resource/RestrictChatMemb
 import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
 import UnbanChatMember from "../../library/telegram/resource/UnbanChatMember.js";
 import Check from "../../library/combot/resource/Check.js";
-import { ChatPermissionsType } from "../../library/telegram/type/ChatPermissions.js";
+import { ChatPermissions } from "../../library/telegram/type/ChatPermissions.js";
 import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
 import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
 
@@ -72,7 +72,7 @@ export default class NewChatMember extends Action {
             return;
         }
 
-        this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
+        // this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
 
         const user = await UserHelper.getUserByTelegramId(
             payload.message.new_chat_member.id
@@ -105,15 +105,14 @@ export default class NewChatMember extends Action {
      */
      public async allowUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
 
-        const chatPermissions: ChatPermissionsType = {
-            can_send_messages         : true,
-            can_send_media_messages   : true,
-            can_send_polls            : true,
-            can_send_other_messages   : true,
-            can_add_web_page_previews : true,
-            can_change_info           : true,
-            can_invite_users          : true,
-            can_pin_messages          : true
+        const chatPermissions: ChatPermissions = {
+            canSendMessages : true,
+            canSendPolls : true,
+            canSendOtherMessages : true,
+            canAddWebPagePreviews : true,
+            canChangeInfo : true,
+            canInviteUsers : true,
+            canPinMessages : true
         };
 
         const restrictChatMember = new RestrictChatMember();
@@ -138,15 +137,14 @@ export default class NewChatMember extends Action {
     public async restrictUser(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
 
         const untilDate = Math.floor(Date.now() / 1000) + 86400;
-        const chatPermissions: ChatPermissionsType = {
-            can_send_messages         : true,
-            can_send_media_messages   : false,
-            can_send_polls            : false,
-            can_send_other_messages   : false,
-            can_add_web_page_previews : false,
-            can_change_info           : false,
-            can_invite_users          : false,
-            can_pin_messages          : false
+        const chatPermissions: ChatPermissions = {
+            canSendMessages : true,
+            canSendPolls : false,
+            canSendOtherMessages : false,
+            canAddWebPagePreviews : false,
+            canChangeInfo : false,
+            canInviteUsers : false,
+            canPinMessages : false
         };
 
         const restrictChatMember = new RestrictChatMember();
@@ -335,16 +333,16 @@ export default class NewChatMember extends Action {
 
             const captchaButton: InlineKeyboardButton = {
                 text: Lang.get("captchaButton"),
-                callback_data: JSON.stringify({
+                callbackData: JSON.stringify({
                     callback : "captchaconfirmation",
                     data : {
-                        userId : this.payload.message.new_chat_member.id
+                        userId : this.payload.message.newChatmember.id
                     }
                 })
             };
 
             const markup: InlineKeyboardMarkup = {
-                inline_keyboard : [[captchaButton]]
+                inlineKeyboard : [[captchaButton]]
             };
 
             sendMessage.setReplyMarkup(markup);
@@ -380,15 +378,14 @@ export default class NewChatMember extends Action {
      */
     private async captcha(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
 
-        const chatPermissions: ChatPermissionsType = {
-            can_send_messages         : false,
-            can_send_media_messages   : false,
-            can_send_polls            : false,
-            can_send_other_messages   : false,
-            can_add_web_page_previews : false,
-            can_change_info           : false,
-            can_invite_users          : false,
-            can_pin_messages          : false
+        const chatPermissions: ChatPermissions = {
+            canSendMessages : false,
+            canSendPolls : false,
+            canSendOtherMessages : false,
+            canAddWebPagePreviews : false,
+            canChangeInfo : false,
+            canInviteUsers : false,
+            canPinMessages : false
         };
 
         const restrictChatMember = new RestrictChatMember();

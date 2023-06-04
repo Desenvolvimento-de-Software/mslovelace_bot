@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { User } from "./User";
+import { User } from "./User.js";
 
 export type ChatMemberMember = {
     status: string;

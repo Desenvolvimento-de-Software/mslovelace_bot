@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { CallbackGame } from "./CallbackGame";
-import { LoginUrl } from "./LoginUrl";
-import { SwitchInlineQueryChosenChat } from "./SwitchInlineQueryChosenChat";
-import { WebAppInfo } from "./WebAppInfo";
+import { CallbackGame } from "./games/CallbackGame.js";
+import { LoginUrl } from "./LoginUrl.js";
+import { SwitchInlineQueryChosenChat } from "./SwitchInlineQueryChosenChat.js";
+import { WebAppInfo } from "./WebAppInfo.js";
 
 export type InlineKeyboardButton = {
     text: string;

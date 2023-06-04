@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { KeyboardButtonPollType } from "./KeyboardButtonPollType";
-import { KeyboardButtonRequestChat } from "./KeyboardButtonRequestChat";
-import { KeyboardButtonRequestUser } from "./KeyboardButtonRequestUser";
-import { WebAppInfo } from "./WebAppInfo";
+import { KeyboardButtonPollType } from "./KeyboardButtonPollType.js";
+import { KeyboardButtonRequestChat } from "./KeyboardButtonRequestChat.js";
+import { KeyboardButtonRequestUser } from "./KeyboardButtonRequestUser.js";
+import { WebAppInfo } from "./WebAppInfo.js";
 
 export type KeyboardButton = {
     text: string;

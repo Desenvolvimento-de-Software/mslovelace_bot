@@ -10,7 +10,6 @@
  */
 
 import fetch from "node-fetch";
-import {RequestType} from "./type/RequestType.js";
 
 export default class TelegramBotApi {
 
@@ -129,15 +128,19 @@ export default class TelegramBotApi {
      */
     private async request(method: string, payload: object): Promise<any> {
 
+        if (payload) {
+            payload = this.camelCaseToSnakeCase(payload);
+        }
+
         const url  = `${this.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
         const body = JSON.stringify(payload) || "";
 
         const headers = {
-            "Content-Type"   : "application/json",
+            "Content-Type" : "application/json",
             "Content-Length" : body.length.toString()
         };
 
-        const params: RequestType = {
+        const params: Record<string, any> = {
             method : method,
             headers : headers
         };
@@ -148,4 +151,35 @@ export default class TelegramBotApi {
 
         return fetch(url, params);
     }
+
+    /**
+     * Converts the payload from snake_case to camelCase.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @param payload
+     *
+     * @returns
+     */
+    private camelCaseToSnakeCase = (payload: Record<string, any>): Record<string, any> => {
+
+        if (Array.isArray(payload)) {
+            return payload.map(this.camelCaseToSnakeCase);
+        }
+
+        if (typeof payload !== "object" || payload === null) {
+            return payload;
+        }
+
+        const keys = Object.keys(payload);
+        const result = <Record<string, any>> {};
+
+        for (const key of keys) {
+            const snakeKey = key.toLowerCase().replace(/([A-Z])/g, (_, letter) => "_" + letter.toUpperCase());
+            result[snakeKey] = this.camelCaseToSnakeCase(payload[key]);
+        }
+
+        return result;
+    };
 }

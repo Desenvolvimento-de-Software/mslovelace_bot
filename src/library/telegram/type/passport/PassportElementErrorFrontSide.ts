@@ -9,8 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-export type Entity = {
-    offset: number,
-    length: number,
-    type: string
+export type PassportElementError = {
+    source: string;
+    type: string;
+    fileHash: string;
+    message: string;
 };

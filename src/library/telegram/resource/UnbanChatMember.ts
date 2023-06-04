@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { UnbanChatMemberType } from "../type/UnbanChatMember.js";
 
 export default class UnbanChatMember extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class UnbanChatMember extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: UnbanChatMemberType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

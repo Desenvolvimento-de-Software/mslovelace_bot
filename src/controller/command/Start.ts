@@ -66,7 +66,7 @@ export default class Start extends Command {
 
         const helpButton: InlineKeyboardButton = {
             text: Lang.get("helpButton"),
-            callback_data: "help"
+            callbackData: "help"
         };
 
         const groupAddButton: InlineKeyboardButton = {
@@ -75,7 +75,7 @@ export default class Start extends Command {
         };
 
         const markup: InlineKeyboardMarkup = {
-            inline_keyboard : [[helpButton, groupAddButton]]
+            inlineKeyboard : [[helpButton, groupAddButton]]
         };
 
         const message     = Lang.get("startMessage");
