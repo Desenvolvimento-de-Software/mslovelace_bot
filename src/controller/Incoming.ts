@@ -104,7 +104,6 @@ export default class IncomingController extends Controller {
      public async handle(payload: Record<string, any>): Promise<void> {
 
         const context = new Context(payload);
-        console.log(context);
         return;
     }
 

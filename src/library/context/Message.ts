@@ -41,34 +41,6 @@ export default class Message {
      * @author Marcos Leandro
      * @sicne  2023-06-02
      *
-     * @param  content
-     * @param  parseMode
-     *
-     * @return Promise<Record<string, any>>
-     */
-    public async send(content: string, parseMode?: string): Promise<Record<string, any>> {
-
-        return new Promise((resolve, reject) => {
-        });
-        // if (!parseMode) {
-        //     parseMode = "HTML";
-        // }
-
-        // const sendMessage = new SendMessage();
-        // sendMessage
-        //     .setChatId(this.context.message.chat.id)
-        //     .setText(content)
-        //     .setParseMode(parseMode);
-
-        // return sendMessage.post();
-    }
-
-    /**
-     * Send a message.
-     *
-     * @author Marcos Leandro
-     * @sicne  2023-06-02
-     *
      * @param  {string} content
      * @param  {string} parseMode
      *
@@ -76,23 +48,21 @@ export default class Message {
      */
     public async reply(content: string, parseMode?: string): Promise<Record<string, any>> {
 
-        return new Promise((resolve, reject) => {
-        });
-        // if (!parseMode) {
-        //     parseMode = "HTML";
-        // }
+        if (!parseMode) {
+            parseMode = "HTML";
+        }
 
-        // const sendMessage = new SendMessage();
-        // sendMessage
-        //     .setReplyToMessageId(this.context.message.messageId)
-        //     .setChatId(this.context.message.chat.id)
-        //     .setText(content)
-        //     .setParseMode(parseMode);
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setReplyToMessageId(this.context.messageId)
+            .setChatId(this.context.chat.id)
+            .setText(content)
+            .setParseMode(parseMode);
 
-        // return sendMessage.post();
+        return sendMessage.post();
     }
 
     public async delete(): Promise<Record<string, any>> {
-        return {};
+        return Promise.resolve({});
     }
 }

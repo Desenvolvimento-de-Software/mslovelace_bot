@@ -45,15 +45,10 @@ export default class User {
      */
     public async ban(untilDate?: number): Promise<Record<string, any>> {
 
-        // if (!await this.isAdmin(payload)) {
-        //     this.warnUserAboutReporting(payload);
-        //     return;
-        // }
-
         const ban = new BanChatMember();
         ban
-            .setUserId(this.context!.from!.id!)
-            .setChatId(this.context!.chat!.id!);
+            .setUserId(this.context.from!.id)
+            .setChatId(this.context.chat!.id);
 
         if (untilDate) {
             ban.setUntilDate(untilDate);
@@ -71,11 +66,6 @@ export default class User {
      * @param  onlyIfBanned
      */
     public async unban(onlyIfBanned?: boolean): Promise<Record<string, any>> {
-
-        // if (!await this.isAdmin(payload)) {
-        //     this.warnUserAboutReporting(payload);
-        //     return;
-        // }
 
         const unban = new UnbanChatMember();
         unban

@@ -15,7 +15,6 @@ import { Message as MessageType } from "./telegram/type/Message.js";
 export default class Context {
 
     public message: Message;
-    private context: MessageType;
     private type: string;
     private payload: Record<string, any>;
 
@@ -30,20 +29,9 @@ export default class Context {
     public constructor(payload: Record<string, any>) {
         this.payload = this.snakeToCamelCase(payload);
         this.type = this.parseType();
-        this.context = this.parseMessage();
-        this.message = new Message(this.context);
-    }
 
-    /**
-     * Returns the current context.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     *
-     * @returns
-     */
-    public getContext(): MessageType {
-        return this.context;
+        const context = this.parseMessage();
+        this.message = new Message(context);
     }
 
     /**
