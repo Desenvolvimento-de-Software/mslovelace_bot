@@ -9,12 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Chat from "./context/Chat.js";
 import Message from "./context/Message.js";
+import User from "./context/User.js";
 import { Message as MessageType } from "./telegram/type/Message.js";
 
 export default class Context {
 
+    public chat: Chat;
     public message: Message;
+    public user: User;
     private type: string;
     private payload: Record<string, any>;
 
@@ -31,7 +35,9 @@ export default class Context {
         this.type = this.parseType();
 
         const context = this.parseMessage();
+        this.chat = new Chat(context);
         this.message = new Message(context);
+        this.user = new User(context);
     }
 
     /**
