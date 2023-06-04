@@ -12,7 +12,7 @@
 import Chat from "./context/Chat.js";
 import Message from "./context/Message.js";
 import User from "./context/User.js";
-import { Message as MessageType } from "./telegram/type/Message.js";
+import { Message as MessageType } from "./type/Message.js";
 
 export default class Context {
 
@@ -35,9 +35,9 @@ export default class Context {
         this.type = this.parseType();
 
         const context = this.parseMessage();
-        this.chat = new Chat(context);
+        this.chat = new Chat(context.chat);
         this.message = new Message(context);
-        this.user = new User(context);
+        this.user = new User(context.from?);
     }
 
     /**

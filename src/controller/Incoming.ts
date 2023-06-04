@@ -13,7 +13,7 @@ import App from "../App.js";
 import Controller from "./Controller.js";
 import AskToAskAction from "./action/AskToAsk.js";
 import CheckRestriction from "./action/CheckRestriction.js";
-import Context from "../library/Context.js";
+import Context from "../library/telegram/Context.js";
 import NewChatMember from "./action/NewChatMember.js";
 import LeftChatMember from "./action/LeftChatMember.js";
 import Ping from "./action/Ping.js";

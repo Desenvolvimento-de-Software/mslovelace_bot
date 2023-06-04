@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Message } from "../telegram/type/Message.js";
+import { Message as MessageType } from "../type/Message.js";
 
 export default class Chat {
 
@@ -19,7 +19,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-02
      */
-    private context: Message;
+    private context: MessageType;
 
     /**
      * The constructor.
@@ -29,7 +29,7 @@ export default class Chat {
      *
      * @param context
      */
-    public constructor(context: Message) {
+    public constructor(context: MessageType) {
         this.context = context;
     }
 }

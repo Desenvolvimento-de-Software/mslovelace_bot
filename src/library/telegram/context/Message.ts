@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import SendMessage from "../telegram/resource/SendMessage.js";
-import { Message as MessageType } from "../telegram/type/Message.js";
+import SendMessage from "../resource/SendMessage.js";
+import { Message as MessageType } from "../type/Message.js";
 
 
 export default class Message {

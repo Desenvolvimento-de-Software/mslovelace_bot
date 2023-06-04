@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import BanChatMember from "../telegram/resource/BanChatMember.js";
-import UnbanChatMember from "../telegram/resource/UnbanChatMember.js";
-import { Message as MessageType } from "../telegram/type/Message.js";
+import BanChatMember from "../resource/BanChatMember.js";
+import UnbanChatMember from "../resource/UnbanChatMember.js";
+import { Message as MessageType } from "../type/Message.js";
 
 export default class User {
 
@@ -33,6 +33,18 @@ export default class User {
      */
     public constructor(context: MessageType) {
         this.context = context;
+    }
+
+    /**
+     * Returns the user id.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-04
+     *
+     * @returns
+     */
+    public getId(): number {
+        return this.context.from!.id!;
     }
 
     /**
