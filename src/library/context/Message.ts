@@ -20,6 +20,8 @@ export default class Message {
      *
      * @author Marcos Leandro
      * @since  2023-06-02
+     *
+     * @var {MessageType}
      */
     private context: MessageType;
 
@@ -29,7 +31,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-02
      *
-     * @param context
+     * @param {string} context
      */
     public constructor(context: MessageType) {
         this.context = context;
