@@ -11,57 +11,9 @@
 
 import App from "../App.js";
 import Controller from "./Controller.js";
-import AskToAskAction from "./action/AskToAsk.js";
-import CheckRestriction from "./action/CheckRestriction.js";
 import Context from "../library/telegram/Context.js";
-import NewChatMember from "./action/NewChatMember.js";
-import LeftChatMember from "./action/LeftChatMember.js";
-import Ping from "./action/Ping.js";
-import CaptchaConfirmationCallback from "./callback/CaptchaConfirmation.js";
-import AdaShieldCommand from "./command/AdaShield.js";
-import AskCommand from "./command/Ask.js";
-import BanCommand from "./command/Ban.js";
-import GreetingsCommand from "./command/Greetings.js";
-import KickCommand from "./command/Kick.js";
-import NpmCommand from "./command/Npm.js";
-import RestrictCommand from "./command/Restrict.js";
-import SendCommand from "./command/Send.js";
-import StartCommand from "./command/Start.js";
-import UnbanCommand from "./command/Unban.js";
-import YarnCallback from "./callback/Yarn.js";
-import YarnCommand from "./command/Yarn.js";
 
 export default class IncomingController extends Controller {
-
-    /**
-     * Actions object.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @type {Record<string, any>}
-     */
-    private actions: Record<string, Array<any>> = {};
-
-    /**
-     * Commands object.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @type {Record<string, any>}
-     */
-    private commands: Record<string, any> = {};
-
-    /**
-     * Callbacks object.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-16
-     *
-     * @type {Record<string, any>}
-     */
-    private callbacks: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -71,9 +23,9 @@ export default class IncomingController extends Controller {
      */
     constructor(app: App) {
         super(app, "/incoming");
-        // this.initializeActions();
-        // this.initializeCommands();
-        // this.initializeCallbacks();
+        if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "true") {
+            app.listen();
+        }
     }
 
     /**

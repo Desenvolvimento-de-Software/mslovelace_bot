@@ -21,7 +21,7 @@ import SendMessage from "../library/telegram/resource/SendMessage.js";
 import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import Lang from "../helper/Lang.js";
 
-export default class DefaultController {
+export default class Controller {
 
     /**
      * App instance.
