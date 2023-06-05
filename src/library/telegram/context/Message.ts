@@ -12,7 +12,6 @@
 import SendMessage from "../resource/SendMessage.js";
 import { Message as MessageType } from "../type/Message.js";
 
-
 export default class Message {
 
     /**

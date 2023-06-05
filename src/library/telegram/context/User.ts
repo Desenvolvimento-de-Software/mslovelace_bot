@@ -48,6 +48,42 @@ export default class User {
     }
 
     /**
+     * Returns the user first name.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns
+     */
+    public getFirstName(): string|undefined {
+        return this.context.from?.firstName || undefined;
+    }
+
+    /**
+     * Returns the user last name.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns
+     */
+    public getLastName(): string|undefined {
+        return this.context.from?.lastName || undefined;
+    }
+
+    /**
+     * Returns the user username.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns
+     */
+    public getUsername(): string|undefined {
+        return this.context.from?.username || undefined;
+    }
+
+    /**
      * Bans the user.
      *
      * @author Marcos Leandro
