@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
 import Action from "./Action.js";
+import Context from "src/library/telegram/context/Context.js";
 import ChatMessages from "../model/ChatMessages.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import Shield from "../model/Shield.js";
@@ -29,21 +29,15 @@ import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMar
 export default class NewChatMember extends Action {
 
     /**
-     * Telegram payload.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-09
-     */
-    private payload: Record<string,any> = {};
-
-    /**
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since  1.0.0
+     * @since  2023-06-05
+     *
+     * @param context
      */
-    public constructor(app: App) {
-        super(app);
+    public constructor(context: Context) {
+        super(context);
     }
 
     /**
@@ -54,40 +48,37 @@ export default class NewChatMember extends Action {
      *
      * @param payload
      */
-    public async run(payload: Record<string, any>): Promise<void> {
+    public async run(): Promise<void> {
 
-        this.payload = payload;
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         if (!chat) {
             return;
         }
 
-        Lang.set(chat.language || "us");
-
         if (parseInt(chat.remove_event_messages) === 1) {
-            this.deleteMessage(payload.message.message_id, payload.message.chat.id);
+            this.context.message.delete();
         }
+
+        Lang.set(chat.language || "us");
 
         if (await this.shield()) {
             return;
         }
 
-        // this.saveUserAndChat(payload.message.new_chat_member, payload.message.chat);
-
-        const user = await UserHelper.getUserByTelegramId(
-            payload.message.new_chat_member.id
-        );
-
+        const user = await UserHelper.getUserByTelegramId(this.context.user.getId());
         if (!user) {
             return;
         }
 
-        this.greetings(user, chat);
+        if (parseInt(chat.greetings) === 1) {
+            this.greetings();
+        }
 
         if (chat.captcha) {
-            this.captcha(user, chat);
+            this.captcha();
+        }
 
-        } else if (chat.restrict_new_users) {
+        if (chat.restrict_new_users) {
             this.restrictUser(user, chat);
         }
     }
@@ -290,16 +281,10 @@ export default class NewChatMember extends Action {
      * @author Marcos Leandro
      * @since  2022-09-09
      *
-     * @param user User object.
-     * @param chat Chat object.
      */
-    private async greetings(user: Record<string, any>, chat: Record<string, any>) {
+    private async greetings() {
 
         if (chat.grouped_greetings) {
-            return;
-        }
-
-        if (parseInt(chat.greetings) === 0) {
             return;
         }
 

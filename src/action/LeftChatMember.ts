@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
 import Action from "./Action.js";
+import Context from "src/library/telegram/context/Context.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
@@ -21,10 +21,12 @@ export default class LeftChatMember extends Action {
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since  1.0.0
+     * @since  2023-06-05
+     *
+     * @param context
      */
-    public constructor(app: App) {
-        super(app);
+    public constructor(context: Context) {
+        super(context);
     }
 
     /**
@@ -35,10 +37,15 @@ export default class LeftChatMember extends Action {
      *
      * @param payload
      */
-    public async run(payload: Record<string, any>): Promise<void> {
+    public async run(): Promise<void> {
 
-        const user = await UserHelper.getUserByTelegramId(payload.message.left_chat_member.id);
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const user = await UserHelper.getUserByTelegramId(
+            this.context.user.getId()
+        );
+
+        const chat = await ChatHelper.getChatByTelegramId(
+            this.context.chat.getId()
+        );
 
         if (!user || !chat) {
             return;
@@ -58,6 +65,6 @@ export default class LeftChatMember extends Action {
             return;
         }
 
-        this.deleteMessage(payload.message.message_id, payload.message.chat.id);
+        this.context.message.delete();
     }
  }

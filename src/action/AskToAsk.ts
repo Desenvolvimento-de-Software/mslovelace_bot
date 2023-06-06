@@ -21,7 +21,9 @@ export default class AskToAsk extends Action {
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since  1.0.0
+     * @since  2023-06-05
+     *
+     * @param context
      */
     public constructor(context: Context) {
         super(context);
