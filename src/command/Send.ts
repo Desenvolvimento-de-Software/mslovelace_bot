@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
+import App from "../App.js";
+import Command from "./Command.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
 
-export default class Ban extends Command {
+export default class Unban extends Command {
 
     /**
      * The constructor.
@@ -21,7 +21,7 @@ export default class Ban extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(app: App) {
+     public constructor(app: App) {
         super(app);
     }
 
@@ -35,19 +35,20 @@ export default class Ban extends Command {
      */
     public async index(payload: Record<string, any>): Promise<void> {
 
-        if (!await this.isAdmin(payload)) {
+        if (!this.isAdmin(payload)) {
             this.warnUserAboutReporting(payload);
             return;
         }
 
-        const userId = await this.getUserId(payload);
+        let message = payload.message?.text || "";
+        message = message.replace(/\/send\s?\/?/g, "");
+
         const chatId = payload.message.chat.id;
+        const sendMessage = new SendMessage();
 
-        if (!userId || !chatId) {
-            return;
-        }
-
-        const ban = new BanChatMember();
-        ban.setUserId(userId).setChatId(chatId).post();
+        sendMessage
+            .setChatId(chatId)
+            .setText(message)
+            .post();
     }
 }

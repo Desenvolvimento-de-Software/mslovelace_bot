@@ -9,22 +9,22 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Action from "../Action.js";
-import ChatMessages from "../../model/ChatMessages.js";
-import RelUsersChats from "../../model/RelUsersChats.js";
-import Shield from "../../model/Shield.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import UserHelper from "../../helper/User.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
-import RestrictChatMember from "../../library/telegram/resource/RestrictChatMember.js";
-import BanChatMember from "../../library/telegram/resource/BanChatMember.js";
-import UnbanChatMember from "../../library/telegram/resource/UnbanChatMember.js";
-import Check from "../../library/combot/resource/Check.js";
-import { ChatPermissions } from "../../library/telegram/type/ChatPermissions.js";
-import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
-import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
+import App from "../App.js";
+import Action from "./Action.js";
+import ChatMessages from "../model/ChatMessages.js";
+import RelUsersChats from "../model/RelUsersChats.js";
+import Shield from "../model/Shield.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import RestrictChatMember from "../library/telegram/resource/RestrictChatMember.js";
+import BanChatMember from "../library/telegram/resource/BanChatMember.js";
+import UnbanChatMember from "../library/telegram/resource/UnbanChatMember.js";
+import Check from "../library/combot/resource/Check.js";
+import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class NewChatMember extends Action {
 

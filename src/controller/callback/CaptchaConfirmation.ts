@@ -14,7 +14,7 @@ import Callback from "../Callback.js";
 import RelUsersChats from "../../model/RelUsersChats.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
-import NewChatMember from "../action/NewChatMember.js";
+import NewChatMember from "../../action/NewChatMember.js";
 
 export default class CaptchaConfirmation extends Callback {
 

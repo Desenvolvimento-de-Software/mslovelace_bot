@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../../library/telegram/Context.js";
+import Context from "../library/telegram/context/Context.js";
 
 export default class saveUserAndChat {
 

@@ -10,7 +10,7 @@
  */
 
 import App from "../App.js";
-import DefaultController from "./Controller.js";
+import DefaultController from "../controller/Controller.js";
 import SendMessage from "../library/telegram/resource/SendMessage.js";
 import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
 import Lang from "../helper/Lang.js";

@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Action from "../Action.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
+import App from "../App.js";
+import Action from "./Action.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
 
 export default class Ping extends Action {
 

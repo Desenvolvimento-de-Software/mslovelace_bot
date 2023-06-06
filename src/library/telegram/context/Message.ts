@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import DeleteMessage from "../resource/DeleteMessage.js";
 import SendMessage from "../resource/SendMessage.js";
 import { Message as MessageType } from "../type/Message.js";
 
@@ -72,6 +73,35 @@ export default class Message {
      * @return {Promise<Record<string, any>>}
      */
     public async delete(): Promise<Record<string, any>> {
-        return Promise.resolve({});
+        const deleteMessage = new DeleteMessage();
+        deleteMessage
+            .setMessageId(this.context.messageId)
+            .setChatId(this.context.chat.id);
+
+        return deleteMessage.post();
+    }
+
+    /**
+     * Returns the message text.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     *
+     * @returns
+     */
+    public getText(): string {
+        return this.context.text || "";
+    }
+
+    /**
+     * Returns the reply to message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     *
+     * @returns
+     */
+    public getReplyToMessage(): Record<string, any>|undefined {
+        return this.context.replyToMessage;
     }
 }

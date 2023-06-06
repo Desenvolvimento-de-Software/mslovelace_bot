@@ -9,14 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import UnbanChatMember from "../../library/telegram/resource/UnbanChatMember.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
+import App from "../App.js";
+import Command from "./Command.js";
+import BanChatMember from "../library/telegram/resource/BanChatMember.js";
 
-export default class Kick extends Command {
+export default class Ban extends Command {
 
     /**
      * The constructor.
@@ -36,7 +33,7 @@ export default class Kick extends Command {
      *
      * @param payload
      */
-     public async index(payload: Record<string, any>): Promise<void> {
+    public async index(payload: Record<string, any>): Promise<void> {
 
         if (!await this.isAdmin(payload)) {
             this.warnUserAboutReporting(payload);
@@ -50,18 +47,7 @@ export default class Kick extends Command {
             return;
         }
 
-        const sendMessage = new SendMessage();
-        sendMessage
-            .setChatId(payload.message.chat.id)
-            .setText(`Removing ${userId} from ${chatId}`)
-            .setParseMode("HTML")
-            .post();
-
-        const unban = new UnbanChatMember();
-        unban
-            .setUserId(userId)
-            .setChatId(chatId)
-            .setOnlyIfBanned(false)
-            .post();
+        const ban = new BanChatMember();
+        ban.setUserId(userId).setChatId(chatId).post();
     }
 }

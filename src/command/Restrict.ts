@@ -9,10 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
+import App from "../App.js";
+import Command from "./Command.js";
+import Chats from "../model/Chats.js";
+import ChatHelper from "../helper/Chat.js";
 
-export default class Warn extends Command {
+export default class Restrict extends Command {
 
     /**
      * The constructor.
@@ -37,6 +39,26 @@ export default class Warn extends Command {
         if (!await this.isAdmin(payload)) {
             this.warnUserAboutReporting(payload);
             return;
+        }
+
+        const chatId = payload.message.chat.id;
+        const chat   = await ChatHelper.getChatByTelegramId(chatId);
+
+        if (!chatId || !chat) {
+            return;
+        }
+
+        const chats = new Chats();
+        chats
+            .update()
+            .set("restrict_new_users", 1)
+            .where("id").equal(chat.id);
+
+        try {
+            chats.execute();
+
+        } catch (err: any) {
+            this.app.log(err.toString());
         }
     }
 }

@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
-import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
-import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
+import App from "../App.js";
+import Command from "./Command.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class Start extends Command {
 

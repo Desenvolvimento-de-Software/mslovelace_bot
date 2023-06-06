@@ -11,7 +11,7 @@
 
 import App from "../App.js";
 import Controller from "./Controller.js";
-import Context from "../library/telegram/Context.js";
+import Context from "../library/telegram/context/Context.js";
 
 export default class IncomingController extends Controller {
 

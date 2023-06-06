@@ -11,7 +11,9 @@
 
 import App from "../App.js";
 import Controller from "./Controller.js";
-import GetUpdates from "../library/telegram/resource/GetUpdates.js";
+import Context from "@library/telegram/context/Context.js";
+import GetUpdates from "src/library/telegram/resource/GetUpdates.js";
+import { resources } from "src/config/resources.js";
 
 export default class Polling extends Controller {
 
@@ -39,7 +41,7 @@ export default class Polling extends Controller {
      */
     private async initializeLongPolling(offset?: number): Promise<void> {
 
-        console.log("Requesting updates..." + (typeof offset !== "undefined" ? `from ${offset}` : ""));
+        console.log("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
 
         const request = new GetUpdates();
         request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT || 60) as number);
@@ -83,7 +85,7 @@ export default class Polling extends Controller {
         let offset;
         for (const update of response.result) {
             offset = update.update_id;
-            // (new IncomingController(this)).handle(update);
+            this.handle(update);
         }
 
         return offset;
@@ -99,7 +101,11 @@ export default class Polling extends Controller {
      */
     public async handle(payload: Record<string, any>): Promise<void> {
 
-        // const context = new Context(payload);
+        const context = new Context(payload);
+        for (const resource of resources) {
+            new resource(context);
+        }
+
         return;
     }
 }

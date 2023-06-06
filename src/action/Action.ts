@@ -9,13 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
+import Context from "src/library/telegram/context/Context";
 
-export default class Unban extends Command {
+export default class Action {
+
+    /**
+     * Current context.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     */
+    protected context: Context;
 
     /**
      * The constructor.
@@ -23,7 +27,7 @@ export default class Unban extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(app: App) {
-        super(app);
+    public constructor(context: Context) {
+        this.context = context;
     }
 }

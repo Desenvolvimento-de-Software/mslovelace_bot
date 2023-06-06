@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Action from "../Action.js";
-import UserHelper from "../../helper/User.js";
-import ChatHelper from "../../helper/Chat.js";
-import RelUsersChats from "../../model/RelUsersChats.js";
+import App from "../App.js";
+import Action from "./Action.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import RelUsersChats from "../model/RelUsersChats.js";
 
 export default class CheckRestriction extends Action {
 

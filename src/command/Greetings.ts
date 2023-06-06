@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import ChatHelper from "../../helper/Chat.js";
-import Chats from "../../model/Chats.js";
-import ChatMessages from "../../model/ChatMessages.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
-import Lang from "../../helper/Lang.js";
+import App from "../App.js";
+import Command from "./Command.js";
+import ChatHelper from "../helper/Chat.js";
+import Chats from "../model/Chats.js";
+import ChatMessages from "../model/ChatMessages.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import Lang from "../helper/Lang.js";
 
 export default class GreetingsCommand extends Command {
 

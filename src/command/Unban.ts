@@ -10,9 +10,12 @@
  */
 
 import App from "../App.js";
-import DefaultController from "./Controller.js";
+import Command from "./Command.js";
+import SendMessage from "../library/telegram/resource/SendMessage.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
 
-export default class Action extends DefaultController {
+export default class Unban extends Command {
 
     /**
      * The constructor.

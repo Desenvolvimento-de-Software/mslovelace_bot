@@ -9,11 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Command from "../Command.js";
-import SendMessage from "../../library/telegram/resource/SendMessage.js";
+import App from "../App.js";
+import Command from "./Command.js";
 
-export default class Unban extends Command {
+export default class Warn extends Command {
 
     /**
      * The constructor.
@@ -35,20 +34,9 @@ export default class Unban extends Command {
      */
     public async index(payload: Record<string, any>): Promise<void> {
 
-        if (!this.isAdmin(payload)) {
+        if (!await this.isAdmin(payload)) {
             this.warnUserAboutReporting(payload);
             return;
         }
-
-        let message = payload.message?.text || "";
-        message = message.replace(/\/send\s?\/?/g, "");
-
-        const chatId = payload.message.chat.id;
-        const sendMessage = new SendMessage();
-
-        sendMessage
-            .setChatId(chatId)
-            .setText(message)
-            .post();
     }
 }

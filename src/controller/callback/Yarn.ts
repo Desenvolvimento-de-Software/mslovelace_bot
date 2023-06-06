@@ -12,7 +12,7 @@
 import AnswerCallbackQuery from "../../library/telegram/resource/AnswerCallbackQuery.js";
 import App from "../../App.js";
 import Callback from "../Callback.js";
-import YarnCommand from "../command/Yarn.js";
+import YarnCommand from "../../command/Yarn.js";
 
 export default class Yarn extends Callback {
 
