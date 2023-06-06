@@ -11,17 +11,27 @@
 
 import BanChatMember from "../resource/BanChatMember.js";
 import UnbanChatMember from "../resource/UnbanChatMember.js";
-import { Message as MessageType } from "../type/Message.js";
+import { Chat as ChatType } from "../type/Chat.js";
+import { User as UserType } from "../type/User.js";
+
 
 export default class User {
 
     /**
-     * Bot context.
+     * User object.
      *
      * @author Marcos Leandro
-     * @since  2023-06-02
+     * @since  2023-06-05
      */
-    context: MessageType;
+    private user: UserType;
+
+    /**
+     * Chat object.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     */
+    private chat: ChatType;
 
     /**
      * The constructor.
@@ -31,8 +41,9 @@ export default class User {
      *
      * @param context
      */
-    public constructor(context: MessageType) {
-        this.context = context;
+    public constructor(user: UserType, chat: ChatType) {
+        this.user = user;
+        this.chat = chat;
     }
 
     /**
@@ -44,7 +55,7 @@ export default class User {
      * @returns
      */
     public getId(): number {
-        return this.context.from!.id!;
+        return this.user.id!;
     }
 
     /**
@@ -56,7 +67,7 @@ export default class User {
      * @returns
      */
     public getFirstName(): string|undefined {
-        return this.context.from?.firstName || undefined;
+        return this.user.firstName || undefined;
     }
 
     /**
@@ -68,7 +79,7 @@ export default class User {
      * @returns
      */
     public getLastName(): string|undefined {
-        return this.context.from?.lastName || undefined;
+        return this.user.lastName || undefined;
     }
 
     /**
@@ -80,7 +91,7 @@ export default class User {
      * @returns
      */
     public getUsername(): string|undefined {
-        return this.context.from?.username || undefined;
+        return this.user.username || undefined;
     }
 
     /**
@@ -95,8 +106,8 @@ export default class User {
 
         const ban = new BanChatMember();
         ban
-            .setUserId(this.context.from!.id)
-            .setChatId(this.context.chat!.id);
+            .setUserId(this.user.id)
+            .setChatId(this.chat.id);
 
         if (untilDate) {
             ban.setUntilDate(untilDate);
@@ -117,8 +128,8 @@ export default class User {
 
         const unban = new UnbanChatMember();
         unban
-            .setUserId(this.context!.from!.id!)
-            .setChatId(this.context!.chat!.id!);
+            .setUserId(this.user.id)
+            .setChatId(this.chat.id);
 
         if (onlyIfBanned) {
             unban.setOnlyIfBanned(false);

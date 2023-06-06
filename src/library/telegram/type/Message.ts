@@ -87,6 +87,7 @@ export type Message = {
     poll?: Poll;
     venue?: Venue;
     location?: Location;
+    newChatMember?: User;
     newChatMembers?: User[];
     leftChatMember?: User;
     newChatTitle?: string;

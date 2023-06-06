@@ -19,6 +19,8 @@ export default class Context {
     public chat: Chat;
     public message: Message;
     public user: User;
+    public newChatMember?: User;
+    public leftChatMember?: User;
     private type: string;
     private payload: Record<string, any>;
 
@@ -37,7 +39,15 @@ export default class Context {
         const context = this.parseMessage();
         this.chat = new Chat(context);
         this.message = new Message(context);
-        this.user = new User(context);
+        this.user = new User(context.from!, context.chat);
+
+        if (context.newChatMember) {
+            this.newChatMember = new User(context.newChatMember, context.chat);
+        }
+
+        if (context.leftChatMember) {
+            this.leftChatMember = new User(context.leftChatMember, context.chat);
+        }
     }
 
     /**
