@@ -10,10 +10,10 @@
  */
 
 import Action from "./Action";
-import UserHelper from "src/helper/User";
-import ChatHelper from "src/helper/Chat";
-import Context from "src/library/telegram/context/Context";
-import Lang from "src/helper/Lang";
+import UserHelper from "..//helper/User";
+import ChatHelper from "..//helper/Chat";
+import Context from "..//library/telegram/context/Context";
+import Lang from "..//helper/Lang";
 
 export default class AskToAsk extends Action {
 

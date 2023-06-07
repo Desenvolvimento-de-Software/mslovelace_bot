@@ -46,20 +46,6 @@ export default class IncomingController extends Controller {
     };
 
     /**
-     * Handles the incoming message.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param {Record<string, any>} payload
-     */
-     public async handle(payload: Record<string, any>): Promise<void> {
-
-        const context = new Context(payload);
-        return;
-    }
-
-    /**
      * Forbidden action.
      *
      * @author Marcos Leandro

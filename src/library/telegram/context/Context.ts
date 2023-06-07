@@ -21,6 +21,7 @@ export default class Context {
     public user: User;
     public newChatMember?: User;
     public leftChatMember?: User;
+    public data?: Record<string, any>;
     private type: string;
     private payload: Record<string, any>;
 
@@ -33,6 +34,7 @@ export default class Context {
      * @param payload
      */
     public constructor(payload: Record<string, any>) {
+
         this.payload = this.snakeToCamelCase(payload);
         this.type = this.parseType();
 
@@ -40,6 +42,13 @@ export default class Context {
         this.chat = new Chat(context);
         this.message = new Message(context);
         this.user = new User(context.from!, context.chat);
+
+        if (payload.data) {
+            this.data = payload.data;
+        }
+
+        // payload.callback_query.from.id;
+        // payload.callback_query.message.chat.id;
 
         if (context.newChatMember) {
             this.newChatMember = new User(context.newChatMember, context.chat);
@@ -61,6 +70,10 @@ export default class Context {
     private parseType(): string {
 
         switch (true) {
+
+            case this.payload.hasOwnProperty("callbackQuery"):
+                return "callbackQuery";
+
             case this.payload.hasOwnProperty("editedMessage"):
                 return "editedMessage";
 
@@ -78,6 +91,11 @@ export default class Context {
      * @return Message
      */
     private parseMessage(): MessageType {
+
+        if (this.type === "callbackQuery") {
+            return this.payload.callbackQuery.message;
+        }
+
         return this.payload[this.type];
     }
 

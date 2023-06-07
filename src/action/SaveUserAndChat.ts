@@ -11,9 +11,9 @@
 
 import Action from "./Action";
 import Context from "../library/telegram/context/Context";
-import UserHelper from "src/helper/User";
-import ChatHelper from "src/helper/Chat";
-import RelUsersChats from "src/model/RelUsersChats";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
+import RelUsersChats from "../model/RelUsersChats";
 
 export default class saveUserAndChat extends Action {
 

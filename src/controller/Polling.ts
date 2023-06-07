@@ -11,7 +11,7 @@
 
 import App from "../App";
 import Controller from "./Controller";
-import GetUpdates from "src/library/telegram/resource/GetUpdates";
+import GetUpdates from "..//library/telegram/resource/GetUpdates";
 
 export default class Polling extends Controller {
 

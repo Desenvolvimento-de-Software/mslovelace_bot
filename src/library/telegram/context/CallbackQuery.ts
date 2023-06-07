@@ -9,28 +9,29 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
+import { Message as MessageType } from "../type/Message";
 
-export default abstract class Callback {
+export default class CallbackQuery {
 
     /**
      * Bot context.
      *
      * @author Marcos Leandro
      * @since  2023-06-07
+     *
+     * @var {Record<string, any>}
      */
-    protected context: Context;
+    private context;
 
     /**
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since 2023-06-07
+     * @since  2023-06-07
      *
      * @param context
-     * @param type
      */
-    public constructor(context: Context) {
+    public constructor(context: MessageType) {
         this.context = context;
     }
 }

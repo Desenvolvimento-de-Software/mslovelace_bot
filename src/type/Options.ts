@@ -9,10 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-// import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation";
-// import YarnCallback from "../callback/Yarn";
-
-export const callbacks = [
-    // CaptchaConfirmationCallback,
-    // YarnCallback
-];
+export type Options = {
+    start: number,
+    end: number,
+    params?: string
+};

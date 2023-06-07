@@ -10,27 +10,27 @@
  */
 
 import AdaShieldCommand from "../command/AdaShield";
-import AskCommand from "../command/Ask";
+// import AskCommand from "../command/Ask";
 import BanCommand from "../command/Ban";
-import GreetingsCommand from "../command/Greetings";
-import KickCommand from "../command/Kick";
-import NpmCommand from "../command/Npm";
-import RestrictCommand from "../command/Restrict";
-import SendCommand from "../command/Send";
-import StartCommand from "../command/Start";
-import UnbanCommand from "../command/Unban";
-import YarnCommand from "../command/Yarn";
+// import GreetingsCommand from "../command/Greetings";
+// import KickCommand from "../command/Kick";
+// import NpmCommand from "../command/Npm";
+// import RestrictCommand from "../command/Restrict";
+// import SendCommand from "../command/Send";
+// import StartCommand from "../command/Start";
+// import UnbanCommand from "../command/Unban";
+// import YarnCommand from "../command/Yarn";
 
 export const commands = [
     AdaShieldCommand,
-    AskCommand,
+    // AskCommand,
     BanCommand,
-    GreetingsCommand,
-    KickCommand,
-    NpmCommand,
-    RestrictCommand,
-    SendCommand,
-    StartCommand,
-    UnbanCommand,
-    YarnCommand
+    // GreetingsCommand,
+    // KickCommand,
+    // NpmCommand,
+    // RestrictCommand,
+    // SendCommand,
+    // StartCommand,
+    // UnbanCommand,
+    // YarnCommand
 ];

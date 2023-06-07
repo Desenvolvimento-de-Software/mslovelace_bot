@@ -10,7 +10,7 @@
  */
 
 import Context from "../library/telegram/context/Context";
-import User from "src/library/telegram/context/User";
+import User from "../library/telegram/context/User";
 import Users from "../model/Users";
 
 export default class UserHelper {
@@ -110,8 +110,8 @@ export default class UserHelper {
             .set("username", user.getUsername() || null)
             .set("language_code", user.getLanguageCode() || "us")
             .set("is_channel", user.getId() > 0 ? 1 : 0)
-            .set("is_bot", user.getIsBot || 0)
-            .set("is_premium", user.getIsPremium || 0);
+            .set("is_bot", user.getIsBot() || 0)
+            .set("is_premium", user.getIsPremium() || 0);
 
         try {
 
@@ -119,6 +119,7 @@ export default class UserHelper {
             return result.insertId;
 
         } catch (err) {
+            console.log(err);
             return null;
         }
     }

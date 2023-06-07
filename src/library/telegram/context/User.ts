@@ -11,7 +11,9 @@
 
 import BanChatMember from "../resource/BanChatMember";
 import UnbanChatMember from "../resource/UnbanChatMember";
+import RestrictChatMember from "../resource/RestrictChatMember";
 import { Chat as ChatType } from "../type/Chat";
+import { ChatPermissions } from "../type/ChatPermissions";
 import { User as UserType } from "../type/User";
 
 
@@ -230,5 +232,30 @@ export default class User {
      */
     public async kick(): Promise<Record<string, any>> {
         return this.unban(false);
+    }
+
+    /**
+     * Sets the user permissions.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param permissions
+     */
+    public async setPermissions(permissions: ChatPermissions, untilDate?: number): Promise<Record<string, any>> {
+
+        const restrictChatMember = new RestrictChatMember();
+        restrictChatMember
+            .setUserId(this.user.id)
+            .setChatId(this.chat.id)
+            .setChatPermissions(permissions);
+
+        if (untilDate) {
+            restrictChatMember.setUntilDate(untilDate);
+        }
+
+        return restrictChatMember
+            .post()
+            .then((response: Record<string, any>) => response.json());
     }
 }

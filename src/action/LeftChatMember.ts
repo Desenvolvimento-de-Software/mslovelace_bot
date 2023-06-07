@@ -10,7 +10,7 @@
  */
 
 import Action from "./Action";
-import Context from "src/library/telegram/context/Context";
+import Context from "../library/telegram/context/Context";
 import RelUsersChats from "../model/RelUsersChats";
 import UserHelper from "../helper/User";
 import ChatHelper from "../helper/Chat";

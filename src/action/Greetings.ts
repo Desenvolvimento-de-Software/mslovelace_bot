@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "src/library/telegram/context/Context";
-import Message from "src/library/telegram/context/Message";
+import Context from "../library/telegram/context/Context";
+import Message from "../library/telegram/context/Message";
 import Action from "./Action";
-import Lang from "src/helper/Lang";
-import ChatHelper from "src/helper/Chat";
-import UserHelper from "src/helper/User";
-import RelUsersChats from "src/model/RelUsersChats";
-import ChatMessages from "src/model/ChatMessages";
-import { InlineKeyboardButton } from "src/library/telegram/type/InlineKeyboardButton";
-import { InlineKeyboardMarkup } from "src/library/telegram/type/InlineKeyboardMarkup";
+import Lang from "../helper/Lang";
+import ChatHelper from "../helper/Chat";
+import UserHelper from "../helper/User";
+import RelUsersChats from "../model/RelUsersChats";
+import ChatMessages from "../model/ChatMessages";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
 
 export default class Greetings extends Action {
 
@@ -64,8 +64,12 @@ export default class Greetings extends Action {
      */
     public async run(): Promise<void> {
 
+        if (!this.context.newChatMember) {
+            return;
+        }
+
         this.chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
-        if (!this.chat?.id) {
+        if (!this.chat || this.chat?.id) {
             return;
         }
 

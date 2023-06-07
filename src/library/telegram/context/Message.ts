@@ -11,10 +11,12 @@
 
 import DeleteMessage from "../resource/DeleteMessage";
 import SendMessage from "../resource/SendMessage";
+import Command from "./Command";
 import User from "./User";
 import { Message as MessageType } from "../type/Message";
 import { User as UserType } from "../type/User";
-import UserHelper from "src/helper/User";
+import { Options as OptionsType } from "../../../type/Options";
+import UserHelper from "../../../helper/User";
 
 export default class Message {
 
@@ -29,12 +31,42 @@ export default class Message {
     private context: MessageType;
 
     /**
+     * Message sender.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @var {User}
+     */
+    private user: User;
+
+    /**
      * The message mentions.
      *
      * @author Marcos Leandro
      * @since  2023-06-06
+     *
+     * @var {User[]}
      */
     private mentions: User[] = [];
+
+    /**
+     * The message commands.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @var {string[]}
+     */
+    private commands: Command[] = [];
+
+    /**
+     * Reply to message context.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     */
+    private replyToMessage?: Message;
 
     /**
      * The constructor.
@@ -46,7 +78,9 @@ export default class Message {
      */
     public constructor(context: MessageType) {
         this.context = context;
+        this.user = this.parseSender();
         this.parseEntities();
+        this.parseReplyToMessage();
     }
 
     /**
@@ -97,6 +131,18 @@ export default class Message {
     }
 
     /**
+     * Returns the message user.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @returns {User}
+     */
+    public getUser(): User {
+        return this.user;
+    }
+
+    /**
      * Returns the message text.
      *
      * @author Marcos Leandro
@@ -114,10 +160,10 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns
+     * @returns {Message|undefined}
      */
-    public getReplyToMessage(): Record<string, any>|undefined {
-        return this.context.replyToMessage;
+    public getReplyToMessage(): Message|undefined {
+        return this.replyToMessage;
     }
 
     /**
@@ -130,6 +176,47 @@ export default class Message {
      */
     public getMentions(): User[] {
         return this.mentions;
+    }
+
+    /**
+     * Returns the message commands.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @returns
+     */
+    public getCommands(): Command[] {
+        return this.commands;
+    }
+
+    /**
+     * Parses the reply to message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @returns
+     */
+    private parseReplyToMessage(): void {
+
+        if (!this.context.replyToMessage) {
+            return;
+        }
+
+        this.replyToMessage = new Message(this.context.replyToMessage);
+    }
+
+    /**
+     * Parses the message sender.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {User}
+     */
+    private parseSender(): User {
+        return new User(this.context.from!, this.context.chat);
     }
 
     /**
@@ -148,7 +235,28 @@ export default class Message {
         }
 
         for (const entity of entities) {
-            this.appendMention(entity);
+            this.appendEntity(entity);
+        }
+    }
+
+    /**
+     * Appends the entity.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param entity
+     */
+    private appendEntity(entity: Record<string, any>): void {
+
+        switch (entity.type) {
+            case "mention":
+                this.appendMention(entity);
+                break;
+
+            case "bot_command":
+                this.appendBotCommand(entity);
+                break;
         }
     }
 
@@ -164,15 +272,11 @@ export default class Message {
      */
     private async appendMention(entity: Record<string, any>): Promise<void> {
 
-        if (entity.type !== "mention") {
-            return;
-        }
-
         const username = this.context.text?.substring(
             ++entity.offset, entity.offset + entity.length
         );
 
-        if (!username) {
+        if (!username || !username.length) {
             return;
         }
 
@@ -181,8 +285,9 @@ export default class Message {
             return;
         }
 
+        console.log(user);
         const mention: UserType = {
-            id: user.getId(),
+            id: user.id,
             isBot: user.is_bot,
             firstName: user.first_name,
             lastName: user.last_name,
@@ -194,5 +299,32 @@ export default class Message {
         this.mentions.push(
             new User(mention, this.context.chat)
         );
+    }
+
+    /**
+     * Appends the bot command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param entity
+     */
+    private async appendBotCommand(entity: Record<string, any>): Promise<void> {
+
+        const start = ++entity.offset;
+        const end = start + (entity.length - 1);
+        const command = this.context.text?.substring(start, end);
+
+        if (!command || !command.length) {
+            return;
+        }
+
+        const options: OptionsType = {
+            start: start,
+            end: end,
+            params: this.context.text?.substring(end).trim()
+        };
+
+        this.commands.push(new Command(command, options));
     }
 }

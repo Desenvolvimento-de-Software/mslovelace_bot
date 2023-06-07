@@ -11,7 +11,9 @@
 
 import AdaShield from "../action/AdaShield";
 import AskToAskAction from "../action/AskToAsk";
+import Captcha from "../action/Captcha";
 import CheckRestriction from "../action/CheckRestriction";
+import Greetings from "../action/Greetings";
 import NewChatMember from "../action/NewChatMember";
 import LeftChatMember from "../action/LeftChatMember";
 import Ping from "../action/Ping";
@@ -20,6 +22,8 @@ import saveUserAndChat from "../action/SaveUserAndChat";
 export const actions = [
     saveUserAndChat,
     AdaShield,
+    Captcha,
+    Greetings,
     AskToAskAction,
     CheckRestriction,
     NewChatMember,

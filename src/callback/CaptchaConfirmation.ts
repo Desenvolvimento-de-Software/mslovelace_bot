@@ -1,81 +1,82 @@
-/**
- * Ada Lovelace Telegram Bot
- *
- * This file is part of Ada Lovelace Telegram Bot.
- * You are free to modify and share this project or its files.
- *
- * @package  mslovelace_bot
- * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
- * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
- */
+// /**
+//  * Ada Lovelace Telegram Bot
+//  *
+//  * This file is part of Ada Lovelace Telegram Bot.
+//  * You are free to modify and share this project or its files.
+//  *
+//  * @package  mslovelace_bot
+//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+//  */
 
-import App from "../App";
-import Callback from "./Callback";
-import RelUsersChats from "../model/RelUsersChats";
-import UserHelper from "../helper/User";
-import ChatHelper from "../helper/Chat";
-import NewChatMember from "../action/NewChatMember";
+// import Callback from "./Callback";
+// import Context from "../library/telegram/context/Context";
+// import RelUsersChats from "../model/RelUsersChats";
+// import UserHelper from "../helper/User";
+// import ChatHelper from "../helper/Chat";
+// import NewChatMember from "../action/NewChatMember";
 
-export default class CaptchaConfirmation extends Callback {
+// export default class CaptchaConfirmation extends Callback {
 
-    /**
-     * The constructor.
-     *
-     * @author Marcos Leandro
-     * @since 1.0.0
-     */
-     public constructor(app: App) {
-        super(app);
-    }
+//     /**
+//      * The constructor.
+//      *
+//      * @author Marcos Leandro
+//      * @since 1.0.0
+//      */
+//      public constructor(context: Context) {
+//         super(context);
+//     }
 
-    /**
-     * Command main route.
-     *
-     * @author Marcos Leandro
-     * @since 1.0.0
-     *
-     * @param payload
-     * @param data
-     */
-    public async run(payload: Record<string, any>, data: Record<string, any>): Promise<void> {
+//     /**
+//      * Command main route.
+//      *
+//      * @author Marcos Leandro
+//      * @since 1.0.0
+//      *
+//      * @param payload
+//      * @param data
+//      */
+//     public async run(): Promise<void> {
 
-        if (payload.callback_query.from.id !== data.userId) {
-            return;
-        }
 
-        const user = await UserHelper.getUserByTelegramId(
-            payload.callback_query.from.id
-        );
+//         if (payload.callback_query.from.id !== data.userId) {
+//             return;
+//         }
 
-        const chat = await ChatHelper.getChatByTelegramId(
-            payload.callback_query.message.chat.id
-        );
+//         const user = await UserHelper.getUserByTelegramId(
+//             payload.callback_query.from.id
+//         );
 
-        if (!user || !chat) {
-            return;
-        }
+//         const chat = await ChatHelper.getChatByTelegramId(
+//             payload.callback_query.message.chat.id
+//         );
 
-        const relUsersChats = new RelUsersChats();
-        relUsersChats
-            .update()
-            .set("checked", 1)
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
+//         if (!user || !chat) {
+//             return;
+//         }
 
-        try {
+//         const relUsersChats = new RelUsersChats();
+//         relUsersChats
+//             .update()
+//             .set("checked", 1)
+//             .where("user_id").equal(user.id)
+//             .and("chat_id").equal(chat.id);
 
-            relUsersChats.execute();
-            this.deleteMessage(payload.callback_query.message.message_id, chat.chat_id);
+//         try {
 
-            const newChatMember = new NewChatMember(this.app);
-            await newChatMember.allowUser(user, chat);
+//             relUsersChats.execute();
+//             this.deleteMessage(payload.callback_query.message.message_id, chat.chat_id);
 
-            if (chat.restrict_new_users) {
-                newChatMember.restrictUser(user, chat);
-            }
+//             const newChatMember = new NewChatMember(this.app);
+//             await newChatMember.allowUser(user, chat);
 
-        } catch (err: any) {
-            this.app.log(err.toString());
-        }
-    }
-}
+//             if (chat.restrict_new_users) {
+//                 newChatMember.restrictUser(user, chat);
+//             }
+
+//         } catch (err: any) {
+//             this.app.log(err.toString());
+//         }
+//     }
+// }

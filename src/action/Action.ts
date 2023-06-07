@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "src/library/telegram/context/Context";
+import Context from "../library/telegram/context/Context";
 
 export default abstract class Action {
 

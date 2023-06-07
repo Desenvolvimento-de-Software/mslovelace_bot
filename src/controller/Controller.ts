@@ -11,11 +11,12 @@
 
 import express from "express";
 import App from "../App";
-import Action from "src/action/Action";
-import Context from "src/library/telegram/context/Context";
+import Action from "../action/Action";
+import Command from "../command/Command";
+import Context from "../library/telegram/context/Context";
 import TelegramBotApi from "../library/telegram/TelegramBotApi";
-import { actions } from "src/config/actions";
-import { commands } from "src/config/commands";
+import { actions } from "../config/actions";
+import { commands } from "../config/commands";
 
 export default interface Controller {
     executeSyncAction(action: Action): void;
@@ -62,7 +63,7 @@ export default class Controller {
      * @param {string} path
      */
     public constructor(app: App, path?: string) {
-        this.app  = app;
+        this.app = app;
         this.path = path || "/";
         this.initializeRoutes();
         TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
@@ -114,10 +115,11 @@ export default class Controller {
     protected async handle(payload: Record<string, any>): Promise<void> {
         const context = new Context(payload);
         this.handleActions(context);
+        this.handleCommands(context);
     }
 
     /**
-     * Handles the action.
+     * Handles the actions.
      *
      * @author Marcos Leandro
      * @since  2023-06-07
@@ -132,6 +134,21 @@ export default class Controller {
     }
 
     /**
+     * Handles the commands.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param context
+     */
+    private async handleCommands(context: Context): Promise<void> {
+        for (const commandName of commands) {
+            const command = new commandName(context);
+            await this.executeCommand(command);
+        }
+    }
+
+    /**
      * Executes the action.
      *
      * @author Marcos Leandro
@@ -142,10 +159,28 @@ export default class Controller {
      * @returns {Promise<void>}
      */
     private async executeAction(action: Action): Promise<void> {
+
         if (action.isSync()) {
             return await action.run();
         }
 
         return action.run();
+    }
+
+    /**
+     * Executes the command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param command
+     *
+     * @returns {Promise<void>}
+     */
+    private async executeCommand(command: Command): Promise<void> {
+        const commandContext = command.isCalled();
+        if (commandContext) {
+            return await command.execute(commandContext);
+        }
     }
 }

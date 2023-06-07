@@ -9,12 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App";
 import Command from "./Command";
-import Chats from "../model/Chats";
-import ChatHelper from "../helper/Chat";
-import Lang from "../helper/Lang";
-import SendMessage from "../library/telegram/resource/SendMessage";
+import Context from "../library/telegram/context/Context";
+import CommandContext from "../library/telegram/context/Command";
 
 export default class AdaShield extends Command {
 
@@ -26,110 +23,122 @@ export default class AdaShield extends Command {
      *
      * @param app App instance.
      */
-    public constructor(app: App) {
-        super(app);
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["adashield", `adashield${process.env.TELEGRAM_USERNAME}`]);
     }
 
     /**
-     * Shows the AdaShield status.
+     * Executes the command.
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param payload Telegram API payload.
      */
-    public async index(payload: Record<string, any>): Promise<void> {
-
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-        if (!chat || !chat.id) {
-            return;
-        }
-
-        Lang.set(chat.language || "us");
-        const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
-        const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
-
-        const sendMessage = new SendMessage();
-        sendMessage
-            .setChatId(chat.chat_id)
-            .setText(adaShieldMessage)
-            .setParseMode("HTML")
-            .post();
+    public async execute(command: CommandContext): Promise<void> {
+        console.log(command);
+        return Promise.resolve();
     }
 
-    /**
-     * Enables the AdaShield.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-12
-     *
-     * @param payload
-     */
-    public async on(payload: Record<string, any>): Promise<void> {
+    // /**
+    //  * Shows the AdaShield status.
+    //  *
+    //  * @author Marcos Leandro
+    //  * @since  2022-09-12
+    //  *
+    //  * @param payload Telegram API payload.
+    //  */
+    // public async index(payload: Record<string, any>): Promise<void> {
 
-        if (!this.isAdmin(payload)) {
-            return;
-        }
+    //     const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+    //     if (!chat || !chat.id) {
+    //         return;
+    //     }
 
-        try {
+    //     Lang.set(chat.language || "us");
+    //     const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
+    //     const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
-            const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-            await this.change(chat, 1);
-            this.index(payload);
+    //     const sendMessage = new SendMessage();
+    //     sendMessage
+    //         .setChatId(chat.chat_id)
+    //         .setText(adaShieldMessage)
+    //         .setParseMode("HTML")
+    //         .post();
+    // }
 
-        } catch (err: any) {
-            this.app.log(err.toString());
-        }
-    }
+    // /**
+    //  * Enables the AdaShield.
+    //  *
+    //  * @author Marcos Leandro
+    //  * @since  2022-09-12
+    //  *
+    //  * @param payload
+    //  */
+    // public async on(payload: Record<string, any>): Promise<void> {
 
-    /**
-     * Enables the AdaShield.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-12
-     *
-     * @param payload
-     */
-    public async off(payload: Record<string, any>): Promise<void> {
+    //     if (!this.isAdmin(payload)) {
+    //         return;
+    //     }
 
-        if (!this.isAdmin(payload)) {
-            return;
-        }
+    //     try {
 
-        try {
+    //         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+    //         await this.change(chat, 1);
+    //         this.index(payload);
 
-            const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-            await this.change(chat, 0);
-            this.index(payload);
+    //     } catch (err: any) {
+    //         this.app.log(err.toString());
+    //     }
+    // }
 
-        } catch (err: any) {
-            this.app.log(err.toString());
-        }
-    }
+    // /**
+    //  * Enables the AdaShield.
+    //  *
+    //  * @author Marcos Leandro
+    //  * @since  2022-09-12
+    //  *
+    //  * @param payload
+    //  */
+    // public async off(payload: Record<string, any>): Promise<void> {
 
-    /**
-     * Changes the AdaShield status.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-12
-     *
-     * @param chat Chat object.
-     * @param status New AdaShield status.
-     */
-    public async change(chat: Record<string, any>, status: number) {
+    //     if (!this.isAdmin(payload)) {
+    //         return;
+    //     }
 
-        try {
+    //     try {
 
-            const update = new Chats();
-            update
-                .update()
-                .set("adashield", status)
-                .where("id").equal(chat.id);
+    //         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+    //         await this.change(chat, 0);
+    //         this.index(payload);
 
-            await update.execute();
+    //     } catch (err: any) {
+    //         this.app.log(err.toString());
+    //     }
+    // }
 
-        } catch (err: any) {
-            this.app.log(err.toString());
-        }
-    }
+    // /**
+    //  * Changes the AdaShield status.
+    //  *
+    //  * @author Marcos Leandro
+    //  * @since  2022-09-12
+    //  *
+    //  * @param chat Chat object.
+    //  * @param status New AdaShield status.
+    //  */
+    // public async change(chat: Record<string, any>, status: number) {
+
+    //     try {
+
+    //         const update = new Chats();
+    //         update
+    //             .update()
+    //             .set("adashield", status)
+    //             .where("id").equal(chat.id);
+
+    //         await update.execute();
+
+    //     } catch (err: any) {
+    //         this.app.log(err.toString());
+    //     }
+    // }
 }

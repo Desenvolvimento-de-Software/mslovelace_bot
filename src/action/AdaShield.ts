@@ -10,13 +10,13 @@
  */
 
 import Action from "./Action";
-import Context from "src/library/telegram/context/Context";
-import Lang from "src/helper/Lang";
-import Shield from "src/model/Shield";
+import Context from "../library/telegram/context/Context";
+import Lang from "../helper/Lang";
+import Shield from "../model/Shield";
 import Check from "../library/combot/resource/Check";
-import RelUsersChats from "src/model/RelUsersChats";
-import UserHelper from "src/helper/User";
-import ChatHelper from "src/helper/Chat";
+import RelUsersChats from "../model/RelUsersChats";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
 
 export default class AdaShield extends Action {
 
