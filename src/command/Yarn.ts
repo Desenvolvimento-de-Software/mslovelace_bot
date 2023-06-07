@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Command from "./Command.js";
-import ChatHelper from "../helper/Chat.js";
-import YarnPackage from "../helper/YarnPackage.js";
-import EditMessageText from "../library/telegram/resource/EditMessageText.js";
-import SendMessage from "../library/telegram/resource/SendMessage.js";
-import Lang from "../helper/Lang.js";
+import App from "../App";
+import Command from "./Command";
+import ChatHelper from "../helper/Chat";
+import YarnPackage from "../helper/YarnPackage";
+import EditMessageText from "../library/telegram/resource/EditMessageText";
+import SendMessage from "../library/telegram/resource/SendMessage";
+import Lang from "../helper/Lang";
 import { exec } from "child_process";
 
 export default class Yarn extends Command {

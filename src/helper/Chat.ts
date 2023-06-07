@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "../model/Chats.js";
-import ChatConfigs from "../model/ChatConfigs.js";
+import Chats from "../model/Chats";
+import ChatConfigs from "../model/ChatConfigs";
 
 export default class ChatHelper {
 
@@ -64,13 +64,13 @@ export default class ChatHelper {
      */
     public static async createChat(chat: Record<string, any>): Promise<any> {
 
-        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
+        const title = chat.getTitle() || chat.getUsername() || (`${chat.getFirstName()} ${chat.getLastName()}`).trim();
         const newChat = new Chats();
         newChat
             .insert()
-            .set("chat_id", chat.id)
+            .set("chat_id", chat.getId())
             .set("title", title)
-            .set("type", chat.type)
+            .set("type", chat.getType())
             .set("joined", 1);
 
         const result = await newChat.execute();
@@ -98,15 +98,14 @@ export default class ChatHelper {
 
         const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
         const currentChat = new Chats();
-
-        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
+        const title = chat.getTitle() || chat.getUsername() || (`${chat.getFirstName()} ${chat.getLastName()}`).trim();
 
         currentChat
             .update()
             .set("title", title)
-            .set("type", chatObject.type)
+            .set("type", chatObject.getType())
             .set("joined", 1)
-            .where("chat_id").equal(chatObject.id);
+            .where("chat_id").equal(chatObject.getId());
 
         try {
             currentChat.execute();

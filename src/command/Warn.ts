@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Command from "./Command.js";
+import App from "../App";
+import Command from "./Command";
 
 export default class Warn extends Command {
 

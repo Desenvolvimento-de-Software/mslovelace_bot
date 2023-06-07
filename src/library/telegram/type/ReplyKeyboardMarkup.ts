@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { KeyboardButton } from "./KeyboardButton.js";
+import { KeyboardButton } from "./KeyboardButton";
 
 export type ReplyKeyboardMarkup = {
     keyboard: Array<KeyboardButton[]>;

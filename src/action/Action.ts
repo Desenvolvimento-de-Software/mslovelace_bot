@@ -11,7 +11,7 @@
 
 import Context from "src/library/telegram/context/Context";
 
-export default class Action {
+export default abstract class Action {
 
     /**
      * Current context.
@@ -22,12 +22,48 @@ export default class Action {
     protected context: Context;
 
     /**
+     * Action execute type [sync|async].
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @var string
+     */
+    private type: string;
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
      * @since 1.0.0
+     *
+     * @param context
+     * @param type
      */
-    public constructor(context: Context) {
+    public constructor(context: Context, type?: string) {
         this.context = context;
+        this.type = type || "sync";
+    }
+
+    /**
+     * Action routines.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     */
+    public async run(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Return the action type.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean}
+     */
+    public isSync(): boolean {
+        return this.type === "sync";
     }
 }

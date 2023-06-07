@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "src/library/telegram/context/Context.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import RelUsersChats from "../model/RelUsersChats.js";
+import Action from "./Action";
+import Context from "src/library/telegram/context/Context";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
+import RelUsersChats from "../model/RelUsersChats";
 
 export default class CheckRestriction extends Action {
 

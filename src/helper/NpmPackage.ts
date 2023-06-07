@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JsPackage from "./JsPackage.js";
-import Lang from "./Lang.js";
+import JsPackage from "./JsPackage";
+import Lang from "./Lang";
 
 export default class NpmPackage extends JsPackage {
 
@@ -23,7 +23,7 @@ export default class NpmPackage extends JsPackage {
      * @param record
      */
     public constructor(record: Record<string, any>) {
-        
+
         super(record);
 
         this.addDescription();

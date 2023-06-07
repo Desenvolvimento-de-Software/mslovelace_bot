@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultController from "../controller/Controller.js";
-import IncomingController from "../controller/Incoming.js";
-import PollingController from "../controller/Polling.js";
+import DefaultController from "../controller/Controller";
+import IncomingController from "../controller/Incoming";
+import PollingController from "../controller/Polling";
 
 export const controllers = [
     DefaultController,

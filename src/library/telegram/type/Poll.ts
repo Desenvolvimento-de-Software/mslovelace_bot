@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { MessageEntity } from "./MessageEntity.js";
-import { PollOption } from "./PollOption.js";
+import { MessageEntity } from "./MessageEntity";
+import { PollOption } from "./PollOption";
 
 export type Poll = {
     id: string;

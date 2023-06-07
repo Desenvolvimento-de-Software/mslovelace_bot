@@ -9,17 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
+import Action from "./Action";
+import Context from "../library/telegram/context/Context";
+import UserHelper from "src/helper/User";
+import ChatHelper from "src/helper/Chat";
+import RelUsersChats from "src/model/RelUsersChats";
 
-export default class saveUserAndChat {
-
-    /**
-     * Bot context.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     */
-    private context: Context;
+export default class saveUserAndChat extends Action {
 
     /**
      * The constructor.
@@ -30,66 +26,106 @@ export default class saveUserAndChat {
      * @param context
      */
     constructor(context: Context) {
-        this.context = context;
+        super(context, "sync");
     }
 
     /**
-     * Saves the user and group.
+     * Run the action.
      *
      * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param payload
+     * @since  2023-06-06
      */
-    // protected async saveUserAndChat(userObject: Record<string, any>, chatObject: Record<string, any>): Promise<any> {
+    public async run(): Promise<void> {
 
-    //     const user = await UserHelper.getUserByTelegramId(userObject.id);
-    //     const userId = user === null ? await UserHelper.createUser(userObject) : user.id;
+        if (!this.context.newChatMember) {
+            return;
+        }
 
-    //     const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
-    //     const chatId = chat === null ? await ChatHelper.createChat(chatObject) : chat.id;
+        const user = await UserHelper.getUserByTelegramId(this.context.newChatMember!.getId());
+        const userId = user === null ? await UserHelper.createUser(this.context.newChatMember) : user.id;
 
-    //     UserHelper.updateUser(userObject);
-    //     ChatHelper.updateChat(chatObject);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat.id;
 
-    //     if (user && chat) {
-    //         this.warnNamechanging(user, userObject, chat);
-    //     }
+        UserHelper.updateUser(this.context.newChatMember);
+        ChatHelper.updateChat(this.context.chat);
 
-    //     if (userId && chatId) {
+        if (!await this.hasRelationship(userId, chatId)) {
+            return await this.saveRelationship(userId, chatId);
+        }
 
-    //         let relUserChat;
+        return await this.updateRelationship(userId, chatId);
+    }
 
-    //         relUserChat = new RelUsersChats();
-    //         relUserChat
-    //             .select()
-    //             .where("user_id").equal(userId)
-    //             .and("chat_id").equal(chatId)
-    //             .offset(0)
-    //             .limit(1);
+    /**
+     * Returns if the user has a relationship with the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @param userId
+     * @param chatId
+     *
+     * @returns {Promise<boolean>}
+     */
+    private async hasRelationship(userId: number, chatId: number): Promise<boolean> {
 
-    //         const row = await relUserChat.execute();
-    //         if (row.length) {
-    //             relUserChat = new RelUsersChats();
-    //             relUserChat
-    //                 .update()
-    //                 .set("joined", 1)
-    //                 .set("checked", 0)
-    //                 .where("user_id").equal(userId)
-    //                 .and("chat_id").equal(chatId);
+        const relUserChat = new RelUsersChats();
+        relUserChat
+            .select()
+            .where("user_id").equal(userId)
+            .and("chat_id").equal(chatId)
+            .offset(0)
+            .limit(1);
 
-    //             relUserChat.execute();
-    //             return;
-    //         }
+        const row = await relUserChat.execute();
+        return !!row.length;
+    }
 
-    //         relUserChat = new RelUsersChats();
-    //         relUserChat
-    //             .insert()
-    //             .set("user_id", userId)
-    //             .set("chat_id", chatId)
-    //             .set("date", Math.floor(Date.now() / 1000));
+    /**
+     * Saves the relationship between the user and the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @param userId
+     * @param chatId
+     *
+     * @returns {Promise<void>}
+     */
+    public async saveRelationship(userId: number, chatId: number): Promise<void> {
 
-    //         relUserChat.execute();
-    //     }
-    // }
+        const relUserChat = new RelUsersChats();
+        relUserChat
+            .insert()
+            .set("user_id", userId)
+            .set("chat_id", chatId)
+            .set("date", Math.floor(Date.now() / 1000));
+
+        return relUserChat.execute();
+    }
+
+    /**
+     * Updates the relationship between the user and the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @param userId
+     * @param chatId
+     *
+     * @returns {Promise<void>}
+     */
+    private async updateRelationship(userId: number, chatId: number): Promise<void> {
+
+        const relUserChat = new RelUsersChats();
+        relUserChat
+            .update()
+            .set("joined", 1)
+            .set("checked", 0)
+            .where("user_id").equal(userId)
+            .and("chat_id").equal(chatId);
+
+        return relUserChat.execute();
+    }
 }

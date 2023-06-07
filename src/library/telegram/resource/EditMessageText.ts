@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class EditMessageText extends TelegramBotApi {
 

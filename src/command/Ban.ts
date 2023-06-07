@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Command from "./Command.js";
-import BanChatMember from "../library/telegram/resource/BanChatMember.js";
+import App from "../App";
+import Command from "./Command";
+import BanChatMember from "../library/telegram/resource/BanChatMember";
 
 export default class Ban extends Command {
 

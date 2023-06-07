@@ -11,7 +11,7 @@
 
 import fs from "fs";
 import express from "express";
-import { controllers } from "./config/controllers.js";
+import { controllers } from "./config/controllers";
 
 export default class App {
 

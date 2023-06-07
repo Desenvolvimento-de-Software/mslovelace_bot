@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import DefaultController from "./Controller.js";
+import App from "../App";
+import DefaultController from "../controller/Controller";
 
 export default class Callback extends DefaultController {
 

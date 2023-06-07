@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ChatAdministratorRights } from "./ChatAdministratorRights.js";
+import { ChatAdministratorRights } from "./ChatAdministratorRights";
 
 export type KeyboardButtonRequestChat = {
     requestId: number;

@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chat from "./Chat.js";
-import Message from "./Message.js";
-import User from "./User.js";
-import { Message as MessageType } from "../type/Message.js";
+import Chat from "./Chat";
+import Message from "./Message";
+import User from "./User";
+import { Message as MessageType } from "../type/Message";
 
 export default class Context {
 

@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JoinInterface from "./interface/Join.js";
-import OrderInterface from "./interface/Order.js";
+import JoinInterface from "./interface/Join";
+import OrderInterface from "./interface/Order";
 
 export default abstract class Builder {
 

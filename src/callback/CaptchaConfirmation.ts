@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../../App.js";
-import Callback from "../Callback.js";
-import RelUsersChats from "../../model/RelUsersChats.js";
-import UserHelper from "../../helper/User.js";
-import ChatHelper from "../../helper/Chat.js";
-import NewChatMember from "../../action/NewChatMember.js";
+import App from "../App";
+import Callback from "./Callback";
+import RelUsersChats from "../model/RelUsersChats";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
+import NewChatMember from "../action/NewChatMember";
 
 export default class CaptchaConfirmation extends Callback {
 

@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import DefaultController from "../controller/Controller.js";
-import SendMessage from "../library/telegram/resource/SendMessage.js";
-import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators.js";
-import Lang from "../helper/Lang.js";
+import App from "../App";
+import DefaultController from "../controller/Controller";
+import SendMessage from "../library/telegram/resource/SendMessage";
+import GetChatAdministrators from "../library/telegram/resource/GetChatAdministrators";
+import Lang from "../helper/Lang";
 
 export default class Command extends DefaultController {
 

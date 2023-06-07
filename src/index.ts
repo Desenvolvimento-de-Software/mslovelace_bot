@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "./App.js";
+import App from "./App";
 
 console.log("    _       _         _                   _");
 console.log("   / \\   __| | __ _  | |    _____   _____| | __ _  ___ ___");

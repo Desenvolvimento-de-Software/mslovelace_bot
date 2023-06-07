@@ -9,11 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Action from "./Action.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
-import SendMessage from "../library/telegram/resource/SendMessage.js";
+import Action from "./Action";
+import Context from "../library/telegram/context/Context";
+import ChatHelper from "../helper/Chat";
+import Lang from "../helper/Lang";
 
 export default class Ping extends Action {
 
@@ -25,8 +24,8 @@ export default class Ping extends Action {
      *
      * @param app
      */
-    public constructor(app: App) {
-        super(app);
+    public constructor(context: Context) {
+        super(context);
     }
 
     /**
@@ -34,55 +33,43 @@ export default class Ping extends Action {
      *
      * @author Marcos Leandro
      * @since  2022-09-20
-     *
-     * @param payload
      */
-    public async run(payload: Record<string, any>): Promise<void> {
+    public async run(): Promise<void> {
 
-        if (typeof payload.message.text === "undefined" || !payload.message.text.length) {
+        if (!this.context.message.getText().length) {
             return;
         }
 
-        if (!await this.isAdmin(payload)) {
-            return;
-        }
-
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         if (!chat) {
             return;
         }
 
+        if (!this.hasMention()) {
+            return;
+        }
+
         Lang.set(chat.language || "us");
+        this.context.message.reply(Lang.get("pongMessage"));
+    }
 
-        const text = payload.message.text;
-        if (text.indexOf(process.env.TELEGRAM_USERNAME) === -1) {
-            return;
+    /**
+     * Returns whether the message has a mention to the bot or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns
+     */
+    private hasMention(): boolean {
+
+        const mentionUsernames = [];
+        const mentions = this.context.message.getMentions();
+
+        for (const mention of mentions) {
+            mentionUsernames.push(mention.getUsername());
         }
 
-        const entities = payload.message.entities;
-        if (!Array.isArray(entities)) {
-            return;
-        }
-
-        let hasMention = false;
-        for (let entity of entities) {
-
-            let start = entity.offset || 0;
-            let end = start + (entity.length || 0);
-            if (entity.type === "mention" && text.substring(start, end) === process.env.TELEGRAM_USERNAME) {
-                hasMention = true;
-                break;
-            }
-        }
-
-        if (hasMention) {
-            const sendMessage = new SendMessage();
-            sendMessage
-                .setChatId(payload.message.chat.id)
-                .setReplyToMessageId(payload.message.message_id)
-                .setText(Lang.get("pongMessage"))
-                .setParseMode("HTML")
-                .post();
-        }
+        return mentionUsernames.includes(process.env.TELEGRAM_USERNAME);
     }
 }

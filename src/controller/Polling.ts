@@ -9,11 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Controller from "./Controller.js";
-import Context from "@library/telegram/context/Context.js";
-import GetUpdates from "src/library/telegram/resource/GetUpdates.js";
-import { resources } from "src/config/resources.js";
+import App from "../App";
+import Controller from "./Controller";
+import GetUpdates from "src/library/telegram/resource/GetUpdates";
 
 export default class Polling extends Controller {
 
@@ -89,23 +87,5 @@ export default class Polling extends Controller {
         }
 
         return offset;
-    }
-
-    /**
-     * Handles the incoming message.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param {Record<string, any>} payload
-     */
-    public async handle(payload: Record<string, any>): Promise<void> {
-
-        const context = new Context(payload);
-        for (const resource of resources) {
-            new resource(context);
-        }
-
-        return;
     }
 }

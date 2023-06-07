@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Lang from "./Lang.js";
+import Lang from "./Lang";
 
 export default class JsPackage {
 
@@ -31,10 +31,10 @@ export default class JsPackage {
 
     /**
      * The constructor.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
-     * 
+     *
      * @param  record
      */
     public constructor(record: Record<string, any>) {

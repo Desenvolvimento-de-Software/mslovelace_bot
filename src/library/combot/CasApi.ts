@@ -10,7 +10,7 @@
  */
 
 import fetch from "node-fetch";
-import {RequestType} from "./type/RequestType.js";
+import {RequestType} from "./type/RequestType";
 
 export default class CasApi {
 

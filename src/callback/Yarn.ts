@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import AnswerCallbackQuery from "../../library/telegram/resource/AnswerCallbackQuery.js";
-import App from "../../App.js";
-import Callback from "../Callback.js";
-import YarnCommand from "../../command/Yarn.js";
+import AnswerCallbackQuery from "../library/telegram/resource/AnswerCallbackQuery";
+import App from "../App";
+import Callback from "./Callback";
+import YarnCommand from "../command/Yarn";
 
 export default class Yarn extends Callback {
 

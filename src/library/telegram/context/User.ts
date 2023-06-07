@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import BanChatMember from "../resource/BanChatMember.js";
-import UnbanChatMember from "../resource/UnbanChatMember.js";
-import { Chat as ChatType } from "../type/Chat.js";
-import { User as UserType } from "../type/User.js";
+import BanChatMember from "../resource/BanChatMember";
+import UnbanChatMember from "../resource/UnbanChatMember";
+import { Chat as ChatType } from "../type/Chat";
+import { User as UserType } from "../type/User";
 
 
 export default class User {
@@ -95,6 +95,90 @@ export default class User {
     }
 
     /**
+     * Returns the user language code.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {string|undefined}
+     */
+    public getLanguageCode(): string|undefined {
+        return this.user.languageCode || undefined;
+    }
+
+    /**
+     * Returns whether the user is a bot or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean}
+     */
+    public getIsBot(): boolean {
+        return this.user.isBot;
+    }
+
+    /**
+     * Returns whether the user is premium or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean|undefined}
+     */
+    public getIsPremium(): boolean|undefined {
+        return this.user.isPremium || undefined;
+    }
+
+    /**
+     * Returns whether the user is added to attachment menu or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean|undefined}
+     */
+    public getAddedToAttachmentMenu(): boolean|undefined {
+        return this.user.addedToAttachmentMenu || undefined;
+    }
+
+    /**
+     * Returns whether the user can join groups or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean|undefined}
+     */
+    public getCanJoinGroups(): boolean|undefined {
+        return this.user.canJoinGroups || undefined;
+    }
+
+    /**
+     * Returns whether the user can read all group messages or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean|undefined}
+     */
+    public getCanReadAllGroupMessages(): boolean|undefined {
+        return this.user.canReadAllGroupMessages || undefined;
+    }
+
+    /**
+     * Returns whether the user supports inline queries or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @returns {boolean|undefined}
+     */
+    public getSupportsInlineQueries(): boolean|undefined {
+        return this.user.supportsInlineQueries || undefined;
+    }
+
+    /**
      * Bans the user.
      *
      * @author Marcos Leandro
@@ -113,7 +197,7 @@ export default class User {
             ban.setUntilDate(untilDate);
         }
 
-        return ban.post();
+        return ban.post().then((response) => response.json());
     }
 
     /**
@@ -135,7 +219,7 @@ export default class User {
             unban.setOnlyIfBanned(false);
         }
 
-        return unban.post();
+        return unban.post().then((response) => response.json());
     }
 
     /**

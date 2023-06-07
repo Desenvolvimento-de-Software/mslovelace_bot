@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Chat } from "./Chat.js";
-import { ChatInviteLink } from "./ChatInviteLink.js";
-import { ChatMember } from "./ChatMember.js";
-import { User } from "./User.js";
+import { Chat } from "./Chat";
+import { ChatInviteLink } from "./ChatInviteLink";
+import { ChatMember } from "./ChatMember";
+import { User } from "./User";
 
 export type ChatMemberUpdated = {
     chat: Chat;

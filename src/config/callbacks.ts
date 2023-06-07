@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { WebAppInfo } from "./WebAppInfo";
+import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation";
+import YarnCallback from "../callback/Yarn";
 
-export type MenuButtonWebApp = {
-    type: string;
-    text: string;
-    webApp: WebAppInfo;
-};
+export const callbacks = [
+    CaptchaConfirmationCallback,
+    YarnCallback
+];

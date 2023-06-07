@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Command from "./Command.js";
-import SendMessage from "../library/telegram/resource/SendMessage.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import App from "../App";
+import Command from "./Command";
+import SendMessage from "../library/telegram/resource/SendMessage";
+import ChatHelper from "../helper/Chat";
+import Lang from "../helper/Lang";
 
 export default class Unban extends Command {
 
