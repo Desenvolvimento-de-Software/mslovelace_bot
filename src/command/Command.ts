@@ -35,6 +35,16 @@ export default abstract class Command {
     private commands: string[] = [];
 
     /**
+     * Params list.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @var {string[]}
+     */
+    private params: string[] = [];
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
@@ -69,6 +79,18 @@ export default abstract class Command {
     }
 
     /**
+     * Defines the params list.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @param params
+     */
+    public setParams(params: string[]): void {
+        this.params = params;
+    }
+
+    /**
      * Returns whether the command is valid.
      *
      * @author Marcos Leandro
@@ -87,5 +109,19 @@ export default abstract class Command {
         }
 
         return currentCommand;
+    }
+
+    /**
+     * Returns whether the param is registered or not.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @param param
+     *
+     * @returns {Boolean}
+     */
+    public isRegisteredParam(param: string): boolean {
+        return this.params.includes(param);
     }
 }

@@ -10,6 +10,10 @@
  */
 
 import Command from "./Command";
+import Chats from "../model/Chats";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
+import Lang from "../helper/Lang";
 import Context from "../library/telegram/context/Context";
 import CommandContext from "../library/telegram/context/Command";
 
@@ -26,6 +30,7 @@ export default class AdaShield extends Command {
     public constructor(context: Context) {
         super(context);
         this.setCommands(["adashield", `adashield${process.env.TELEGRAM_USERNAME}`]);
+        this.setParams(["index", "on", "off"]);
     }
 
     /**
@@ -35,110 +40,89 @@ export default class AdaShield extends Command {
      * @since  2022-09-12
      */
     public async execute(command: CommandContext): Promise<void> {
-        console.log(command);
+
+        if (!UserHelper.isAdmin(this.context)) {
+            return;
+        }
+
+        const params = command.getParams();
+
+        let action = "index";
+        if (params && params.length && this.hasOwnProperty(params[0])) {
+            action = this.isRegisteredParam(params[0]) ? params[0] : "index";
+        }
+
+        this.context.message.delete();
+
+        await this[action as keyof typeof this]();
         return Promise.resolve();
     }
 
-    // /**
-    //  * Shows the AdaShield status.
-    //  *
-    //  * @author Marcos Leandro
-    //  * @since  2022-09-12
-    //  *
-    //  * @param payload Telegram API payload.
-    //  */
-    // public async index(payload: Record<string, any>): Promise<void> {
+    /**
+     * Shows the AdaShield status.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-12
+     *
+     * @param payload Telegram API payload.
+     */
+    public async index(): Promise<void> {
 
-    //     const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-    //     if (!chat || !chat.id) {
-    //         return;
-    //     }
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-    //     Lang.set(chat.language || "us");
-    //     const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
-    //     const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
+        Lang.set(chat.language || "us");
+        const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
+        const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
-    //     const sendMessage = new SendMessage();
-    //     sendMessage
-    //         .setChatId(chat.chat_id)
-    //         .setText(adaShieldMessage)
-    //         .setParseMode("HTML")
-    //         .post();
-    // }
+        this.context.chat.sendMessage(adaShieldMessage);
+    }
 
-    // /**
-    //  * Enables the AdaShield.
-    //  *
-    //  * @author Marcos Leandro
-    //  * @since  2022-09-12
-    //  *
-    //  * @param payload
-    //  */
-    // public async on(payload: Record<string, any>): Promise<void> {
+    /**
+     * Activates the AdaShield.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     */
+    private async on(): Promise<void> {
+        await this.change(1);
+        this.index();
+    }
 
-    //     if (!this.isAdmin(payload)) {
-    //         return;
-    //     }
+    /**
+     * Deactivates the AdaShield.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     */
+    private async off(): Promise<void> {
+        await this.change(0);
+        this.index();
+    }
 
-    //     try {
+    /**
+     * Changes the AdaShield status.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @param {Number} status New AdaShield status.
+     */
+    public async change(status: number) {
 
-    //         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-    //         await this.change(chat, 1);
-    //         this.index(payload);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-    //     } catch (err: any) {
-    //         this.app.log(err.toString());
-    //     }
-    // }
+        const update = new Chats();
+        update
+            .update()
+            .set("adashield", status)
+            .where("id").equal(chat.id);
 
-    // /**
-    //  * Enables the AdaShield.
-    //  *
-    //  * @author Marcos Leandro
-    //  * @since  2022-09-12
-    //  *
-    //  * @param payload
-    //  */
-    // public async off(payload: Record<string, any>): Promise<void> {
-
-    //     if (!this.isAdmin(payload)) {
-    //         return;
-    //     }
-
-    //     try {
-
-    //         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-    //         await this.change(chat, 0);
-    //         this.index(payload);
-
-    //     } catch (err: any) {
-    //         this.app.log(err.toString());
-    //     }
-    // }
-
-    // /**
-    //  * Changes the AdaShield status.
-    //  *
-    //  * @author Marcos Leandro
-    //  * @since  2022-09-12
-    //  *
-    //  * @param chat Chat object.
-    //  * @param status New AdaShield status.
-    //  */
-    // public async change(chat: Record<string, any>, status: number) {
-
-    //     try {
-
-    //         const update = new Chats();
-    //         update
-    //             .update()
-    //             .set("adashield", status)
-    //             .where("id").equal(chat.id);
-
-    //         await update.execute();
-
-    //     } catch (err: any) {
-    //         this.app.log(err.toString());
-    //     }
-    // }
+        await update.execute();
+    }
 }
