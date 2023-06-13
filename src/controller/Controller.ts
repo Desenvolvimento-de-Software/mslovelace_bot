@@ -21,11 +21,6 @@ import { commands } from "../config/commands";
 import { callbacks } from "../config/callbacks";
 import Log from "../helper/Log";
 
-export default interface Controller {
-    executeSyncAction(action: Action): void;
-    executeAsyncAction(action: Action): void;
-}
-
 export default class Controller {
 
     /**
