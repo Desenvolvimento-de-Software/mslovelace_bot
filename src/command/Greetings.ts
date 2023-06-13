@@ -1,159 +1,205 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import ChatHelper from "../helper/Chat";
-// import Chats from "../model/Chats";
-// import ChatMessages from "../model/ChatMessages";
-// import SendMessage from "../library/telegram/resource/SendMessage";
-// import Lang from "../helper/Lang";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import CommandContext from "../library/telegram/context/Command";
+import ChatHelper from "../helper/Chat";
+import ChatConfigs from "../model/ChatConfigs";
+import ChatMessages from "../model/ChatMessages";
+import Lang from "../helper/Lang";
 
-// export default class GreetingsCommand extends Command {
+export default class GreetingsCommand extends Command {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
+    /**
+     * Command context.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     */
+    private command?: CommandContext;
 
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public async index(payload: Record<string, any>): Promise<void> {
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["greetings", "greeting"]);
+        this.setParams(["on", "off", "set"]);
+    }
 
-//         if (!await this.isAdmin(payload)) {
-//             return;
-//         }
+    /**
+     * Runs the command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param {CommandContext} command
+     */
+    public async run(command: CommandContext): Promise<void> {
 
-//         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-//         if (!chat || !chat.id) {
-//             return;
-//         }
+        if (!await this.context.user.isAdmin()) {
+            return;
+        }
 
-//         Lang.set(chat.language);
+        this.context.message.delete();
+        this.command = command;
+        const params = command.getParams();
 
-//         const chatMessages = new ChatMessages();
-//         chatMessages
-//             .select()
-//             .where("chat_id").equal(chat.id);
+        let action = "index";
+        if (params && params.length) {
+            action = this.isRegisteredParam(params[0]) ? params[0] : "index";
+        }
 
-//         const result = await chatMessages.execute();
-//         const sendMessage = new SendMessage();
-//         sendMessage.setChatId(chat.chat_id).setParseMode("HTML");
+        const method = action as keyof typeof GreetingsCommand.prototype;
+        await this[method](true as never);
+    }
 
-//         if (!result.length) {
+    /**
+     * Command main route.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    private async index(): Promise<void> {
 
-//             sendMessage
-//                 .setText(Lang.get("emptyGreetingsMessage"))
-//                 .post();
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//             return;
-//         }
+        Lang.set(chat.language || "us");
 
-//         let greetingsDemo = Lang.get("greetingsMessageDemo");
-//         greetingsDemo = greetingsDemo.replace("{greetings}", result[0].greetings);
-//         greetingsDemo = greetingsDemo.replace("{userid}", payload.message.from.id);
-//         greetingsDemo = greetingsDemo.replace(
-//             "{username}",
-//             payload.message.from.first_name || payload.message.from.username
-//         );
+        const chatMessages = new ChatMessages();
+        chatMessages
+            .select()
+            .where("chat_id").equal(chat.id);
 
-//         sendMessage
-//             .setText(greetingsDemo)
-//             .post();
-//     }
+        const result = await chatMessages.execute();
 
-//     /**
-//      * Activates the greetings message.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      */
-//     public async on(payload: Record<string, any>): Promise<void> {
+        if (!result.length) {
+            this.context.chat.sendMessage(Lang.get("greetingsMessageNotSet"), { parseMode: "HTML" });
+            return;
+        }
 
-//         if (!await this.isAdmin(payload)) {
-//             return;
-//         }
+        let greetingsDemo = Lang.get("greetingsMessageDemo");
+        greetingsDemo = greetingsDemo.replace("{greetings}", result[0].greetings);
+        greetingsDemo = greetingsDemo.replace("{userid}", this.context.user.getId());
+        greetingsDemo = greetingsDemo.replace(
+            "{username}",
+            this.context.user.getFirstName() || this.context.user.getUsername()
+        );
 
-//         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-//         if (!chat || !chat.id) {
-//             return;
-//         }
+        this.context.chat.sendMessage(greetingsDemo, { parseMode: "HTML" });
+    }
 
-//         Lang.set(chat.language);
+    /**
+     * Activates the greetings message.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    private async on(): Promise<void> {
 
-//         const update = new Chats();
-//         update
-//             .update()
-//             .set("greetings", true)
-//             .where("id").equal(chat.id);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//         const result = await update.execute();
-//         if (result.affectedRows > 0) {
+        Lang.set(chat.language);
+        const result = await this.updateGreetingsStatus(chat.id, 1);
 
-//             const sendMessage = new SendMessage();
-//             sendMessage
-//                 .setChatId(payload.message.chat.id)
-//                 .setText(Lang.get("commandGreetingsActivated"));
+        if (result.affectedRows > 0) {
+            this.context.chat.sendMessage(Lang.get("commandGreetingsActivated"));
+        }
+    }
 
-//             sendMessage.post();
-//         }
-//     }
+    /**
+     * Deactivates the greetings message.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    private async off(): Promise<void> {
 
-//     /**
-//      * Deactivates the greetings message.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      */
-//     public async off(payload: Record<string, any>): Promise<void> {
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//         if (!await this.isAdmin(payload)) {
-//             return;
-//         }
+        Lang.set(chat.language);
+        const result = await this.updateGreetingsStatus(chat.id, 0);
 
-//         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-//         if (!chat || !chat.id) {
-//             return;
-//         }
+        if (result.affectedRows > 0) {
+            this.context.chat.sendMessage(Lang.get("commandGreetingsDeactivated"));
+        }
+    }
 
-//         Lang.set(chat.language);
+    /**
+     * Sets the greetings message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     */
+    private async set(): Promise<void> {
 
-//         const update = new Chats();
-//         update
-//             .update()
-//             .set("greetings", false)
-//             .where("id").equal(chat.id);
+        if (!this.command) {
+            return;
+        }
 
-//         const result = await update.execute();
-//         if (result.affectedRows > 0) {
+        const params = this.command.getParams();
+        if (!params || !params.length) {
+            return;
+        }
 
-//             const sendMessage = new SendMessage();
-//             sendMessage
-//                 .setChatId(payload.message.chat.id)
-//                 .setText(Lang.get("commandGreetingsDeactivated"));
+        params.shift();
 
-//             sendMessage.post();
-//         }
-//     }
-// }
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        const chatMessage = new ChatMessages();
+        chatMessage
+            .update()
+            .set("greetings", params.join(" "))
+            .where("chat_id").equal(chat.id);
+
+        const result = await chatMessage.execute();
+
+        if (result.affectedRows > 0) {
+            this.index();
+        }
+    }
+
+    /**
+     * Updates the greetings status.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param {number} chatId
+     * @param {number} status
+     */
+    private async updateGreetingsStatus(chatId: number, status: number): Promise<any> {
+
+        const update = new ChatConfigs();
+        update
+            .update()
+            .set("greetings", status)
+            .where("chat_id").equal(chatId);
+
+        return update.execute();
+    }
+}
