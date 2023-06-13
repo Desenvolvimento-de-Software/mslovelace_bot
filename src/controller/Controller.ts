@@ -13,10 +13,12 @@ import express from "express";
 import App from "../App";
 import Action from "../action/Action";
 import Command from "../command/Command";
+import Callback from "../callback/Callback";
 import Context from "../library/telegram/context/Context";
 import TelegramBotApi from "../library/telegram/TelegramBotApi";
 import { actions } from "../config/actions";
 import { commands } from "../config/commands";
+import { callbacks } from "../config/callbacks";
 
 export default interface Controller {
     executeSyncAction(action: Action): void;
@@ -88,7 +90,7 @@ export default class Controller {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @returns {express.Router}
+     * @return {express.Router}
      */
     public getRoutes(): express.Router {
         return this.router;
@@ -116,6 +118,7 @@ export default class Controller {
         const context = new Context(payload);
         this.handleActions(context);
         this.handleCommands(context);
+        this.handleCallbacks(context);
     }
 
     /**
@@ -144,7 +147,22 @@ export default class Controller {
     private async handleCommands(context: Context): Promise<void> {
         for (const commandName of commands) {
             const command = new commandName(context);
-            await this.executeCommand(command);
+            this.executeCommand(command);
+        }
+    }
+
+    /**
+     * Handles the callbacks.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @param context
+     */
+    private async handleCallbacks(context: Context): Promise<void> {
+        for (const callbackName of callbacks) {
+            const callback = new callbackName(context);
+            this.executeCallback(callback);
         }
     }
 
@@ -156,7 +174,7 @@ export default class Controller {
      *
      * @param action
      *
-     * @returns {Promise<void>}
+     * @return {Promise<void>}
      */
     private async executeAction(action: Action): Promise<void> {
 
@@ -174,13 +192,25 @@ export default class Controller {
      * @since  2023-06-07
      *
      * @param command
-     *
-     * @returns {Promise<void>}
      */
-    private async executeCommand(command: Command): Promise<void> {
+    private executeCommand(command: Command): void {
         const commandContext = command.isCalled();
         if (commandContext) {
-            return await command.run(commandContext);
+            command.run(commandContext);
+        }
+    }
+
+    /**
+     * Executes the callback.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @param callback
+     */
+    private executeCallback(callback: Callback): void {
+        if (callback.isCalled()) {
+            callback.run();
         }
     }
 }

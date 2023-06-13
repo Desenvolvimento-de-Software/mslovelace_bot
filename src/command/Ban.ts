@@ -43,7 +43,7 @@ export default class Ban extends Command {
      */
     public async run(command: CommandContext): Promise<void> {
 
-        if (!await UserHelper.isAdmin(this.context)) {
+        if (!await this.context.user.isAdmin()) {
             return;
         }
 

@@ -12,7 +12,6 @@
 import Command from "./Command";
 import Context from "../library/telegram/context/Context";
 import ChatHelper from "../helper/Chat";
-import UserHelper from "../helper/User";
 import Lang from "../helper/Lang";
 
 export default class Ask extends Command {
@@ -40,7 +39,7 @@ export default class Ask extends Command {
      */
     public async run(): Promise<void> {
 
-        if (!await UserHelper.isAdmin(this.context)) {
+        if (!await this.context.user.isAdmin()) {
             return;
         }
 

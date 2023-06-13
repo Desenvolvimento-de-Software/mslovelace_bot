@@ -10,9 +10,11 @@
  */
 
 import DeleteMessage from "../resource/DeleteMessage";
+import EditMessageText from "../resource/EditMessageText";
 import SendMessage from "../resource/SendMessage";
 import Command from "./Command";
 import User from "./User";
+import Chat from "./Chat";
 import { Message as MessageType } from "../type/Message";
 import { User as UserType } from "../type/User";
 import { Options as OptionsType } from "../../../type/Options";
@@ -102,20 +104,48 @@ export default class Message {
      *
      * @return {Promise<Message>}
      */
-    public async reply(content: string, parseMode?: string): Promise<any> {
-
-        if (!parseMode) {
-            parseMode = "HTML";
-        }
+    public async reply(content: string, options?: Record<string, any>): Promise<any> {
 
         const sendMessage = new SendMessage();
         sendMessage
             .setReplyToMessageId(this.context.messageId)
             .setChatId(this.context.chat.id)
-            .setText(content)
-            .setParseMode(parseMode);
+            .setText(content);
+
+        if (options) {
+            sendMessage.setOptions(options);
+        }
 
         return sendMessage
+            .post()
+            .then((response) => response.json())
+            .then((json) => new Message(json.result));
+    }
+
+    /**
+     * Edit the message.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param  {string} content
+     * @param  {Record<string, any>} options
+     *
+     * @return {Promise<Message>}
+     */
+    public async edit(content: string, options?: Record<string, any>): Promise<any> {
+
+        const editMessage = new EditMessageText();
+        editMessage
+            .setChatId(this.context.chat.id)
+            .setMessageId(this.context.messageId)
+            .setText(content);
+
+        if (options) {
+            editMessage.setOptions(options);
+        }
+
+        return editMessage
             .post()
             .then((response) => response.json())
             .then((json) => new Message(json.result));
@@ -136,6 +166,18 @@ export default class Message {
             .setChatId(this.context.chat.id);
 
         return deleteMessage.post().then((response) => response.json());
+    }
+
+    /**
+     * Parses the message ID.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @return {number}
+     */
+    public getId(): number {
+        return this.context.messageId;
     }
 
     /**
@@ -242,7 +284,7 @@ export default class Message {
      * @returns {User}
      */
     private parseSender(): User {
-        return new User(this.context.from!, this.context.chat);
+        return new User(this.context.from!, new Chat(this.context));
     }
 
     /**
@@ -339,7 +381,7 @@ export default class Message {
         };
 
         this.mentions!.push(
-            new User(mention, this.context.chat)
+            new User(mention, new Chat(this.context))
         );
     }
 

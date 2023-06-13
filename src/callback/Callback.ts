@@ -18,8 +18,20 @@ export default abstract class Callback {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
+     *
+     * @var {Context}
      */
     protected context: Context;
+
+    /**
+     * Registered callbacks.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @var {string[]}
+     */
+    private callbacks: string[] = [];
 
     /**
      * The constructor.
@@ -32,5 +44,44 @@ export default abstract class Callback {
      */
     public constructor(context: Context) {
         this.context = context;
+    }
+
+    /**
+     * Action routines.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     */
+    public async run(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Returns whether the command is valid.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @return {boolean}
+     */
+    public isCalled(): boolean {
+
+        if (!this.context.callbackQuery?.callbackData || !this.context.callbackQuery?.callbackData.callback) {
+            return false;
+        }
+
+        return this.callbacks.includes(this.context.callbackQuery?.callbackData.callback);
+    }
+
+    /**
+     * Registers the callbacks.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param callbacks
+     */
+    protected setCallbacks(callbacks: string[]): void {
+        this.callbacks = callbacks;
     }
 }

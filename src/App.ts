@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import fs from "fs";
 import express from "express";
 import { controllers } from "./config/controllers";
 
@@ -61,30 +60,6 @@ export default class App {
         this.expressApp.listen(this.port, () => {
             console.log(`Listening on port ${this.port}`);
         });
-    }
-
-    /**
-     * Saves an entry to the log.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     *
-     * @param content
-     */
-    public log(content: string): void {
-
-        const date = new Date();
-
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const day = (date.getDate()).toString().padStart(2, "0");
-
-        const hours = (date.getHours()).toString().padStart(2, "0");
-        const minutes = (date.getMinutes()).toString().padStart(2, "0");
-        const seconds = (date.getSeconds()).toString().padStart(2, "0");
-
-        const filename = `${year}-${month}-${day}.log`;
-        fs.appendFileSync(`./log/${filename}`, `${hours}:${minutes}:${seconds} :: ${content}\n`);
     }
 
     /**

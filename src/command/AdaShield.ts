@@ -41,7 +41,7 @@ export default class AdaShield extends Command {
      */
     public async run(command: CommandContext): Promise<void> {
 
-        if (!UserHelper.isAdmin(this.context)) {
+        if (!await this.context.user.isAdmin()) {
             return;
         }
 
@@ -54,7 +54,8 @@ export default class AdaShield extends Command {
 
         this.context.message.delete();
 
-        await this[action as keyof typeof this]();
+        const method = action as keyof typeof AdaShield.prototype;
+        await this[method](true as never);
         return Promise.resolve();
     }
 

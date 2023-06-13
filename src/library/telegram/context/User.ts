@@ -12,10 +12,9 @@
 import BanChatMember from "../resource/BanChatMember";
 import UnbanChatMember from "../resource/UnbanChatMember";
 import RestrictChatMember from "../resource/RestrictChatMember";
-import { Chat as ChatType } from "../type/Chat";
-import { ChatPermissions } from "../type/ChatPermissions";
+import Chat from "./Chat";
 import { User as UserType } from "../type/User";
-
+import { ChatPermissions } from "../type/ChatPermissions";
 
 export default class User {
 
@@ -33,7 +32,7 @@ export default class User {
      * @author Marcos Leandro
      * @since  2023-06-05
      */
-    private chat: ChatType;
+    private chat: Chat;
 
     /**
      * The constructor.
@@ -43,7 +42,7 @@ export default class User {
      *
      * @param context
      */
-    public constructor(user: UserType, chat: ChatType) {
+    public constructor(user: UserType, chat: Chat) {
         this.user = user;
         this.chat = chat;
     }
@@ -181,6 +180,26 @@ export default class User {
     }
 
     /**
+     * Returns if the user is an admin.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     *
+     * @param context
+     *
+     * @returns
+     */
+    public async isAdmin(): Promise<boolean> {
+
+        if (this.chat.getType() === "private") {
+            return true;
+        }
+
+        const admins = await this.chat.getChatAdministrators();
+        return admins.includes(this.user.id);
+    }
+
+    /**
      * Bans the user.
      *
      * @author Marcos Leandro
@@ -192,8 +211,8 @@ export default class User {
 
         const ban = new BanChatMember();
         ban
-            .setUserId(this.user.id)
-            .setChatId(this.chat.id);
+            .setUserId(this.getId())
+            .setChatId(this.chat.getId());
 
         if (untilDate) {
             ban.setUntilDate(untilDate);
@@ -214,8 +233,8 @@ export default class User {
 
         const unban = new UnbanChatMember();
         unban
-            .setUserId(this.user.id)
-            .setChatId(this.chat.id);
+            .setUserId(this.getId())
+            .setChatId(this.chat.getId());
 
         if (onlyIfBanned) {
             unban.setOnlyIfBanned(false);
@@ -246,12 +265,13 @@ export default class User {
 
         const restrictChatMember = new RestrictChatMember();
         restrictChatMember
-            .setUserId(this.user.id)
-            .setChatId(this.chat.id)
+            .setUserId(this.getId())
+            .setChatId(this.chat.getId())
             .setChatPermissions(permissions);
 
         if (untilDate) {
-            restrictChatMember.setUntilDate(untilDate);
+            const now = Math.ceil(Date.now() / 1000);
+            restrictChatMember.setUntilDate(now + untilDate);
         }
 
         return restrictChatMember

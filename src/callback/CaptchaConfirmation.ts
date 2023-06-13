@@ -1,82 +1,120 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import Callback from "./Callback";
-// import Context from "../library/telegram/context/Context";
-// import RelUsersChats from "../model/RelUsersChats";
-// import UserHelper from "../helper/User";
-// import ChatHelper from "../helper/Chat";
-// import NewChatMember from "../action/NewChatMember";
+import Callback from "./Callback";
+import Context from "../library/telegram/context/Context";
+import UserHelper from "../helper/User";
+import ChatHelper from "../helper/Chat";
+import RelUsersChats from "../model/RelUsersChats";
+import { ChatPermissions } from "src/library/telegram/type/ChatPermissions";
 
-// export default class CaptchaConfirmation extends Callback {
+export default class CaptchaConfirmation extends Callback {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//      public constructor(context: Context) {
-//         super(context);
-//     }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+     public constructor(context: Context) {
+        super(context);
+        this.setCallbacks(["captchaconfirmation"]);
+    }
 
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      * @param data
-//      */
-//     public async run(): Promise<void> {
+    /**
+     * Command main route.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     *
+     * @param payload
+     * @param data
+     */
+    public async run(): Promise<void> {
 
+        if (this.context.callbackQuery?.callbackData.data.userId !== this.context.user.getId()) {
+            return;
+        }
 
-//         if (payload.callback_query.from.id !== data.userId) {
-//             return;
-//         }
+        const user = await UserHelper.getUserByTelegramId(
+            this.context.user.getId()
+        );
 
-//         const user = await UserHelper.getUserByTelegramId(
-//             payload.callback_query.from.id
-//         );
+        const chat = await ChatHelper.getChatByTelegramId(
+            this.context.chat.getId()
+        );
 
-//         const chat = await ChatHelper.getChatByTelegramId(
-//             payload.callback_query.message.chat.id
-//         );
+        if (!user || !chat) {
+            return;
+        }
 
-//         if (!user || !chat) {
-//             return;
-//         }
+        const relUsersChats = new RelUsersChats();
+        relUsersChats
+            .update()
+            .set("checked", 1)
+            .where("user_id").equal(user.id)
+            .and("chat_id").equal(chat.id);
 
-//         const relUsersChats = new RelUsersChats();
-//         relUsersChats
-//             .update()
-//             .set("checked", 1)
-//             .where("user_id").equal(user.id)
-//             .and("chat_id").equal(chat.id);
+        relUsersChats.execute();
+        this.context.message.delete();
 
-//         try {
+        const permissions: ChatPermissions = {
+            canSendMessages: true,
+            canSendAudios: true,
+            canSendDocuments: true,
+            canSendPhotos: true,
+            canSendVideos: true,
+            canSendVideoNotes: false,
+            canSendVoiceNotes: false,
+            canSendPolls: false,
+            canSendOtherMessages: true,
+            canAddWebPagePreviews: true,
+            canChangeInfo: false,
+            canInviteUsers: true,
+            canPinMessages: false,
+            canManageTopics: false
+        };
 
-//             relUsersChats.execute();
-//             this.deleteMessage(payload.callback_query.message.message_id, chat.chat_id);
+        await this.context.user.setPermissions(permissions);
 
-//             const newChatMember = new NewChatMember(this.app);
-//             await newChatMember.allowUser(user, chat);
+        if (chat.restrict_new_users) {
+            this.restrictUser();
+        }
+    }
 
-//             if (chat.restrict_new_users) {
-//                 newChatMember.restrictUser(user, chat);
-//             }
+    /**
+     * Restricts the user, if applicable.
+     *
+     * @author Marcos Leandro
+     * @since 2023-06-13
+     */
+    private async restrictUser(): Promise<void> {
 
-//         } catch (err: any) {
-//             this.app.log(err.toString());
-//         }
-//     }
-// }
+        const permissions: ChatPermissions = {
+            canSendMessages: true,
+            canSendAudios: false,
+            canSendDocuments: false,
+            canSendPhotos: false,
+            canSendVideos: false,
+            canSendVideoNotes: false,
+            canSendVoiceNotes: false,
+            canSendPolls: false,
+            canSendOtherMessages: false,
+            canAddWebPagePreviews: false,
+            canChangeInfo: false,
+            canInviteUsers: false,
+            canPinMessages: false,
+            canManageTopics: false
+        };
+
+        await this.context.user.setPermissions(permissions, 60 * 60 * 24);
+    }
+}

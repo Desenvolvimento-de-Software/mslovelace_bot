@@ -150,4 +150,23 @@ export default class EditMessageText extends TelegramBotApi {
         this.payload.reply_markup = replyMarkup;
         return this;
     }
+
+    /**
+     * Sets the message options.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @param options
+     *
+     * @returns {EditMessageText}
+     */
+    public setOptions(options: Record<string, any>): EditMessageText {
+
+        for (const key in options) {
+            this.payload[key] = options[key];
+        }
+
+        return this;
+    }
 }

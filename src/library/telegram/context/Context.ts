@@ -12,6 +12,7 @@
 import Chat from "./Chat";
 import Message from "./Message";
 import User from "./User";
+import CallbackQuery from "./CallbackQuery";
 import { Message as MessageType } from "../type/Message";
 
 export default class Context {
@@ -21,7 +22,7 @@ export default class Context {
     public user: User;
     public newChatMember?: User;
     public leftChatMember?: User;
-    public data?: Record<string, any>;
+    public callbackQuery?: CallbackQuery
     private type: string;
     private payload: Record<string, any>;
 
@@ -38,6 +39,10 @@ export default class Context {
         this.payload = this.snakeToCamelCase(payload);
         this.type = this.parseType();
 
+        if (this.type === "callbackQuery") {
+            this.callbackQuery = new CallbackQuery(this.payload);
+        }
+
         const context = this.parseMessage();
         if (!context) {
             throw new Error("Invalid context.");
@@ -45,21 +50,14 @@ export default class Context {
 
         this.chat = new Chat(context);
         this.message = new Message(context);
-        this.user = new User(context.from!, context.chat);
-
-        if (payload.data) {
-            this.data = payload.data;
-        }
-
-        // payload.callback_query.from.id;
-        // payload.callback_query.message.chat.id;
+        this.user = new User(this.payload[this.type].from!, this.chat);
 
         if (context.newChatMember) {
-            this.newChatMember = new User(context.newChatMember, context.chat);
+            this.newChatMember = new User(context.newChatMember, this.chat);
         }
 
         if (context.leftChatMember) {
-            this.leftChatMember = new User(context.leftChatMember, context.chat);
+            this.leftChatMember = new User(context.leftChatMember, this.chat);
         }
     }
 

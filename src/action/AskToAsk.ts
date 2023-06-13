@@ -10,7 +10,6 @@
  */
 
 import Action from "./Action";
-import UserHelper from "..//helper/User";
 import ChatHelper from "..//helper/Chat";
 import Context from "..//library/telegram/context/Context";
 import Lang from "..//helper/Lang";
@@ -39,7 +38,7 @@ export default class AskToAsk extends Action {
      */
      public async run(): Promise<void> {
 
-        if (await UserHelper.isAdmin(this.context)) {
+        if (await this.context.user.isAdmin()) {
             return;
         }
 

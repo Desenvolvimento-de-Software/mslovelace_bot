@@ -19,7 +19,7 @@ import KickCommand from "../command/Kick";
 // import SendCommand from "../command/Send";
 // import StartCommand from "../command/Start";
 // import UnbanCommand from "../command/Unban";
-// import YarnCommand from "../command/Yarn";
+import YarnCommand from "../command/Yarn";
 
 export const commands = [
     AdaShieldCommand,
@@ -32,5 +32,5 @@ export const commands = [
     // SendCommand,
     // StartCommand,
     // UnbanCommand,
-    // YarnCommand
+    YarnCommand
 ];

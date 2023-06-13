@@ -41,8 +41,8 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @return {AnswerCallbackQuery}
      */
-    public setCallbackQueryId(callbackQueryId: string): AnswerCallbackQuery {
-        this.payload.callback_query_id = callbackQueryId;
+    public setCallbackQueryId(callbackQueryId: number): AnswerCallbackQuery {
+        this.payload.callbackQueryId = callbackQueryId;
         return this;
     }
 
@@ -72,7 +72,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      * @return {AnswerCallbackQuery}
      */
     public setShowAlert(showAlert: boolean): AnswerCallbackQuery {
-        this.payload.show_alert = showAlert;
+        this.payload.showAlert = showAlert;
         return this;
     }
 
@@ -102,7 +102,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      * @return {AnswerCallbackQuery}
      */
     public setCacheTime(time: number): AnswerCallbackQuery {
-        this.payload.cache_time = time;
+        this.payload.cacheTime = time;
         return this;
     }
 }

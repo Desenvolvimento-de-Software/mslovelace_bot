@@ -16,26 +16,6 @@ import Users from "../model/Users";
 export default class UserHelper {
 
     /**
-     * Returns if the user is an admin.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-05
-     *
-     * @param context
-     *
-     * @returns
-     */
-    public static async isAdmin(context: Context): Promise<boolean> {
-
-        if (context.chat.getType() === "private") {
-            return true;
-        }
-
-        const admins = await context.chat.getChatAdministrators();
-        return admins.includes(context.user.getId());
-    }
-
-    /**
      * Returns the user by the Telegram ID.
      *
      * @author Marcos Leandro

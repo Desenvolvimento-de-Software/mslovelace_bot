@@ -67,21 +67,6 @@ export default abstract class Command {
     }
 
     /**
-     * Defines the commands list.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-07
-     *
-     * @param command
-     */
-    public setCommands(commands: string[]): void {
-        for (const command of commands) {
-            this.commands.push(command);
-            this.commands.push(`${command}@${process.env.TELEGRAM_USERNAME}`);
-        }
-    }
-
-    /**
      * Defines the params list.
      *
      * @author Marcos Leandro
@@ -124,7 +109,22 @@ export default abstract class Command {
      *
      * @returns {Boolean}
      */
-    public isRegisteredParam(param: string): boolean {
+    protected isRegisteredParam(param: string): boolean {
         return this.params.includes(param);
+    }
+
+    /**
+     * Defines the commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param command
+     */
+    protected setCommands(commands: string[]): void {
+        for (const command of commands) {
+            this.commands.push(command);
+            this.commands.push(`${command}@${process.env.TELEGRAM_USERNAME}`);
+        }
     }
 }

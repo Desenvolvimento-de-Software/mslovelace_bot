@@ -69,7 +69,7 @@ export default class Greetings extends Action {
         }
 
         this.chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
-        if (!this.chat || this.chat?.id) {
+        if (!this.chat || !this.chat?.id) {
             return;
         }
 
@@ -118,7 +118,7 @@ export default class Greetings extends Action {
             this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
         );
 
-        let options = {};
+        let options: Record<string, any> = { parseMode : "HTML" };
         options = this.addCaptchaOptions(options);
 
         const message = await this.context.chat.sendMessage(text, options);
@@ -141,7 +141,7 @@ export default class Greetings extends Action {
     private addCaptchaOptions(options: Record<string, any>): Record<string, any> {
 
         if (!this.chat?.captcha) {
-            return {};
+            return options;
         }
 
         const captchaButton: InlineKeyboardButton = {
