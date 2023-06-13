@@ -14,7 +14,7 @@ import AskCommand from "../command/Ask";
 import BanCommand from "../command/Ban";
 // import GreetingsCommand from "../command/Greetings";
 import KickCommand from "../command/Kick";
-// import NpmCommand from "../command/Npm";
+import NpmCommand from "../command/Npm";
 // import RestrictCommand from "../command/Restrict";
 // import SendCommand from "../command/Send";
 // import StartCommand from "../command/Start";
@@ -27,7 +27,7 @@ export const commands = [
     BanCommand,
     // GreetingsCommand,
     KickCommand,
-    // NpmCommand,
+    NpmCommand,
     // RestrictCommand,
     // SendCommand,
     // StartCommand,

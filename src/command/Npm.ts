@@ -1,122 +1,112 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import ChatHelper from "../helper/Chat";
-// import NpmPackage from "../helper/NpmPackage";
-// import SendMessage from "../library/telegram/resource/SendMessage";
-// import Lang from "../helper/Lang";
-// import { exec } from "child_process";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import ChatHelper from "../helper/Chat";
+import NpmPackage from "../helper/NpmPackage";
+import Lang from "../helper/Lang";
+import Log from "../helper/Log";
+import { exec } from "child_process";
 
-// export default class Npm extends Command {
+export default class Npm extends Command {
 
-//     /**
-//      * Telegram peyload.
-//      *
-//      * @author Marcos Leandro
-//      * @since  2022-09-21
-//      */
-//     private payload: Record<string, any> = {};
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-21
+     *
+     * @param {Context} context
+     */
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["npm"]);
+    }
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since  2022-09-21
-//      *
-//      * @param app
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
+    /**
+     * Runs the command.
+     *
+     * @author Marcos Leandro
+     * @since 2023-06-13
+     */
+     public async run(): Promise<void> {
 
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 2022-09-21
-//      */
-//      public async index(payload: Record<string, any>): Promise<void> {
+        const text = this.context.message.getText().split(/\s+/);
+        if (!text.length || text.length < 2) {
+            return;
+        }
 
-//         const text = payload.message.text.split(/\s+/);
-//         if (!text.length || text.length < 2) {
-//             return;
-//         }
+        const library = text[1].replace(/[^\w\d_-]/g, '').toLowerCase();
+        if (!library.length) {
+            return;
+        }
 
-//         const library = text[1].replace(/[^\w\d_-]/g, '').toLowerCase();
-//         if (!library.length) {
-//             return;
-//         }
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//         const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
-//         if (!chat || !chat.id) {
-//             return;
-//         }
+        Lang.set(chat.language || "us");
 
-//         Lang.set(chat.language || "us");
-//         this.payload = payload;
+        try {
 
-//         try {
+            exec(`npm search --json ${library}`, (error: any, stdout: string, stderr: string) => {
+                this.processResponse(error, stdout, stderr);
+            });
 
-//             exec(`npm search --json ${library}`, (error: any, stdout: string, stderr: string) => {
-//                 this.processResponse(error, stdout, stderr);
-//             });
+        } catch (err: any) {
+            Log.append(err.toString());
+        }
+    }
 
-//         } catch (err: any) {
-//             this.app.log(err.toString());
-//         }
-//     }
+    /**
+     * Processes the shell response.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-21
+     *
+     * @param error
+     * @param stdout
+     * @param stderr
+     */
+    private async processResponse(error: any, stdout: string, stderr: string): Promise<void> {
 
-//     /**
-//      * Processes the shell response.
-//      *
-//      * @author Marcos Leandro
-//      * @since  2022-09-21
-//      *
-//      * @param error
-//      * @param stdout
-//      * @param stderr
-//      */
-//     private async processResponse(error: any, stdout: string, stderr: string): Promise<void> {
+        if (error) {
+            Log.append(error.message);
+            return;
+        }
 
-//         if (error) {
-//             this.app.log(error.message);
-//             return;
-//         }
+        if (stderr) {
+            Log.append(stderr);
+            return;
+        }
 
-//         if (stderr) {
-//             this.app.log(stderr);
-//             return;
-//         }
+        const json = await JSON.parse(stdout);
+        if (!json.length) {
+            return;
+        }
 
-//         const json = await JSON.parse(stdout);
-//         if (!json.length) {
-//             return;
-//         }
+        const library = json[0];
+        const npmPackage = new NpmPackage(library);
 
-//         const library = json[0];
-//         const npmPackage = new NpmPackage(library);
-//         const sendMessage = new SendMessage();
+        const options: Record<string, any> = {
+            disableWebPagePreview: true,
+            parseMode: "HTML"
+        };
 
-//         sendMessage
-//             .setChatId(this.payload.message.chat.id)
-//             .setText(npmPackage.getMessage())
-//             .setDisableWebPagePreview(true)
-//             .setParseMode("HTML");
+        if (this.context.message.getReplyToMessage()) {
+            options.replyToMessageId = this.context.message.getReplyToMessage()?.getId();
+        }
 
-//         if (this.payload.message?.reply_to_message?.message_id) {
-//             sendMessage.setReplyToMessageId(this.payload.message.reply_to_message.message_id);
-//         }
-
-//         sendMessage.post();
-//     }
-// }
+        this.context.chat.sendMessage(npmPackage.getMessage(), options);
+    }
+}

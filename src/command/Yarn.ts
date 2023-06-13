@@ -13,8 +13,6 @@ import Context from "../library/telegram/context/Context";
 import Command from "./Command";
 import ChatHelper from "../helper/Chat";
 import YarnPackage from "../helper/YarnPackage";
-// import EditMessageText from "../library/telegram/resource/EditMessageText";
-// import SendMessage from "../library/telegram/resource/SendMessage";
 import Lang from "../helper/Lang";
 import Log from "../helper/Log";
 import { exec } from "child_process";
@@ -126,6 +124,13 @@ export default class Yarn extends Command {
      * @param yarnPackage
      */
     async sendNewMessage(yarnPackage: YarnPackage): Promise<void> {
+
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        Lang.set(chat.language || "us");
 
         const options: Record<string, any> = {
             disableWebPagePreview: true,
