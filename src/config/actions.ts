@@ -10,9 +10,8 @@
  */
 
 import AdaShield from "../action/AdaShield";
-import AskToAskAction from "../action/AskToAsk";
+import AskToAsk from "../action/AskToAsk";
 import Captcha from "../action/Captcha";
-import CheckRestriction from "../action/CheckRestriction";
 import Greetings from "../action/Greetings";
 import NewChatMember from "../action/NewChatMember";
 import LeftChatMember from "../action/LeftChatMember";
@@ -24,8 +23,7 @@ export const actions = [
     AdaShield,
     Captcha,
     Greetings,
-    AskToAskAction,
-    CheckRestriction,
+    AskToAsk,
     NewChatMember,
     LeftChatMember,
     Ping

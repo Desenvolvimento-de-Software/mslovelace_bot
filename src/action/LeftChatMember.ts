@@ -39,6 +39,10 @@ export default class LeftChatMember extends Action {
      */
     public async run(): Promise<void> {
 
+        if (!this.context.leftChatMember) {
+            return;
+        }
+
         const user = await UserHelper.getUserByTelegramId(
             this.context.user.getId()
         );

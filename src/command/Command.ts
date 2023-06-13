@@ -75,7 +75,10 @@ export default abstract class Command {
      * @param command
      */
     public setCommands(commands: string[]): void {
-        this.commands = commands;
+        for (const command of commands) {
+            this.commands.push(command);
+            this.commands.push(`${command}${process.env.TELEGRAM_USERNAME}`);
+        }
     }
 
     /**

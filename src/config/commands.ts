@@ -10,7 +10,7 @@
  */
 
 import AdaShieldCommand from "../command/AdaShield";
-// import AskCommand from "../command/Ask";
+import AskCommand from "../command/Ask";
 import BanCommand from "../command/Ban";
 // import GreetingsCommand from "../command/Greetings";
 // import KickCommand from "../command/Kick";
@@ -23,8 +23,8 @@ import BanCommand from "../command/Ban";
 
 export const commands = [
     AdaShieldCommand,
-    // AskCommand,
-    BanCommand,
+    AskCommand,
+    // BanCommand,
     // GreetingsCommand,
     // KickCommand,
     // NpmCommand,

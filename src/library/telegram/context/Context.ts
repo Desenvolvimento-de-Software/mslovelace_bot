@@ -39,6 +39,10 @@ export default class Context {
         this.type = this.parseType();
 
         const context = this.parseMessage();
+        if (!context) {
+            throw new Error("Invalid context.");
+        }
+
         this.chat = new Chat(context);
         this.message = new Message(context);
         this.user = new User(context.from!, context.chat);
@@ -90,13 +94,13 @@ export default class Context {
      *
      * @return Message
      */
-    private parseMessage(): MessageType {
+    private parseMessage(): MessageType|undefined {
 
         if (this.type === "callbackQuery") {
             return this.payload.callbackQuery.message;
         }
 
-        return this.payload[this.type];
+        return this.payload[this.type] || undefined;
     }
 
     /**

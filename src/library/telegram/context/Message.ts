@@ -69,6 +69,14 @@ export default class Message {
     private replyToMessage?: Message;
 
     /**
+     * Message thread ID.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     */
+    private messageThreadId?: number;
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
@@ -110,8 +118,7 @@ export default class Message {
         return sendMessage
             .post()
             .then((response) => response.json())
-            // .then((json) => new Message(json.result));
-            // .then((json) => console.log(json));
+            .then((json) => new Message(json.result));
     }
 
     /**
@@ -165,6 +172,18 @@ export default class Message {
      */
     public getReplyToMessage(): Message|undefined {
         return this.replyToMessage;
+    }
+
+    /**
+     * Returns the message thread ID.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @returns (number|undefined)
+     */
+    public getMessageThreadId(): number|undefined {
+        return this.messageThreadId;
     }
 
     /**

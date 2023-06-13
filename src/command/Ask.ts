@@ -1,57 +1,60 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import SendMessage from "../library/telegram/resource/SendMessage";
-// import BanChatMember from "../library/telegram/resource/BanChatMember";
-// import ChatHelper from "../helper/Chat";
-// import Lang from "../helper/Lang";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import ChatHelper from "../helper/Chat";
+import UserHelper from "../helper/User";
+import Lang from "../helper/Lang";
 
-// export default class Ask extends Command {
+export default class Ask extends Command {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since  2022-09-12
-//      *
-//      * @param app App instance.
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-12
+     *
+     * @param app App instance.
+     */
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["ask"]);
+    }
 
-//     /**
-//      * Ask-to-ask main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public async index(payload: Record<string, any>): Promise<void> {
+    /**
+     * Run the command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     *
+     * @return {Promise<void>}
+     */
+    public async run(): Promise<void> {
 
-//         const isAdmin = await this.isAdmin(payload);
-//         if (!isAdmin) {
-//             return;
-//         }
+        if (!await UserHelper.isAdmin(this.context)) {
+            return;
+        }
 
-//         const sendMessage = new SendMessage();
-//         sendMessage
-//             .setChatId(payload.message.chat.id)
-//             .setText(Lang.get("askToAskLink"));
+        this.context.message.delete();
 
-//         if (payload.message?.reply_to_message?.message_id) {
-//             sendMessage.setReplyToMessageId(payload.message.reply_to_message.message_id);
-//         }
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        Lang.set(chat.language || "us");
 
-//         sendMessage.post();
-//     }
-// }
+        const replyToMessage = this.context.message.getReplyToMessage();
+        if (replyToMessage) {
+            replyToMessage.reply(Lang.get("askToAskLink"));
+            return;
+        }
+
+        this.context.chat.sendMessage(Lang.get("askToAskLink"));
+    }
+}

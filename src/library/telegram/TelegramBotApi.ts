@@ -130,9 +130,11 @@ export default class TelegramBotApi {
 
         if (payload) {
             payload = this.camelCaseToSnakeCase(payload);
+            payload = { method: this.method, ...payload };
         }
 
-        const url  = `${this.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
+        console.log(payload);
+        const url = `${this.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
         const body = JSON.stringify(payload) || "";
 
         const headers = {

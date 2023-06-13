@@ -29,7 +29,7 @@ export default class AdaShield extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["adashield", `adashield${process.env.TELEGRAM_USERNAME}`]);
+        this.setCommands(["adashield"]);
         this.setParams(["index", "on", "off"]);
     }
 
