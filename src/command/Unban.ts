@@ -1,29 +1,90 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import SendMessage from "../library/telegram/resource/SendMessage";
-// import ChatHelper from "../helper/Chat";
-// import Lang from "../helper/Lang";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import Message from "src/library/telegram/context/Message";
+import User from "src/library/telegram/context/User";
+import CommandContext from "../library/telegram/context/Command";
 
-// export default class Unban extends Command {
+export default class Unban extends Command {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
-// }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  2022-09-12
+     *
+     * @param app App instance.
+     */
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["unban"]);
+    }
+
+    /**
+     * Executes the command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param command
+     *
+     * @returns
+     */
+    public async run(command: CommandContext): Promise<void> {
+
+        if (!await this.context.user.isAdmin()) {
+            return;
+        }
+
+        this.context.message.delete();
+
+        const replyToMessage = this.context.message.getReplyToMessage();
+        if (replyToMessage) {
+            this.unbanByReply(replyToMessage);
+            return;
+        }
+
+        const mentions = await this.context.message.getMentions();
+        if (!mentions.length) {
+            return;
+        }
+
+        for (const mention of mentions) {
+            this.unbanByMention(mention);
+        }
+    }
+
+    /**
+     * Bans an user by message reply.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @returns void
+     */
+    private async unbanByReply(replyToMessage: Message): Promise<Record<string, any>> {
+        return replyToMessage.getUser().unban();
+    }
+
+    /**
+     * Bans an user by mention reply.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @returns void
+     */
+    private async unbanByMention(mention: User): Promise<Record<string, any>> {
+        return mention.unban();
+    }
+}

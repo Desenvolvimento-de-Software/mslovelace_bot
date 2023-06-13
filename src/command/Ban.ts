@@ -14,7 +14,6 @@ import Context from "../library/telegram/context/Context";
 import Message from "src/library/telegram/context/Message";
 import User from "src/library/telegram/context/User";
 import CommandContext from "../library/telegram/context/Command";
-import UserHelper from "../helper/User";
 
 export default class Ban extends Command {
 

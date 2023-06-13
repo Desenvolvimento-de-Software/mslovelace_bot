@@ -18,7 +18,7 @@ import KickCommand from "../command/Kick";
 // import RestrictCommand from "../command/Restrict";
 // import SendCommand from "../command/Send";
 // import StartCommand from "../command/Start";
-// import UnbanCommand from "../command/Unban";
+import UnbanCommand from "../command/Unban";
 import YarnCommand from "../command/Yarn";
 
 export const commands = [
@@ -31,6 +31,6 @@ export const commands = [
     // RestrictCommand,
     // SendCommand,
     // StartCommand,
-    // UnbanCommand,
+    UnbanCommand,
     YarnCommand
 ];
