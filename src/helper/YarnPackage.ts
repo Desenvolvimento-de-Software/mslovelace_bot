@@ -63,7 +63,7 @@ export default class YarnPackage extends JsPackage {
 
             const button: InlineKeyboardButton = {
                 text : `${key} ${this.package.data.dependencies[key]}`,
-                callback_data : JSON.stringify({
+                callbackData : JSON.stringify({
                     callback : "yarn",
                     data : {
                         package : key
@@ -80,7 +80,7 @@ export default class YarnPackage extends JsPackage {
         }
 
         const markup: InlineKeyboardMarkup = {
-            inline_keyboard : buttons
+            inlineKeyboard : buttons
         };
 
         return markup;

@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InlineKeyboardButton } from "./InlineKeyboardButton";
+import { InlineKeyboardButton } from "./InlineKeyboardButton.js";
 
 export type InlineKeyboardMarkup = {
-    inline_keyboard: Array<Array<InlineKeyboardButton>>
+    inlineKeyboard: Array<InlineKeyboardButton[]>;
 };

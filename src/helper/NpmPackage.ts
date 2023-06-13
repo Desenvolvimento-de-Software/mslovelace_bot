@@ -23,7 +23,7 @@ export default class NpmPackage extends JsPackage {
      * @param record
      */
     public constructor(record: Record<string, any>) {
-        
+
         super(record);
 
         this.addDescription();

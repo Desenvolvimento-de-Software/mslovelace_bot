@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { SendMessageType } from "../type/SendMessage.js";
 import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
 
 export default class SendMessage extends TelegramBotApi {
@@ -21,7 +20,7 @@ export default class SendMessage extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: SendMessageType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -31,6 +30,25 @@ export default class SendMessage extends TelegramBotApi {
      */
     public constructor() {
         super("sendMessage");
+    }
+
+    /**
+     * Sets the message options.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-06
+     *
+     * @param options
+     *
+     * @returns {SendMessage}
+     */
+    public setOptions(options: Record<string, any>): SendMessage {
+
+        for (const key in options) {
+            this.payload[key] = options[key];
+        }
+
+        return this;
     }
 
     /**
@@ -44,7 +62,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setChatId(chatId: number): SendMessage {
-        this.payload.chat_id = chatId;
+        this.payload.chatId = chatId;
         return this;
     }
 
@@ -74,7 +92,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setParseMode(parseMode: string): SendMessage {
-        this.payload.parse_mode = parseMode;
+        this.payload.parseMode = parseMode;
         return this;
     }
 
@@ -104,7 +122,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setDisableWebPagePreview(disableWebPagePreview: boolean): SendMessage {
-        this.payload.disable_web_page_preview = disableWebPagePreview;
+        this.payload.disableWebPagePreview = disableWebPagePreview;
         return this;
     }
 
@@ -119,7 +137,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setDisableNotification(disableNotification: boolean): SendMessage {
-        this.payload.disable_notification = disableNotification;
+        this.payload.disableNotification = disableNotification;
         return this;
     }
 
@@ -134,7 +152,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setReplyToMessageId(replyToMessageId: number): SendMessage {
-        this.payload.reply_to_message_id = replyToMessageId;
+        this.payload.replyToMessageId = replyToMessageId;
         return this;
     }
 
@@ -149,7 +167,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {SendMessage}
      */
     public setReplyMarkup(replyMarkup: InlineKeyboardMarkup): SendMessage {
-        this.payload.reply_markup = replyMarkup;
+        this.payload.replyMarkup = replyMarkup;
         return this;
     }
 }

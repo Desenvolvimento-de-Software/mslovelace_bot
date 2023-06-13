@@ -64,13 +64,13 @@ export default class ChatHelper {
      */
     public static async createChat(chat: Record<string, any>): Promise<any> {
 
-        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
+        const title = chat.getTitle() || chat.getUsername() || (`${chat.getFirstName()} ${chat.getLastName()}`).trim();
         const newChat = new Chats();
         newChat
             .insert()
-            .set("chat_id", chat.id)
+            .set("chat_id", chat.getId())
             .set("title", title)
-            .set("type", chat.type)
+            .set("type", chat.getType())
             .set("joined", 1);
 
         const result = await newChat.execute();
@@ -94,27 +94,30 @@ export default class ChatHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async updateChat(chatObject: Record<string, any>): Promise<any> {
+    public static async updateChat(chat: Record<string, any>): Promise<number|undefined> {
 
-        const chat = await ChatHelper.getChatByTelegramId(chatObject.id);
+        const row = await ChatHelper.getChatByTelegramId(chat.getId());
+        if (!row) {
+            return;
+        }
+
         const currentChat = new Chats();
-
-        const title = chat.title || chat.username || (`${chat.first_name} ${chat.last_name}`).trim();
+        const title = chat.getTitle() || chat.getUsername() || (`${chat.getFirstName()} ${chat.getLastName()}`).trim();
 
         currentChat
             .update()
             .set("title", title)
-            .set("type", chatObject.type)
+            .set("type", chat.getType())
             .set("joined", 1)
-            .where("chat_id").equal(chatObject.id);
+            .where("id").equal(row.id);
 
         try {
             currentChat.execute();
 
         } catch (err) {
-            return null;
+            return;
         }
 
-        return chat.id;
+        return chat.getId();
     }
 }

@@ -10,8 +10,6 @@
  */
 
 import App from "./App.js";
-import DefaultController from "./controller/Controller.js";
-import IncomingController from "./controller/Incoming.js";
 
 console.log("    _       _         _                   _");
 console.log("   / \\   __| | __ _  | |    _____   _____| | __ _  ___ ___");
@@ -20,15 +18,4 @@ console.log(" / ___ \\ (_| | (_| | | |__| (_) \\ V /  __/ | (_| | (__  __/");
 console.log("/_/   \\_\\__,_|\\__,_| |_____\\___/ \\_/ \\___|_|\\__,_|\\___\\___|");
 console.log("");
 
-const app = new App();
-
-app.addControllers([
-    new DefaultController(app),
-    new IncomingController(app)
-]);
-
-app.listen();
-
-if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "false") {
-    app.initializeLongPolling();
-}
+new App();

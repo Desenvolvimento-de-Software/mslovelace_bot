@@ -10,7 +10,7 @@
  */
 
 export default {
-    startMessage : "Hey! My name is Ada Lovelace. I used to be a programmer. The first programmer in the history, in fact.\n\nNow I'm here to help you get around and keep the order in your groups.\nI have lots of features, such as greetings, a warning system, a flood control system and even more!\n\n",
+    startMessage : "Hey! My name is Ada Lovelace. I used to be a programmer. The first programmer in the history, in fact.\n\nNow I'm here to help you get around and keep the order in your groups.\n\nI have lots of features, such as greetings, a warning system, a flood control system and even more!\n\n",
     startButton : "Adicione-me ao seu grupo",
     helpButton : "Ajuda",
     defaultGreetings : "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador.",
@@ -25,6 +25,7 @@ export default {
     adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: AdaShield.",
     casMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banido. Motivo: <a href=\"https://cas.chat/\">CAS</a>.",
     adaShieldStatus : "Status do AdaShield: {status}",
+    restrictStatus : "Status da restrição de novos usuários: {status}",
     textEnabled : "ativado",
     textDisabled : "desativado",
     captchaButton : "Pressione aqui para confirmar que não é um robô",

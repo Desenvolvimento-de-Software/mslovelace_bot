@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { GetUpdatesType } from "../type/GetUpdates.js";
 
 export default class GetUpdates extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class GetUpdates extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-     protected payload: GetUpdatesType = {};
+     protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

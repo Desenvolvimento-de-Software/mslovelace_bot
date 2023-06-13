@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { DeleteMessageType } from "../type/DeleteMessage.js";
 
 export default class DeleteMessage extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class DeleteMessage extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: DeleteMessageType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.

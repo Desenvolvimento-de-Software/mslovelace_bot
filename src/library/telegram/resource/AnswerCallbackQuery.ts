@@ -10,7 +10,6 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import { AnswerCallbackQueryType } from "../type/AnswerCallbackQuery.js";
 
 export default class AnswerCallbackQuery extends TelegramBotApi {
 
@@ -20,7 +19,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected payload: AnswerCallbackQueryType = {};
+    protected payload: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -34,7 +33,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the callback query ID.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
@@ -42,14 +41,14 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @return {AnswerCallbackQuery}
      */
-    public setCallbackQueryId(callbackQueryId: string): AnswerCallbackQuery {
-        this.payload.callback_query_id = callbackQueryId;
+    public setCallbackQueryId(callbackQueryId: number): AnswerCallbackQuery {
+        this.payload.callbackQueryId = callbackQueryId;
         return this;
     }
 
     /**
      * Defines the answer text.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
@@ -64,26 +63,26 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines whether the alert will be shown or not.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */
     public setShowAlert(showAlert: boolean): AnswerCallbackQuery {
-        this.payload.show_alert = showAlert;
+        this.payload.showAlert = showAlert;
         return this;
     }
 
     /**
      * Defines the answer URL.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */
@@ -94,16 +93,16 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
 
     /**
      * Defines the answer cache time.
-     * 
+     *
      * @author Marcos Leandro
      * @since  2022-10-11
      *
-     * @param showAlert 
+     * @param showAlert
      *
      * @return {AnswerCallbackQuery}
      */
     public setCacheTime(time: number): AnswerCallbackQuery {
-        this.payload.cache_time = time;
+        this.payload.cacheTime = time;
         return this;
     }
 }

@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import User from "../library/telegram/context/User.js";
 import Users from "../model/Users.js";
 
 export default class UserHelper {
@@ -77,18 +78,19 @@ export default class UserHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async createUser(user: Record<string, any>): Promise<any> {
+    public static async createUser(user: User): Promise<any> {
 
         const newUser = new Users();
         newUser
             .insert()
-            .set("user_id", user.id)
-            .set("first_name", user.first_name || null)
-            .set("last_name", user.last_name || null)
-            .set("username", user.username || null)
-            .set("language_code", user.language_code || null)
-            .set("is_channel", user.id > 0 ? 1 : 0)
-            .set("is_bot", user.is_bot || 0);
+            .set("user_id", user.getId())
+            .set("first_name", user.getFirstName() || null)
+            .set("last_name", user.getLastName() || null)
+            .set("username", user.getUsername() || null)
+            .set("language_code", user.getLanguageCode() || "us")
+            .set("is_channel", user.getId() > 0 ? 1 : 0)
+            .set("is_bot", user.getIsBot() || 0)
+            .set("is_premium", user.getIsPremium() || 0);
 
         try {
 
@@ -96,6 +98,7 @@ export default class UserHelper {
             return result.insertId;
 
         } catch (err) {
+            console.log(err);
             return null;
         }
     }
@@ -110,10 +113,10 @@ export default class UserHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async updateUser(userObject: Record<string, any>): Promise<any> {
+    public static async updateUser(user: User): Promise<any> {
 
-        const user = await UserHelper.getUserByTelegramId(userObject.id);
-        if (!user) {
+        const row = await UserHelper.getUserByTelegramId(user.getId());
+        if (!row) {
             return;
         }
 
@@ -121,11 +124,12 @@ export default class UserHelper {
 
         currentUser
             .update()
-            .set("first_name", userObject.first_name || null)
-            .set("last_name", userObject.last_name || null)
-            .set("username", userObject.username || null)
-            .set("language_code", userObject.language_code || "us")
-            .where('id').equal(user.id);
+            .set("first_name", user.getFirstName() || null)
+            .set("last_name", user.getLastName() || null)
+            .set("username", user.getUsername() || null)
+            .set("language_code", user.getLanguageCode() || "us")
+            .set("is_premium", user.getIsPremium() || 0)
+            .where('id').equal(row.id);
 
         try {
             currentUser.execute();
@@ -134,6 +138,6 @@ export default class UserHelper {
             return null;
         }
 
-        return user.id;
+        return row.id;
     }
 }
