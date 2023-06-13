@@ -414,7 +414,7 @@ export default class Chat {
      *
      * @returns {Promise<Message>}
      */
-    public async sendMessage(text: string, options?: Record<string, any>): Promise<Message> {
+    public async sendMessage(text: string, options?: Record<string, any>): Promise<any> {
 
         const sendMessage = new SendMessage();
         sendMessage

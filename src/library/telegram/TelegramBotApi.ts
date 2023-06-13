@@ -176,7 +176,7 @@ export default class TelegramBotApi {
         const result = <Record<string, any>> {};
 
         for (const key of keys) {
-            const snakeKey = key.toLowerCase().replace(/([A-Z])/g, (_, letter) => "_" + letter.toUpperCase());
+            const snakeKey = key.replace(/([A-Z])/g, (_, letter) => "_" + letter.toLowerCase()).toLowerCase();
             result[snakeKey] = this.camelCaseToSnakeCase(payload[key]);
         }
 

@@ -10,7 +10,7 @@
  */
 
 import Command from "./Command";
-import Chats from "../model/Chats";
+import ChatConfigs from "../model/ChatConfigs";
 import UserHelper from "../helper/User";
 import ChatHelper from "../helper/Chat";
 import Lang from "../helper/Lang";
@@ -34,12 +34,12 @@ export default class AdaShield extends Command {
     }
 
     /**
-     * Executes the command.
+     * Runs the command.
      *
      * @author Marcos Leandro
      * @since  2022-09-12
      */
-    public async execute(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext): Promise<void> {
 
         if (!UserHelper.isAdmin(this.context)) {
             return;
@@ -48,7 +48,7 @@ export default class AdaShield extends Command {
         const params = command.getParams();
 
         let action = "index";
-        if (params && params.length && this.hasOwnProperty(params[0])) {
+        if (params && params.length) {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
@@ -117,11 +117,11 @@ export default class AdaShield extends Command {
             return;
         }
 
-        const update = new Chats();
+        const update = new ChatConfigs();
         update
             .update()
             .set("adashield", status)
-            .where("id").equal(chat.id);
+            .where("chat_id").equal(chat.id);
 
         await update.execute();
     }

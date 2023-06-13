@@ -180,7 +180,7 @@ export default class Controller {
     private async executeCommand(command: Command): Promise<void> {
         const commandContext = command.isCalled();
         if (commandContext) {
-            return await command.execute(commandContext);
+            return await command.run(commandContext);
         }
     }
 }

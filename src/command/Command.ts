@@ -57,12 +57,12 @@ export default abstract class Command {
     }
 
     /**
-     * Executes the command.
+     * Runs the command.
      *
      * @author Marcos Leandro
      * @since  2022-09-12
      */
-    public async execute(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

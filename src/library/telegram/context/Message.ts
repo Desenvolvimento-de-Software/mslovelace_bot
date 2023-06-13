@@ -94,7 +94,7 @@ export default class Message {
      *
      * @return {Promise<Message>}
      */
-    public async reply(content: string, parseMode?: string): Promise<Message> {
+    public async reply(content: string, parseMode?: string): Promise<any> {
 
         if (!parseMode) {
             parseMode = "HTML";
@@ -110,7 +110,8 @@ export default class Message {
         return sendMessage
             .post()
             .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            // .then((json) => new Message(json.result));
+            // .then((json) => console.log(json));
     }
 
     /**
@@ -285,7 +286,6 @@ export default class Message {
             return;
         }
 
-        console.log(user);
         const mention: UserType = {
             id: user.id,
             isBot: user.is_bot,
