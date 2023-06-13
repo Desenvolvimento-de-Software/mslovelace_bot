@@ -61,7 +61,7 @@ export default class Ban extends Command {
         }
 
         for (const mention of mentions) {
-            this.banByMention(mention).then((response) => console.log(response));
+            this.banByMention(mention);
         }
     }
 
@@ -89,40 +89,3 @@ export default class Ban extends Command {
         return mention.ban();
     }
 }
-
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
-
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      */
-//     public async index(payload: Record<string, any>): Promise<void> {
-
-//         if (!await this.isAdmin(payload)) {
-//             this.warnUserAboutReporting(payload);
-//             return;
-//         }
-
-//         const userId = await this.getUserId(payload);
-//         const chatId = payload.message.chat.id;
-
-//         if (!userId || !chatId) {
-//             return;
-//         }
-
-//         const ban = new BanChatMember();
-//         ban.setUserId(userId).setChatId(chatId).post();
-//     }
-// }
