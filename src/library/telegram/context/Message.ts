@@ -48,7 +48,7 @@ export default class Message {
      *
      * @var {User[]}
      */
-    private mentions: User[] = [];
+    private mentions?: User[];
 
     /**
      * The message commands.
@@ -87,7 +87,7 @@ export default class Message {
     public constructor(context: MessageType) {
         this.context = context;
         this.user = this.parseSender();
-        this.parseEntities();
+        this.parseCommands();
         this.parseReplyToMessage();
     }
 
@@ -194,8 +194,14 @@ export default class Message {
      *
      * @returns {User[]}
      */
-    public getMentions(): User[] {
-        return this.mentions;
+    public async getMentions(): Promise<User[]> {
+
+        if (typeof this.mentions === "undefined") {
+            this.mentions = [];
+            await this.parseMentions();
+        }
+
+        return this.mentions || [];
     }
 
     /**
@@ -240,14 +246,14 @@ export default class Message {
     }
 
     /**
-     * Parses the message entities.
+     * Parses the message commands.
      *
      * @author Marcos Leandro
      * @since  2023-06-06
      *
      * @returns {void}
      */
-    private parseEntities(): void {
+    private parseCommands(): void {
 
         const entities = this.context.entities;
         if (!Array.isArray(entities)) {
@@ -255,29 +261,42 @@ export default class Message {
         }
 
         for (const entity of entities) {
-            this.appendEntity(entity);
+            this.parseCommand(entity);
         }
     }
 
     /**
-     * Appends the entity.
+     * Parses the message mentions.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-12
+     */
+    private async parseMentions(): Promise<void> {
+        const entities = this.context.entities;
+        if (!Array.isArray(entities)) {
+            return;
+        }
+
+        for (const entity of entities) {
+            await this.appendMention(entity);
+        }
+    }
+
+    /**
+     * Appends the command.
      *
      * @author Marcos Leandro
      * @since  2023-06-07
      *
      * @param entity
      */
-    private appendEntity(entity: Record<string, any>): void {
+    private parseCommand(entity: Record<string, any>): void {
 
-        switch (entity.type) {
-            case "mention":
-                this.appendMention(entity);
-                break;
-
-            case "bot_command":
-                this.appendBotCommand(entity);
-                break;
+        if (entity.type !== "bot_command") {
+            return;
         }
+
+        this.appendBotCommand(entity);
     }
 
     /**
@@ -291,6 +310,10 @@ export default class Message {
      * @returns {void}
      */
     private async appendMention(entity: Record<string, any>): Promise<void> {
+
+        if (entity.type !== "mention") {
+            return;
+        }
 
         const username = this.context.text?.substring(
             ++entity.offset, entity.offset + entity.length
@@ -306,7 +329,7 @@ export default class Message {
         }
 
         const mention: UserType = {
-            id: user.id,
+            id: user.user_id,
             isBot: user.is_bot,
             firstName: user.first_name,
             lastName: user.last_name,
@@ -315,7 +338,7 @@ export default class Message {
             isPremium: user.is_premium
         };
 
-        this.mentions.push(
+        this.mentions!.push(
             new User(mention, this.context.chat)
         );
     }

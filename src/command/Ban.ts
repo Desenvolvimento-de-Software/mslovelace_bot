@@ -14,6 +14,7 @@ import Context from "../library/telegram/context/Context";
 import Message from "src/library/telegram/context/Message";
 import User from "src/library/telegram/context/User";
 import CommandContext from "../library/telegram/context/Command";
+import UserHelper from "../helper/User";
 
 export default class Ban extends Command {
 
@@ -27,7 +28,7 @@ export default class Ban extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["ban", `ban${process.env.TELEGRAM_USERNAME}`]);
+        this.setCommands(["ban"]);
     }
 
     /**
@@ -40,7 +41,13 @@ export default class Ban extends Command {
      *
      * @returns
      */
-    public async execute(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext): Promise<void> {
+
+        if (!await UserHelper.isAdmin(this.context)) {
+            return;
+        }
+
+        this.context.message.delete();
 
         const replyToMessage = this.context.message.getReplyToMessage();
         if (replyToMessage) {
@@ -48,8 +55,7 @@ export default class Ban extends Command {
             return;
         }
 
-        const mentions = this.context.message.getMentions();
-        console.log(mentions);
+        const mentions = await this.context.message.getMentions();
         if (!mentions.length) {
             return;
         }

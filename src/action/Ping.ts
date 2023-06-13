@@ -45,7 +45,7 @@ export default class Ping extends Action {
             return;
         }
 
-        if (!this.hasMention()) {
+        if (!await this.hasMention()) {
             return;
         }
 
@@ -61,10 +61,10 @@ export default class Ping extends Action {
      *
      * @returns
      */
-    private hasMention(): boolean {
+    private async hasMention(): Promise<boolean> {
 
         const mentionUsernames = [];
-        const mentions = this.context.message.getMentions();
+        const mentions = await this.context.message.getMentions();
 
         for (const mention of mentions) {
             mentionUsernames.push(mention.getUsername());

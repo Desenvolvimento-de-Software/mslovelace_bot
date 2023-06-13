@@ -115,7 +115,7 @@ export default class Controller {
     protected async handle(payload: Record<string, any>): Promise<void> {
         const context = new Context(payload);
         this.handleActions(context);
-        // this.handleCommands(context);
+        this.handleCommands(context);
     }
 
     /**

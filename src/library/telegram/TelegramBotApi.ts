@@ -133,7 +133,6 @@ export default class TelegramBotApi {
             payload = { method: this.method, ...payload };
         }
 
-        console.log(payload);
         const url = `${this.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
         const body = JSON.stringify(payload) || "";
 

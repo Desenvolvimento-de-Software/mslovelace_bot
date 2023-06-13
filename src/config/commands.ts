@@ -24,7 +24,7 @@ import BanCommand from "../command/Ban";
 export const commands = [
     AdaShieldCommand,
     AskCommand,
-    // BanCommand,
+    BanCommand,
     // GreetingsCommand,
     // KickCommand,
     // NpmCommand,
