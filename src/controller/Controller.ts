@@ -16,10 +16,10 @@ import Command from "../command/Command";
 import Callback from "../callback/Callback";
 import Context from "../library/telegram/context/Context";
 import TelegramBotApi from "../library/telegram/TelegramBotApi";
+import Log from "../helper/Log";
 import { actions } from "../config/actions";
 import { commands } from "../config/commands";
 import { callbacks } from "../config/callbacks";
-import Log from "../helper/Log";
 
 export default class Controller {
 
