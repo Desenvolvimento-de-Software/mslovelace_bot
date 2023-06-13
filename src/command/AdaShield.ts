@@ -11,7 +11,6 @@
 
 import Command from "./Command";
 import ChatConfigs from "../model/ChatConfigs";
-import UserHelper from "../helper/User";
 import ChatHelper from "../helper/Chat";
 import Lang from "../helper/Lang";
 import Context from "../library/telegram/context/Context";
