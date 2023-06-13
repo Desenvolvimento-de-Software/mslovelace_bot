@@ -25,6 +25,7 @@ export default {
     adaShieldMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banned. Reason: AdaShield banned.",
     casMessage : "<a href=\"tg://user?id={userid}\">{username}</a> banned. Reason: <a href=\"https://cas.chat/\">CAS banned</a>.",
     adaShieldStatus : "AdaShield status: {status}",
+    restrictStatus : "New users restriction status: {status}",
     textEnabled : "enabled",
     textDisabled : "disabled",
     captchaButton : "Press here to confirm you are not a robot",

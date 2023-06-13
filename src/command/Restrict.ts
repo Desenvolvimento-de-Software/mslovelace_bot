@@ -11,8 +11,10 @@
 
 import Command from "./Command";
 import Context from "../library/telegram/context/Context";
+import CommandContext from "../library/telegram/context/Command";
+import ChatConfigs from "../model/ChatConfigs";
 import ChatHelper from "../helper/Chat";
-import ChatConfigs from "src/model/ChatConfigs";
+import Lang from "../helper/Lang";
 
 export default class Restrict extends Command {
 
@@ -25,6 +27,7 @@ export default class Restrict extends Command {
      public constructor(context: Context) {
         super(context);
         this.setCommands(["restrict"]);
+        this.setParams(["index", "on", "off"]);
     }
 
     /**
@@ -35,11 +38,32 @@ export default class Restrict extends Command {
      *
      * @param payload
      */
-    public async run(): Promise<void> {
+    public async run(command: CommandContext): Promise<void> {
 
         if (!await this.context.user.isAdmin()) {
             return;
         }
+
+        const params = command.getParams();
+
+        let action = "index";
+        if (params && params.length) {
+            action = this.isRegisteredParam(params[0]) ? params[0] : "index";
+        }
+
+        this.context.message.delete();
+
+        const method = action as keyof typeof Restrict.prototype;
+        await this[method](true as never);
+    }
+
+    /**
+     * Returns the restriction status.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     */
+    private async index(): Promise<void> {
 
         const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
@@ -48,10 +72,78 @@ export default class Restrict extends Command {
 
         const chatConfig = new ChatConfigs();
         chatConfig
-            .update()
-            .set("restrict_new_users", 1)
-            .where("id").equal(chat.id);
+            .select()
+            .where("chat_id").equal(chat.id);
 
-        await chatConfig.execute();
+        const config = await chatConfig.execute();
+        if (!config.length) {
+            return;
+        }
+
+        Lang.set(chat.language || "us");
+        const restrictStatus = Lang.get(parseInt(config[0].restrict_new_users) === 1 ? "textEnabled" : "textDisabled");
+        const restrictMessage = Lang.get("restrictStatus").replace("{status}", restrictStatus);
+
+        this.context.chat.sendMessage(restrictMessage);
+    }
+
+    /**
+     * Activates the new users restriction.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @return {Promise<void>}
+     */
+    private async on(): Promise<void> {
+
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        const result = await this.update(chat.id, 1);
+        this.index();
+    }
+
+    /**
+     * Deactivates the new users restriction.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @return {Promise<void>}
+     */
+    private async off(): Promise<void> {
+
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
+
+        const result = await this.update(chat.id, 0);
+        this.index();
+    }
+
+    /**
+     * Updates the restriction status.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param {number} chatId
+     * @param {number} status
+     *
+     * @return {Promise<any>}
+     */
+    private async update(chatId: number, status: number): Promise<any> {
+
+        const chatConfig = new ChatConfigs();
+        chatConfig
+            .update()
+            .set("restrict_new_users", status)
+            .where("chat_id").equal(chatId);
+
+        return chatConfig.execute();
     }
 }

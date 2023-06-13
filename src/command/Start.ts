@@ -1,90 +1,104 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import SendMessage from "../library/telegram/resource/SendMessage";
-// import ChatHelper from "../helper/Chat";
-// import Lang from "../helper/Lang";
-// import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
-// import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import ChatHelper from "../helper/Chat";
+import Lang from "../helper/Lang";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
 
-// export default class Start extends Command {
+export default class Start extends Command {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//     public constructor(app: App) {
-//         super(app);
-//     }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+    public constructor(context: Context) {
+        super(context);
+        this.setCommands(["start"]);
+    }
 
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      */
-//     public async index(payload: Record<string, any>): Promise<void> {
+    /**
+     * Executes the command.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     *
+     * @param payload
+     */
+    public async run(payload: Record<string, any>): Promise<void> {
 
-//         const isAdmin = await this.isAdmin(payload);
-//         const chat    = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        if (!await this.context.user.isAdmin()) {
+            return;
+        }
 
-//         Lang.set(chat.language || "us");
+        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//         if (payload.message.chat.type !== "private" && !isAdmin) {
-//             return;
-//         }
+        // Lang.set(chat.language || "us");
 
-//         if (payload.message.chat.type !== "private") {
+        // if (this.context.chat.getType() !== "private") {
+        //     this.context.message.reply(Lang.get("groupStartMessage"));
+        //     return;
+        // }
 
-//             const message = Lang.get("groupStartMessage")
-//                 .replace("{userid}", payload.message.from.id)
-//                 .replace("{username}", payload.message.from.first_name || payload.message.from.username);
+        // const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
 
-//             const sendMessage = new SendMessage();
-//             sendMessage
-//                 .setChatId(payload.message.chat.id)
-//                 .setText(message)
-//                 .setParseMode("HTML")
-//                 .post();
 
-//             return;
-//         }
+        // if (payload.message.chat.type !== "private" && !isAdmin) {
+        //     return;
+        // }
 
-//         const helpButton: InlineKeyboardButton = {
-//             text: Lang.get("helpButton"),
-//             callbackData: "help"
-//         };
+        // if (payload.message.chat.type !== "private") {
 
-//         const groupAddButton: InlineKeyboardButton = {
-//             text : Lang.get("startButton"),
-//             url  : "http://t.me/mslovelace_bot?startgroup=botstart"
-//         };
+        //     const message = Lang.get("groupStartMessage")
+        //         .replace("{userid}", payload.message.from.id)
+        //         .replace("{username}", payload.message.from.first_name || payload.message.from.username);
 
-//         const markup: InlineKeyboardMarkup = {
-//             inlineKeyboard : [[helpButton, groupAddButton]]
-//         };
+        //     const sendMessage = new SendMessage();
+        //     sendMessage
+        //         .setChatId(payload.message.chat.id)
+        //         .setText(message)
+        //         .setParseMode("HTML")
+        //         .post();
 
-//         const message     = Lang.get("startMessage");
-//         const sendMessage = new SendMessage();
-//         sendMessage
-//             .setChatId(payload.message.chat.id)
-//             .setText(message)
-//             .setParseMode("HTML")
-//             .setReplyMarkup(markup)
-//             .post();
-//     }
-// }
+        //     return;
+        // }
+
+        // const helpButton: InlineKeyboardButton = {
+        //     text: Lang.get("helpButton"),
+        //     callbackData: "help"
+        // };
+
+        // const groupAddButton: InlineKeyboardButton = {
+        //     text : Lang.get("startButton"),
+        //     url  : "http://t.me/mslovelace_bot?startgroup=botstart"
+        // };
+
+        // const markup: InlineKeyboardMarkup = {
+        //     inlineKeyboard : [[helpButton, groupAddButton]]
+        // };
+
+        // const message     = Lang.get("startMessage");
+        // const sendMessage = new SendMessage();
+        // sendMessage
+        //     .setChatId(payload.message.chat.id)
+        //     .setText(message)
+        //     .setParseMode("HTML")
+        //     .setReplyMarkup(markup)
+        //     .post();
+    }
+}
