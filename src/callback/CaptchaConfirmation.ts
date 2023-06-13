@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Callback from "./Callback";
-import Context from "../library/telegram/context/Context";
-import UserHelper from "../helper/User";
-import ChatHelper from "../helper/Chat";
-import RelUsersChats from "../model/RelUsersChats";
-import { ChatPermissions } from "src/library/telegram/type/ChatPermissions";
+import Callback from "./Callback.js";
+import Context from "../library/telegram/context/Context.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import RelUsersChats from "../model/RelUsersChats.js";
+import { ChatPermissions } from "src/library/telegram/type/ChatPermissions.js";
 
 export default class CaptchaConfirmation extends Callback {
 

@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import BanChatMember from "../resource/BanChatMember";
-import UnbanChatMember from "../resource/UnbanChatMember";
-import RestrictChatMember from "../resource/RestrictChatMember";
-import Chat from "./Chat";
-import { User as UserType } from "../type/User";
-import { ChatPermissions } from "../type/ChatPermissions";
+import BanChatMember from "../resource/BanChatMember.js";
+import UnbanChatMember from "../resource/UnbanChatMember.js";
+import RestrictChatMember from "../resource/RestrictChatMember.js";
+import Chat from "./Chat.js";
+import { User as UserType } from "../type/User.js";
+import { ChatPermissions } from "../type/ChatPermissions.js";
 
 export default class User {
 

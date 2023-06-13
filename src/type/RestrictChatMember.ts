@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ChatPermissionsType } from "../type/ChatPermissions";
+import { ChatPermissionsType } from "../type/ChatPermissions.js";
 
 export type RestrictChatMemberType = {
     chat_id?     : number,

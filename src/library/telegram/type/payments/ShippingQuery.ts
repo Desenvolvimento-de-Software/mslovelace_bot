@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ShippingAddress } from "./ShippingAddress";
-import { User } from "../User";
+import { ShippingAddress } from "./ShippingAddress.js";
+import { User } from "../User.js";
 
 export type ShippingQuery = {
     id: string;

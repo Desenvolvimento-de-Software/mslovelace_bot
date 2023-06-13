@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action";
-import ChatHelper from "..//helper/Chat";
-import Context from "..//library/telegram/context/Context";
-import Lang from "..//helper/Lang";
+import Action from "./Action.js";
+import ChatHelper from "../helper/Chat.js";
+import Context from "../library/telegram/context/Context.js";
+import Lang from "../helper/Lang.js";
 
 export default class AskToAsk extends Action {
 

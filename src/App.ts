@@ -10,7 +10,7 @@
  */
 
 import express from "express";
-import { controllers } from "./config/controllers";
+import { controllers } from "./config/controllers.js";
 
 export default class App {
 

@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { EncryptedPassportElement } from "./EncryptedPassportElement";
-import { EncryptedCredentials } from "./EncryptedCredentials";
+import { EncryptedPassportElement } from "./EncryptedPassportElement.js";
+import { EncryptedCredentials } from "./EncryptedCredentials.js";
 
 export type PassportData = {
     data: EncryptedPassportElement[];

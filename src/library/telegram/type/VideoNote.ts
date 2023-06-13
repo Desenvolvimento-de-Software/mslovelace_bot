@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { PhotoSize } from "./PhotoSize";
+import { PhotoSize } from "./PhotoSize.js";
 
 export type VideoNote = {
     fileId: string;

@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
-import Message from "../library/telegram/context/Message";
-import Action from "./Action";
-import Lang from "../helper/Lang";
-import ChatHelper from "../helper/Chat";
-import UserHelper from "../helper/User";
-import RelUsersChats from "../model/RelUsersChats";
-import ChatMessages from "../model/ChatMessages";
-import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
-import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
+import Context from "../library/telegram/context/Context.js";
+import Message from "../library/telegram/context/Message.js";
+import Action from "./Action.js";
+import Lang from "../helper/Lang.js";
+import ChatHelper from "../helper/Chat.js";
+import UserHelper from "../helper/User.js";
+import RelUsersChats from "../model/RelUsersChats.js";
+import ChatMessages from "../model/ChatMessages.js";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class Greetings extends Action {
 

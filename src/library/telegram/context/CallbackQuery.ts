@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chat from "./Chat";
-import Message from "./Message";
-import User from "./User";
-import AnswerCallbackQuery from "../resource/AnswerCallbackQuery";
+import Chat from "./Chat.js";
+import Message from "./Message.js";
+import User from "./User.js";
+import AnswerCallbackQuery from "../resource/AnswerCallbackQuery.js";
 
 export default class CallbackQuery {
 
@@ -35,7 +35,13 @@ export default class CallbackQuery {
         this.chat = new Chat(this.payload.callbackQuery);
         this.message = new Message(this.payload.callbackQuery);
         this.user = new User(this.payload.callbackQuery.from!, this.chat);
-        this.callbackData = JSON.parse(this.payload.callbackQuery.data);
+
+        try {
+            this.callbackData = JSON.parse(this.payload.callbackQuery.data);
+
+        } catch (err) {
+            this.callbackData = this.payload.callbackQuery.data;
+        }
     }
 
     /**

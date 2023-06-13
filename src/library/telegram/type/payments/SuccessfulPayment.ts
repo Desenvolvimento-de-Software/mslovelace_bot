@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { OrderInfo } from "./OrderInfo";
+import { OrderInfo } from "./OrderInfo.js";
 
 export type SuccessfulPayment = {
     currency: string;

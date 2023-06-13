@@ -10,16 +10,16 @@
  */
 
 import express from "express";
-import App from "../App";
-import Action from "../action/Action";
-import Command from "../command/Command";
-import Callback from "../callback/Callback";
-import Context from "../library/telegram/context/Context";
-import TelegramBotApi from "../library/telegram/TelegramBotApi";
-import Log from "../helper/Log";
-import { actions } from "../config/actions";
-import { commands } from "../config/commands";
-import { callbacks } from "../config/callbacks";
+import App from "../App.js";
+import Action from "../action/Action.js";
+import Command from "../command/Command.js";
+import Callback from "../callback/Callback.js";
+import Context from "../library/telegram/context/Context.js";
+import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
+import Log from "../helper/Log.js";
+import { actions } from "../config/actions.js";
+import { commands } from "../config/commands.js";
+import { callbacks } from "../config/callbacks.js";
 
 export default class Controller {
 

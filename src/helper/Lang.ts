@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import br from "../lang/br";
-import us from "../lang/us";
+import br from "../lang/br.js";
+import us from "../lang/us.js";
 
 export default class Lang {
 

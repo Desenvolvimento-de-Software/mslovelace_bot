@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InputFile } from "./InputFile";
-import { MessageEntity } from "./MessageEntity";
+import { InputFile } from "./InputFile.js";
+import { MessageEntity } from "./MessageEntity.js";
 
 export type InputMediaVideo = {
     type: string;

@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import Context from "../library/telegram/context/Context";
-import ChatHelper from "../helper/Chat";
-import NpmPackage from "../helper/NpmPackage";
-import Lang from "../helper/Lang";
-import Log from "../helper/Log";
+import Command from "./Command.js";
+import Context from "../library/telegram/context/Context.js";
+import ChatHelper from "../helper/Chat.js";
+import NpmPackage from "../helper/NpmPackage.js";
+import Lang from "../helper/Lang.js";
+import Log from "../helper/Log.js";
 import { exec } from "child_process";
 
 export default class Npm extends Command {

@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JsPackage from "./JsPackage";
-import Lang from "./Lang";
+import JsPackage from "./JsPackage.js";
+import Lang from "./Lang.js";
 
 export default class NpmPackage extends JsPackage {
 

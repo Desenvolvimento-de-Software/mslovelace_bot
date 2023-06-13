@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import AdaShield from "../action/AdaShield";
-import AskToAsk from "../action/AskToAsk";
-import Captcha from "../action/Captcha";
-import Greetings from "../action/Greetings";
-import NewChatMember from "../action/NewChatMember";
-import LeftChatMember from "../action/LeftChatMember";
-import Ping from "../action/Ping";
-import saveUserAndChat from "../action/SaveUserAndChat";
+import AdaShield from "../action/AdaShield.js";
+import AskToAsk from "../action/AskToAsk.js";
+import Captcha from "../action/Captcha.js";
+import Greetings from "../action/Greetings.js";
+import NewChatMember from "../action/NewChatMember.js";
+import LeftChatMember from "../action/LeftChatMember.js";
+import Ping from "../action/Ping.js";
+import saveUserAndChat from "../action/SaveUserAndChat.js";
 
 export const actions = [
     saveUserAndChat,

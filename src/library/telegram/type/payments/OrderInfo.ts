@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ShippingAddress } from "./ShippingAddress";
+import { ShippingAddress } from "./ShippingAddress.js";
 
 export type OrderInfo = {
     name?: string;

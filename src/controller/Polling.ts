@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App";
-import Controller from "./Controller";
-import GetUpdates from "..//library/telegram/resource/GetUpdates";
+import App from "../App.js";
+import Controller from "./Controller.js";
+import GetUpdates from "../library/telegram/resource/GetUpdates.js";
 
 export default class Polling extends Controller {
 

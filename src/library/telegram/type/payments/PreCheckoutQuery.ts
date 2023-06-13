@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { OrderInfo } from "./OrderInfo";
-import { User } from "../User";
+import { OrderInfo } from "./OrderInfo.js";
+import { User } from "../User.js";
 
 export type PreCheckoutQuery = {
     id: string;

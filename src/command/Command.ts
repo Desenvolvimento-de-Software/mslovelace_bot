@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
-import CommandContext from "../library/telegram/context/Command";
+import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 
 export default abstract class Command {
 

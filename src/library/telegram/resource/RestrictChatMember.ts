@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi";
-import { ChatPermissions } from "../type/ChatPermissions";
+import TelegramBotApi from "../TelegramBotApi.js";
+import { ChatPermissions } from "../type/ChatPermissions.js";
 
 export default class RestrictChatMember extends TelegramBotApi {
 

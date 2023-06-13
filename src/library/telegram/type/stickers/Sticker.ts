@@ -9,8 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { MaskPosition } from "./MaskPosition";
-import { PhotoSize } from "../PhotoSize";
+import { MaskPosition } from "./MaskPosition.js";
+import { PhotoSize } from "../PhotoSize.js";
+
 export type Sticker = {
     fileId: string;
     fileUniqueId: string;

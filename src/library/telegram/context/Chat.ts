@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import SendMessage from "../resource/SendMessage";
-import GetChatAdministrators from "../resource/GetChatAdministrators";
-import Message from "./Message";
-import { ChatLocation } from "../type/ChatLocation";
-import { ChatPermissions } from "../type/ChatPermissions";
-import { ChatPhoto } from "../type/ChatPhoto";
-import { Message as MessageType } from "../type/Message";
+import SendMessage from "../resource/SendMessage.js";
+import GetChatAdministrators from "../resource/GetChatAdministrators.js";
+import Message from "./Message.js";
+import { ChatLocation } from "../type/ChatLocation.js";
+import { ChatPermissions } from "../type/ChatPermissions.js";
+import { ChatPhoto } from "../type/ChatPhoto.js";
+import { Message as MessageType } from "../type/Message.js";
 
 export default class Chat {
 

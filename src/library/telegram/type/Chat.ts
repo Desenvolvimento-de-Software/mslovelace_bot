@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ChatLocation } from './ChatLocation';
-import { ChatPermissions } from './ChatPermissions';
-import { ChatPhoto } from './ChatPhoto';
-import { Message } from './Message';
+import { ChatLocation } from "./ChatLocation.js";
+import { ChatPermissions } from "./ChatPermissions.js";
+import { ChatPhoto } from "./ChatPhoto.js";
+import { Message } from "./Message.js";
 
 export type Chat = {
     id: number;

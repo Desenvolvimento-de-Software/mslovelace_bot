@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action";
-import Context from "../library/telegram/context/Context";
-import RelUsersChats from "../model/RelUsersChats";
-import UserHelper from "../helper/User";
-import ChatHelper from "../helper/Chat";
+import Action from "./Action.js";
+import Context from "../library/telegram/context/Context.js";
+import RelUsersChats from "../model/RelUsersChats.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
 
 export default class LeftChatMember extends Action {
 

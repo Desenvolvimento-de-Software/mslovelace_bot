@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DeleteMessage from "../resource/DeleteMessage";
-import EditMessageText from "../resource/EditMessageText";
-import SendMessage from "../resource/SendMessage";
-import Command from "./Command";
-import User from "./User";
-import Chat from "./Chat";
-import { Message as MessageType } from "../type/Message";
-import { User as UserType } from "../type/User";
-import { Options as OptionsType } from "../../../type/Options";
-import UserHelper from "../../../helper/User";
+import DeleteMessage from "../resource/DeleteMessage.js";
+import EditMessageText from "../resource/EditMessageText.js";
+import SendMessage from "../resource/SendMessage.js";
+import Command from "./Command.js";
+import User from "./User.js";
+import Chat from "./Chat.js";
+import { Message as MessageType } from "../type/Message.js";
+import { User as UserType } from "../type/User.js";
+import { Options as OptionsType } from "../../../type/Options.js";
+import UserHelper from "../../../helper/User.js";
 
 export default class Message {
 

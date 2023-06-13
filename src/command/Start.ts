@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import Context from "../library/telegram/context/Context";
-import ChatHelper from "../helper/Chat";
-import Lang from "../helper/Lang";
-import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
-import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
+import Command from "./Command.js";
+import Context from "../library/telegram/context/Context.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class Start extends Command {
 
@@ -39,66 +39,38 @@ export default class Start extends Command {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
-            return;
-        }
-
-        const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }
 
-        // Lang.set(chat.language || "us");
+        Lang.set(chat.language || "us");
 
-        // if (this.context.chat.getType() !== "private") {
-        //     this.context.message.reply(Lang.get("groupStartMessage"));
-        //     return;
-        // }
+        if (this.context.chat.getType() !== "private") {
 
-        // const chat = await ChatHelper.getChatByTelegramId(payload.message.chat.id);
+            const message = Lang.get("groupStartMessage")
+                .replace("{userid}", this.context.user.getId())
+                .replace("{username}", this.context.user.getFirstName() || this.context.user.getUsername());
 
+            this.context.message.reply(message, { parseMode: "HTML" });
+            return;
+        }
 
-        // if (payload.message.chat.type !== "private" && !isAdmin) {
-        //     return;
-        // }
+        const helpButton: InlineKeyboardButton = {
+            text: Lang.get("helpButton"),
+            callbackData: "help"
+        };
 
-        // if (payload.message.chat.type !== "private") {
+        const groupAddButton: InlineKeyboardButton = {
+            text : Lang.get("startButton"),
+            url  : "http://t.me/mslovelace_bot?startgroup=botstart"
+        };
 
-        //     const message = Lang.get("groupStartMessage")
-        //         .replace("{userid}", payload.message.from.id)
-        //         .replace("{username}", payload.message.from.first_name || payload.message.from.username);
+        const markup: InlineKeyboardMarkup = {
+            inlineKeyboard : [[helpButton, groupAddButton]]
+        };
 
-        //     const sendMessage = new SendMessage();
-        //     sendMessage
-        //         .setChatId(payload.message.chat.id)
-        //         .setText(message)
-        //         .setParseMode("HTML")
-        //         .post();
-
-        //     return;
-        // }
-
-        // const helpButton: InlineKeyboardButton = {
-        //     text: Lang.get("helpButton"),
-        //     callbackData: "help"
-        // };
-
-        // const groupAddButton: InlineKeyboardButton = {
-        //     text : Lang.get("startButton"),
-        //     url  : "http://t.me/mslovelace_bot?startgroup=botstart"
-        // };
-
-        // const markup: InlineKeyboardMarkup = {
-        //     inlineKeyboard : [[helpButton, groupAddButton]]
-        // };
-
-        // const message     = Lang.get("startMessage");
-        // const sendMessage = new SendMessage();
-        // sendMessage
-        //     .setChatId(payload.message.chat.id)
-        //     .setText(message)
-        //     .setParseMode("HTML")
-        //     .setReplyMarkup(markup)
-        //     .post();
+        const options = { parseMode: "HTML", replyMarkup: markup };
+        this.context.chat.sendMessage(Lang.get("startMessage"), options);
     }
 }

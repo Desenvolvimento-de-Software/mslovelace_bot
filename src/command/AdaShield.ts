@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import ChatConfigs from "../model/ChatConfigs";
-import ChatHelper from "../helper/Chat";
-import Lang from "../helper/Lang";
-import Context from "../library/telegram/context/Context";
-import CommandContext from "../library/telegram/context/Command";
+import Command from "./Command.js";
+import ChatConfigs from "../model/ChatConfigs.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 
 export default class AdaShield extends Command {
 

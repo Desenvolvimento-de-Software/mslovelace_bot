@@ -9,9 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
-import User from "../library/telegram/context/User";
-import Users from "../model/Users";
+import User from "../library/telegram/context/User.js";
+import Users from "../model/Users.js";
 
 export default class UserHelper {
 

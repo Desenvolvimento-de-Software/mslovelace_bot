@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Animation } from "../Animation";
-import { MessageEntity } from "../MessageEntity";
-import { PhotoSize } from "../PhotoSize";
+import { Animation } from "../Animation.js";
+import { MessageEntity } from "../MessageEntity.js";
+import { PhotoSize } from "../PhotoSize.js";
 
 export type Game = {
     title: string;

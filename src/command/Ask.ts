@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import Context from "../library/telegram/context/Context";
-import ChatHelper from "../helper/Chat";
-import Lang from "../helper/Lang";
+import Command from "./Command.js";
+import Context from "../library/telegram/context/Context.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
 
 export default class Ask extends Command {
 

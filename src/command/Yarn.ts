@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
-import Command from "./Command";
-import ChatHelper from "../helper/Chat";
-import YarnPackage from "../helper/YarnPackage";
-import Lang from "../helper/Lang";
-import Log from "../helper/Log";
+import Context from "../library/telegram/context/Context.js";
+import Command from "./Command.js";
+import ChatHelper from "../helper/Chat.js";
+import YarnPackage from "../helper/YarnPackage.js";
+import Lang from "../helper/Lang.js";
+import Log from "../helper/Log.js";
 import { exec } from "child_process";
 
 export default class Yarn extends Command {

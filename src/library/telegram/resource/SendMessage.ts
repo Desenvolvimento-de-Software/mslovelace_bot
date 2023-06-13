@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi";
-import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup";
+import TelegramBotApi from "../TelegramBotApi.js";
+import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
 
 export default class SendMessage extends TelegramBotApi {
 

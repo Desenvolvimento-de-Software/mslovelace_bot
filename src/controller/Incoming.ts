@@ -9,9 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App";
-import Controller from "./Controller";
-import Context from "../library/telegram/context/Context";
+import App from "../App.js";
+import Controller from "./Controller.js";
 
 export default class IncomingController extends Controller {
 

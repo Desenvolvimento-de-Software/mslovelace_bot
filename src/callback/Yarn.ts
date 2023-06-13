@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context";
-import Callback from "./Callback";
-import YarnCommand from "../command/Yarn";
+import Context from "../library/telegram/context/Context.js";
+import Callback from "./Callback.js";
+import YarnCommand from "../command/Yarn.js";
 
 export default class Yarn extends Callback {
 

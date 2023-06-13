@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import Context from "../library/telegram/context/Context";
-import Message from "src/library/telegram/context/Message";
-import User from "src/library/telegram/context/User";
-import CommandContext from "../library/telegram/context/Command";
+import Command from "./Command.js";
+import Context from "../library/telegram/context/Context.js";
+import Message from "src/library/telegram/context/Message.js";
+import User from "src/library/telegram/context/User.js";
+import CommandContext from "../library/telegram/context/Command.js";
 
 export default class Unban extends Command {
 

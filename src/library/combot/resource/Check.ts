@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import CasApi from "../CasApi";
+import CasApi from "../CasApi.js";
 
 export default class Check extends CasApi {
 

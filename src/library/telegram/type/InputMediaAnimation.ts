@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { InputFile } from "./InputFile";
+import { InputFile } from "./InputFile.js";
 
 export type InputMediaAnimation = {
     type: string;
