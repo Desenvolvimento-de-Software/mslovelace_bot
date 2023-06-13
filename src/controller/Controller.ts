@@ -19,6 +19,7 @@ import TelegramBotApi from "../library/telegram/TelegramBotApi";
 import { actions } from "../config/actions";
 import { commands } from "../config/commands";
 import { callbacks } from "../config/callbacks";
+import Log from "../helper/Log";
 
 export default interface Controller {
     executeSyncAction(action: Action): void;
@@ -178,11 +179,12 @@ export default class Controller {
      */
     private async executeAction(action: Action): Promise<void> {
 
-        if (action.isSync()) {
-            return await action.run();
-        }
+        try {
+            return (action.isSync()) ? await action.run() : action.run();
 
-        return action.run();
+        } catch (error: any) {
+            Log.append(error.toStirng());
+        }
     }
 
     /**
@@ -194,9 +196,14 @@ export default class Controller {
      * @param command
      */
     private executeCommand(command: Command): void {
+
         const commandContext = command.isCalled();
-        if (commandContext) {
-            command.run(commandContext);
+
+        try {
+            !commandContext || command.run(commandContext);
+
+        } catch (error: any) {
+            Log.append(error.toStirng());
         }
     }
 
@@ -209,8 +216,12 @@ export default class Controller {
      * @param callback
      */
     private executeCallback(callback: Callback): void {
-        if (callback.isCalled()) {
-            callback.run();
+
+        try {
+            !callback.isCalled() || callback.run();
+
+        } catch (error: any) {
+            Log.append(error.toStirng());
         }
     }
 }

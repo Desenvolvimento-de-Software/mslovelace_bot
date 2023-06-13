@@ -1,64 +1,57 @@
-// /**
-//  * Ada Lovelace Telegram Bot
-//  *
-//  * This file is part of Ada Lovelace Telegram Bot.
-//  * You are free to modify and share this project or its files.
-//  *
-//  * @package  mslovelace_bot
-//  * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
-//  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
-//  */
+/**
+ * Ada Lovelace Telegram Bot
+ *
+ * This file is part of Ada Lovelace Telegram Bot.
+ * You are free to modify and share this project or its files.
+ *
+ * @package  mslovelace_bot
+ * @author   Marcos Leandro <mleandrojr@yggdrasill.com.br>
+ * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
+ */
 
-// import App from "../App";
-// import Command from "./Command";
-// import Chats from "../model/Chats";
-// import ChatHelper from "../helper/Chat";
+import Command from "./Command";
+import Context from "../library/telegram/context/Context";
+import ChatHelper from "../helper/Chat";
+import ChatConfigs from "src/model/ChatConfigs";
 
-// export default class Restrict extends Command {
+export default class Restrict extends Command {
 
-//     /**
-//      * The constructor.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      */
-//      public constructor(app: App) {
-//         super(app);
-//     }
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since 1.0.0
+     */
+     public constructor(context: Context) {
+        super(context);
+        this.setCommands(["restrict"]);
+    }
 
-//     /**
-//      * Command main route.
-//      *
-//      * @author Marcos Leandro
-//      * @since 1.0.0
-//      *
-//      * @param payload
-//      */
-//     public async index(payload: Record<string, any>): Promise<void> {
+    /**
+     * Runs the command.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-13
+     *
+     * @param payload
+     */
+    public async run(): Promise<void> {
 
-//         if (!await this.isAdmin(payload)) {
-//             this.warnUserAboutReporting(payload);
-//             return;
-//         }
+        if (!await this.context.user.isAdmin()) {
+            return;
+        }
 
-//         const chatId = payload.message.chat.id;
-//         const chat   = await ChatHelper.getChatByTelegramId(chatId);
+        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        if (!chat || !chat.id) {
+            return;
+        }
 
-//         if (!chatId || !chat) {
-//             return;
-//         }
+        const chatConfig = new ChatConfigs();
+        chatConfig
+            .update()
+            .set("restrict_new_users", 1)
+            .where("id").equal(chat.id);
 
-//         const chats = new Chats();
-//         chats
-//             .update()
-//             .set("restrict_new_users", 1)
-//             .where("id").equal(chat.id);
-
-//         try {
-//             chats.execute();
-
-//         } catch (err: any) {
-//             this.app.log(err.toString());
-//         }
-//     }
-// }
+        await chatConfig.execute();
+    }
+}
