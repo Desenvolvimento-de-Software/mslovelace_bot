@@ -10,20 +10,35 @@
  */
 
 export default class Text {
-  /**
-   * Formats the text with the given parameters.
-   *
-   * @author Marcos Leandro
-   * @since  1.0.0
-   *
-   * @param text
-   * @param args
-   *
-   * @returns {string}
-   */
-  public static format(text: string, ...args: any[]): string {
-    return text.replace(/{(\d+)}/g, function (match, number) {
-      return typeof args[number] != "undefined" ? args[number] : match;
-    });
-  }
+
+    /**
+     * Formats the text with the given parameters.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param text
+     * @param args
+     *
+     * @returns {string}
+     */
+    public static format(text: string, ...args: any[]): string {
+        return text.replace(/{(\d+)}/g, function (match, number) {
+            return typeof args[number] != "undefined" ? args[number] : match;
+        });
+    }
+
+    /**
+     * Escapes the markdown characters.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @param {string} text
+     *
+     * @return {string}
+     */
+    public static markdownEscape(text: string): string {
+        return text.replace(/[_*[\]()~`>#+-=|{}.!]/g, "\\$&");
+    }
 }

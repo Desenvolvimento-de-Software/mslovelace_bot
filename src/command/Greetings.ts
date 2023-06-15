@@ -93,13 +93,12 @@ export default class GreetingsCommand extends Command {
             return;
         }
 
-        let greetingsDemo = Lang.get("greetingsMessageDemo");
-        greetingsDemo = greetingsDemo.replace("{greetings}", result[0].greetings);
-        greetingsDemo = greetingsDemo.replace("{userid}", this.context.user.getId());
-        greetingsDemo = greetingsDemo.replace(
-            "{username}",
-            this.context.user.getFirstName() || this.context.user.getUsername()
-        );
+        const greetingsDemo = Lang.get("greetingsMessageDemo")
+            .replace("{greetings}", result[0].greetings)
+            .replace("{userid}", this.context.user.getId())
+            .replace(
+                "{username}", this.context.user.getFirstName() || this.context.user.getUsername()
+            );
 
         this.context.chat.sendMessage(greetingsDemo, { parseMode: "HTML" });
     }
@@ -120,8 +119,11 @@ export default class GreetingsCommand extends Command {
         Lang.set(chat.language);
         const result = await this.updateGreetingsStatus(chat.id, 1);
 
+        const greetingsStatus = Lang.get("textEnabled");
+        const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
+
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get("commandGreetingsActivated"));
+            this.context.chat.sendMessage(Lang.get(greetingsMessage));
         }
     }
 
@@ -141,8 +143,11 @@ export default class GreetingsCommand extends Command {
         Lang.set(chat.language);
         const result = await this.updateGreetingsStatus(chat.id, 0);
 
+        const greetingsStatus = Lang.get("textDisabled");
+        const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
+
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get("commandGreetingsDeactivated"));
+            this.context.chat.sendMessage(Lang.get(greetingsMessage));
         }
     }
 
