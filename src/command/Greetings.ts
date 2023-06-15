@@ -119,8 +119,11 @@ export default class GreetingsCommand extends Command {
         Lang.set(chat.language);
         const result = await this.updateGreetingsStatus(chat.id, 1);
 
+        const greetingsStatus = Lang.get("textEnabled");
+        const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
+
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get("commandGreetingsActivated"));
+            this.context.chat.sendMessage(Lang.get(greetingsMessage));
         }
     }
 
@@ -140,8 +143,11 @@ export default class GreetingsCommand extends Command {
         Lang.set(chat.language);
         const result = await this.updateGreetingsStatus(chat.id, 0);
 
+        const greetingsStatus = Lang.get("textDisabled");
+        const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
+
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get("commandGreetingsDeactivated"));
+            this.context.chat.sendMessage(Lang.get(greetingsMessage));
         }
     }
 
