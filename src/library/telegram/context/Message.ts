@@ -119,14 +119,8 @@ export default class Message {
         return sendMessage
             .post()
             .then((response) => response.json())
-            .then((json) => {
-
-                if (json.result) {
-                    return new Message(json.result);
-                }
-
-                throw new Error(json);
-            })
+            .then((json) => this.validateJsonResponse(json))
+            .then((json) => new Message(json.result))
             .catch((error) => console.error(error));
     }
 
@@ -418,5 +412,23 @@ export default class Message {
         };
 
         this.commands.push(new Command(command, options));
+    }
+
+    /**
+     * Validates the json response.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @param {Record<string, any>} response
+     *
+     * @return {Record<string, any>}
+     */
+    private validateJsonResponse(response: Record<string, any>): Record<string, any> {
+        if (!response.result) {
+            throw new Error(JSON.stringify(response));
+        }
+
+        return response;
     }
 }
