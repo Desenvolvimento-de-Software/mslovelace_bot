@@ -119,7 +119,15 @@ export default class Message {
         return sendMessage
             .post()
             .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((json) => {
+
+                if (json.result) {
+                    return new Message(json.result);
+                }
+
+                throw new Error(json);
+            })
+            .catch((error) => console.error(error));
     }
 
     /**

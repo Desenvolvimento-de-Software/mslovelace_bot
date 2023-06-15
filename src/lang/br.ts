@@ -57,4 +57,5 @@ export default {
     warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertência.\n\nMotivo:\n",
     warningPluralMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertências.\n\nMotivos:\n",
     warningBanMessage : "❌ <a href=\"tg://user?id={userid}\">{username}</a> levou ban por ter {warns} advertências.\n\nMotivos:\n",
+    reportMessage: "Reportado aos administradores."
 };
