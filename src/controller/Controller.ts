@@ -111,7 +111,6 @@ export default class Controller {
      * @param {Record<string, any>} payload
      */
     protected async handle(payload: Record<string, any>): Promise<void> {
-        console.log(JSON.stringify(payload));
         const context = new Context(payload);
         this.handleActions(context);
         this.handleCommands(context);
