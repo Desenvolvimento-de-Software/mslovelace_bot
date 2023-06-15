@@ -9,28 +9,30 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import AdaShieldCommand from "../command/AdaShield.js";
-import AskCommand from "../command/Ask.js";
-import BanCommand from "../command/Ban.js";
-import GreetingsCommand from "../command/Greetings.js";
-import KickCommand from "../command/Kick.js";
-import NpmCommand from "../command/Npm.js";
-import RestrictCommand from "../command/Restrict.js";
-import SendCommand from "../command/Send.js";
-import StartCommand from "../command/Start.js";
-import UnbanCommand from "../command/Unban.js";
-import YarnCommand from "../command/Yarn.js";
+import AdaShield from "../command/AdaShield.js";
+import Ask from "../command/Ask.js";
+import Ban from "../command/Ban.js";
+import Greetings from "../command/Greetings.js";
+import Kick from "../command/Kick.js";
+import Npm from "../command/Npm.js";
+import Restrict from "../command/Restrict.js";
+import Send from "../command/Send.js";
+import Start from "../command/Start.js";
+import Unban from "../command/Unban.js";
+import Yarn from "../command/Yarn.js";
+import Warn from "../command/Warn.js";
 
 export const commands = [
-    AdaShieldCommand,
-    AskCommand,
-    BanCommand,
-    GreetingsCommand,
-    KickCommand,
-    NpmCommand,
-    RestrictCommand,
-    SendCommand,
-    StartCommand,
-    UnbanCommand,
-    YarnCommand
+    AdaShield,
+    Ask,
+    Ban,
+    Greetings,
+    Kick,
+    Npm,
+    Restrict,
+    Send,
+    Start,
+    Unban,
+    Yarn,
+    Warn
 ];

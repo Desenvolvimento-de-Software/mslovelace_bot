@@ -50,5 +50,12 @@ export default {
     packageDevDependencies : "🖇 Dev Dependencies:",
     npmPackageInstall : "⌨️ Install:\n<code>npm install {package}</code>",
     yarnPackageInstall : "⌨️ Install:\n<code>yarn add {package}</code>",
-    playgroundLink : "🧪 Playground:\nhttps://npm.runkit.com/{package}"
+    playgroundLink : "🧪 Playground:\nhttps://npm.runkit.com/{package}",
+    selfReportMessage : "Why would I report myself?",
+    adminReportMessage : "Why would I report an admin?",
+    selfWarnMessage : "Why would I warn myself?",
+    adminWarnMessage : "Why would I warn an admin?",
+    warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warning.\n\nReason:\n",
+    warningPluralMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReasons:\n",
+    warningBanMessage : "❌ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings and has been banned.\n\nReasons:\n",
 };

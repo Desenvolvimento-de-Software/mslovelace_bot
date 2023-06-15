@@ -93,13 +93,12 @@ export default class GreetingsCommand extends Command {
             return;
         }
 
-        let greetingsDemo = Lang.get("greetingsMessageDemo");
-        greetingsDemo = greetingsDemo.replace("{greetings}", result[0].greetings);
-        greetingsDemo = greetingsDemo.replace("{userid}", this.context.user.getId());
-        greetingsDemo = greetingsDemo.replace(
-            "{username}",
-            this.context.user.getFirstName() || this.context.user.getUsername()
-        );
+        const greetingsDemo = Lang.get("greetingsMessageDemo")
+            .replace("{greetings}", result[0].greetings)
+            .replace("{userid}", this.context.user.getId())
+            .replace(
+                "{username}", this.context.user.getFirstName() || this.context.user.getUsername()
+            );
 
         this.context.chat.sendMessage(greetingsDemo, { parseMode: "HTML" });
     }
