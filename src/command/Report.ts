@@ -41,7 +41,7 @@ export default class Report extends Command {
      *
      * @returns
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(): Promise<void> {
 
         const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
