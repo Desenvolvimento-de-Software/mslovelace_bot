@@ -9,17 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command";
-import Context from "../library/telegram/context/Context";
-import CommandContext from "../library/telegram/context/Command";
-import User from "../library/telegram/context/User";
-import Message from "../library/telegram/context/Message";
-import ChatConfigs from "../model/ChatConfigs";
-import Warns from "../model/Warns";
-import UserHelper from "../helper/User";
-import ChatHelper from "../helper/Chat";
-import Lang from "../helper/Lang";
-import Log from "../helper/Log";
+import Command from "./Command.js";
+import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
+import User from "../library/telegram/context/User.js";
+import Message from "../library/telegram/context/Message.js";
+import ChatConfigs from "../model/ChatConfigs.js";
+import Warns from "../model/Warns.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import Log from "../helper/Log.js";
 
 export default class Warn extends Command {
 

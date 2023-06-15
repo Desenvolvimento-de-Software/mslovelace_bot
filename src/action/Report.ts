@@ -12,8 +12,6 @@
 import Action from "../action/Action.js";
 import Context from "../library/telegram/context/Context.js";
 import ReportCommand from "../command/Report.js";
-import ChatHelper from "../helper/Chat.js";
-import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
 
 export default class Report extends Action {
 
