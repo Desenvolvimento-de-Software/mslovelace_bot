@@ -17,6 +17,7 @@ import NewChatMember from "../action/NewChatMember.js";
 import LeftChatMember from "../action/LeftChatMember.js";
 import Ping from "../action/Ping.js";
 import saveUserAndChat from "../action/SaveUserAndChat.js";
+import Report from "../action/Report.js";
 
 export const actions = [
     saveUserAndChat,
@@ -26,5 +27,6 @@ export const actions = [
     AskToAsk,
     NewChatMember,
     LeftChatMember,
-    Ping
+    Ping,
+    Report
 ];

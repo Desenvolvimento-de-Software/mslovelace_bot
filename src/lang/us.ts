@@ -14,8 +14,7 @@ export default {
     startButton : "Add me to your group",
     helpButton : "Help",
     defaultGreetings : "Hey <a href=\"tg://user?id={userid}\">{username}</a>, welcome to this group! If you have any questions, please contact an admin.",
-    commandGreetingsActivated : "Greetings activated",
-    commandGreetingsDeactivated : "Greetings deactivated",
+    greetingsStatus : "Greetings status: {status}",
     warnNameChanging : "<a href=\"tg://user?id={userid}\">{oldname}</a> changed their name to <a href=\"tg://user?id={userid}\">{newname}</a>",
     unauthorizedCommand : "<a href=\"tg://user?id={userid}\">{username}</a>, you are not supposed to send this command here.\nThis incident will be reported.",
     unauthorizedCommandReport : "The user <a href=\"tg://user?id={userid}\">{username}</a> is trying to send an unauthorized command in <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
@@ -50,5 +49,13 @@ export default {
     packageDevDependencies : "🖇 Dev Dependencies:",
     npmPackageInstall : "⌨️ Install:\n<code>npm install {package}</code>",
     yarnPackageInstall : "⌨️ Install:\n<code>yarn add {package}</code>",
-    playgroundLink : "🧪 Playground:\nhttps://npm.runkit.com/{package}"
+    playgroundLink : "🧪 Playground:\nhttps://npm.runkit.com/{package}",
+    selfReportMessage : "Why would I report myself?",
+    adminReportMessage : "Why would I report an admin?",
+    selfWarnMessage : "Why would I warn myself?",
+    adminWarnMessage : "Why would I warn an admin?",
+    warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warning.\n\nReason:\n",
+    warningPluralMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReasons:\n",
+    warningBanMessage : "❌ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings and has been banned.\n\nReasons:\n",
+    report: "Reported to the admins."
 };

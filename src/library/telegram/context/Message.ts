@@ -19,6 +19,7 @@ import { Message as MessageType } from "../type/Message.js";
 import { User as UserType } from "../type/User.js";
 import { Options as OptionsType } from "../../../type/Options.js";
 import UserHelper from "../../../helper/User.js";
+import { MessageEntity } from "../type/MessageEntity.js";
 
 export default class Message {
 
@@ -43,6 +44,16 @@ export default class Message {
     private user: User;
 
     /**
+     * Message entities.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @var {Record<string, any>[]}
+     */
+    private entities: MessageEntity[] = [];
+
+    /**
      * The message mentions.
      *
      * @author Marcos Leandro
@@ -50,7 +61,7 @@ export default class Message {
      *
      * @var {User[]}
      */
-    private mentions?: User[];
+    private mentions: User[] = [];
 
     /**
      * The message commands.
@@ -89,6 +100,7 @@ export default class Message {
     public constructor(context: MessageType) {
         this.context = context;
         this.user = this.parseSender();
+        this.parseEntities();
         this.parseCommands();
         this.parseReplyToMessage();
     }
@@ -119,7 +131,9 @@ export default class Message {
         return sendMessage
             .post()
             .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((json) => this.validateJsonResponse(json))
+            .then((json) => new Message(json.result))
+            .catch((error) => console.error(error));
     }
 
     /**
@@ -229,6 +243,18 @@ export default class Message {
     }
 
     /**
+     * Returns the message entities.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @return {MessageEntity[]}
+     */
+    public getEntities(): MessageEntity[] {
+        return this.entities;
+    }
+
+    /**
      * Returns the message mentions.
      *
      * @author Marcos Leandro
@@ -288,6 +314,22 @@ export default class Message {
     }
 
     /**
+     * Parses the message entities.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     */
+    private parseEntities(): void {
+
+        const entities = this.context.entities;
+        if (!Array.isArray(entities)) {
+            return;
+        }
+
+        this.entities = this.context.entities!;
+    }
+
+    /**
      * Parses the message commands.
      *
      * @author Marcos Leandro
@@ -296,13 +338,7 @@ export default class Message {
      * @returns {void}
      */
     private parseCommands(): void {
-
-        const entities = this.context.entities;
-        if (!Array.isArray(entities)) {
-            return;
-        }
-
-        for (const entity of entities) {
+        for (const entity of this.entities) {
             this.parseCommand(entity);
         }
     }
@@ -314,12 +350,7 @@ export default class Message {
      * @since  2023-06-12
      */
     private async parseMentions(): Promise<void> {
-        const entities = this.context.entities;
-        if (!Array.isArray(entities)) {
-            return;
-        }
-
-        for (const entity of entities) {
+        for (const entity of this.entities) {
             await this.appendMention(entity);
         }
     }
@@ -410,5 +441,23 @@ export default class Message {
         };
 
         this.commands.push(new Command(command, options));
+    }
+
+    /**
+     * Validates the json response.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @param {Record<string, any>} response
+     *
+     * @return {Record<string, any>}
+     */
+    private validateJsonResponse(response: Record<string, any>): Record<string, any> {
+        if (!response.result) {
+            throw new Error(JSON.stringify(response));
+        }
+
+        return response;
     }
 }

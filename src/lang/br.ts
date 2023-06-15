@@ -14,8 +14,7 @@ export default {
     startButton : "Adicione-me ao seu grupo",
     helpButton : "Ajuda",
     defaultGreetings : "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador.",
-    commandGreetingsActivated : "Saudações ativadas",
-    commandGreetingsDeactivated : "Saudações desativadas",
+    greetingsStatus : "Status das saudações: {status}",
     warnNameChanging : "<a href=\"tg://user?id={userid}\">{oldname}</a> mudou seu nome para <a href=\"tg://user?id={userid}\">{newname}</a>",
     unauthorizedCommand : "<a href=\"tg://user?id={userid}\">{username}</a>, você não está autorizado a enviar este comando aqui.\nEste incidente será reportado.",
     unauthorizedCommandReport : "O usuário <a href=\"tg://user?id={userid}\">{username}</a> está tentando enviar um comando não autorizado em <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
@@ -50,5 +49,13 @@ export default {
     packageDevDependencies : "🖇 Dependências Dev:",
     npmPackageInstall : "⌨️ Instalação:\n<code>npm install {package}</code>",
     yarnPackageInstall : "⌨️ Instalação:\n<code>yarn add {package}</code>",
-    playgroundLink : "🧪 Experimentos:\nhttps://npm.runkit.com/{package}"
+    playgroundLink : "🧪 Experimentos:\nhttps://npm.runkit.com/{package}",
+    selfReportMessage : "Por que eu me reportaria?",
+    adminReportMessage : "Por que eu reportaria um administrador?",
+    selfWarnMessage : "Por que eu me daria advertência?",
+    adminWarnMessage : "Por que eu daria advertência em um administrador?",
+    warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertência.\n\nMotivo:\n",
+    warningPluralMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertências.\n\nMotivos:\n",
+    warningBanMessage : "❌ <a href=\"tg://user?id={userid}\">{username}</a> levou ban por ter {warns} advertências.\n\nMotivos:\n",
+    reportMessage: "Reportado aos administradores."
 };
