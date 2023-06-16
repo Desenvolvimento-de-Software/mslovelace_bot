@@ -23,7 +23,7 @@ export default class Context {
     public newChatMember?: User;
     public leftChatMember?: User;
     public callbackQuery?: CallbackQuery
-    private type: string;
+    public type: string;
     private payload: Record<string, any>;
 
     /**

@@ -25,12 +25,12 @@ export default class saveUserAndChat extends Action {
      *
      * @param context
      */
-    constructor(context: Context) {
+    public constructor(context: Context) {
         super(context, "sync");
     }
 
     /**
-     * Run the action.
+     * Runs the action.
      *
      * @author Marcos Leandro
      * @since  2023-06-06
