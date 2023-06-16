@@ -85,9 +85,9 @@ export default class saveUserAndChat extends Action {
             insert.set("thread_id", threadId);
         }
 
-        const reply = this.context.message.getReplyToMessage();
-        if (reply) {
-            insert.set("reply_to", this.getReplyMessageId(reply.getId()));
+        const replyTo = await this.getReplyMessageId();
+        if (replyTo) {
+            insert.set("reply_to", replyTo);
         }
 
         const entities = this.context.message.getEntities();
@@ -126,9 +126,9 @@ export default class saveUserAndChat extends Action {
             update.set("thread_id", threadId);
         }
 
-        const reply = this.context.message.getReplyToMessage();
-        if (reply) {
-            update.set("reply_to", this.getReplyMessageId(reply.getId()));
+        const replyTo = await this.getReplyMessageId();
+        if (replyTo) {
+            update.set("reply_to", replyTo);
         }
 
         const entities = this.context.message.getEntities();
@@ -149,14 +149,19 @@ export default class saveUserAndChat extends Action {
      *
      * @return {number|null}
      */
-    private getReplyMessageId(replyTo: number): number|null {
+    private async getReplyMessageId(): Promise<number|null> {
+
+        const replyToMessage = this.context.message.getReplyToMessage();
+        if (!replyToMessage) {
+            return null;
+        }
 
         const message = new Messages();
         message
             .select()
-            .where("message_id").equal(replyTo);
+            .where("message_id").equal(replyToMessage.getId());
 
-        const reply = message.execute();
+        const reply = await message.execute();
         if (reply.length) {
             return reply[0].id;
         }
