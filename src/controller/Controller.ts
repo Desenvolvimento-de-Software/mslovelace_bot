@@ -178,7 +178,7 @@ export default class Controller {
             return (action.isSync()) ? await action.run() : action.run();
 
         } catch (error: any) {
-            Log.append(error.toStirng());
+            Log.append(error.toString());
         }
     }
 

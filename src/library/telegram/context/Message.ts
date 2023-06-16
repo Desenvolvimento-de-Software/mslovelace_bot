@@ -200,7 +200,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @returns {User}
+     * @return {User}
      */
     public getUser(): User {
         return this.user;
@@ -212,10 +212,22 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns
+     * @return {string}
      */
     public getText(): string {
         return this.context.text || "";
+    }
+
+    /**
+     * Returns the message date.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-16
+     *
+     * @return {number|undefined}
+     */
+    public getDate(): number|undefined {
+        return this.context.date;
     }
 
     /**
@@ -224,7 +236,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns {Message|undefined}
+     * @return {Message|undefined}
      */
     public getReplyToMessage(): Message|undefined {
         return this.replyToMessage;
@@ -236,7 +248,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-12
      *
-     * @returns (number|undefined)
+     * @return (number|undefined)
      */
     public getMessageThreadId(): number|undefined {
         return this.messageThreadId;
@@ -260,7 +272,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {User[]}
+     * @return {User[]}
      */
     public async getMentions(): Promise<User[]> {
 
@@ -278,7 +290,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @returns
+     * @return
      */
     public getCommands(): Command[] {
         return this.commands;
@@ -290,7 +302,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @returns
+     * @return
      */
     private parseReplyToMessage(): void {
 
@@ -307,7 +319,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {User}
+     * @return {User}
      */
     private parseSender(): User {
         return new User(this.context.from!, new Chat(this.context));
@@ -335,7 +347,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {void}
+     * @return {void}
      */
     private parseCommands(): void {
         for (const entity of this.entities) {
@@ -380,7 +392,7 @@ export default class Message {
      *
      * @param entity
      *
-     * @returns {void}
+     * @return {void}
      */
     private async appendMention(entity: Record<string, any>): Promise<void> {
 

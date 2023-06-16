@@ -25,33 +25,31 @@ export default class saveUserAndChat extends Action {
      *
      * @param context
      */
-    constructor(context: Context) {
+    public constructor(context: Context) {
         super(context, "sync");
     }
 
     /**
-     * Run the action.
+     * Runs the action.
      *
      * @author Marcos Leandro
      * @since  2023-06-06
      */
     public async run(): Promise<void> {
 
-        if (!this.context.newChatMember) {
-            return;
-        }
-
-        const user = await UserHelper.getUserByTelegramId(this.context.newChatMember!.getId());
-        const userId = user === null ? await UserHelper.createUser(this.context.newChatMember) : user.id;
+        const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
+        const user = await UserHelper.getUserByTelegramId(contextUser.getId());
+        const userId = user === null ? await UserHelper.createUser(contextUser) : user.id;
 
         const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
         const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat.id;
 
-        UserHelper.updateUser(this.context.newChatMember);
+        UserHelper.updateUser(contextUser);
         ChatHelper.updateChat(this.context.chat);
 
         if (!await this.hasRelationship(userId, chatId)) {
-            return await this.saveRelationship(userId, chatId);
+            const query = await this.saveRelationship(userId, chatId);
+            return query;
         }
 
         return await this.updateRelationship(userId, chatId);

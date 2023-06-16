@@ -16,11 +16,13 @@ import Greetings from "../action/Greetings.js";
 import NewChatMember from "../action/NewChatMember.js";
 import LeftChatMember from "../action/LeftChatMember.js";
 import Ping from "../action/Ping.js";
-import saveUserAndChat from "../action/SaveUserAndChat.js";
+import SaveMessage from "../action/SaveMessage.js";
+import SaveUserAndChat from "../action/SaveUserAndChat.js";
 import Report from "../action/Report.js";
 
 export const actions = [
-    saveUserAndChat,
+    SaveUserAndChat,
+    SaveMessage,
     AdaShield,
     Captcha,
     Greetings,
