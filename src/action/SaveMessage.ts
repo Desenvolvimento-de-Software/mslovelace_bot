@@ -91,9 +91,69 @@ export default class saveUserAndChat extends Action {
             insert.set("reply_to", replyTo);
         }
 
+        const callbackData = this.context.callbackQuery?.callbackData;
+        if (callbackData) {
+            insert.set("callbackQuery", JSON.stringify(callbackData));
+        }
+
         const entities = this.context.message.getEntities();
         if (entities) {
             insert.set("entities", JSON.stringify(entities));
+        }
+
+        const animation = this.context.message.getAnimation();
+        if (animation) {
+            insert.set("animation", JSON.stringify(animation));
+        }
+
+        const audio = this.context.message.getAudio();
+        if (audio) {
+            insert.set("audio", JSON.stringify(audio));
+        }
+
+        const document = this.context.message.getDocument();
+        if (document) {
+            insert.set("document", JSON.stringify(document));
+        }
+
+        const photo = this.context.message.getPhoto();
+        if (photo) {
+            insert.set("photo", JSON.stringify(photo));
+        }
+
+        const sticker = this.context.message.getSticker();
+        if (sticker) {
+            insert.set("sticker", JSON.stringify(sticker));
+        }
+
+        const video = this.context.message.getVideo();
+        if (video) {
+            insert.set("video", JSON.stringify(video));
+        }
+
+        const videoNote = this.context.message.getVideoNote();
+        if (videoNote) {
+            insert.set("videoNote", JSON.stringify(videoNote));
+        }
+
+        const voice = this.context.message.getVoice();
+        if (voice) {
+            insert.set("voice", JSON.stringify(voice));
+        }
+
+        const caption = this.context.message.getCaption();
+        if (caption) {
+            insert.set("caption", caption);
+        }
+
+        const captionEntities = this.context.message.getCaptionEntities();
+        if (captionEntities) {
+            insert.set("captionEntities", JSON.stringify(captionEntities));
+        }
+
+        const contact = this.context.message.getContact();
+        if (contact) {
+            insert.set("contact", JSON.stringify(contact));
         }
 
         message.execute();
