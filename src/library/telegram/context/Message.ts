@@ -297,6 +297,138 @@ export default class Message {
     }
 
     /**
+     * Returns the message animation.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getAnimation(): Record<string, any>|undefined {
+        return this.context.animation || undefined;
+    }
+
+    /**
+     * Returns the message audio.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getAudio(): Record<string, any>|undefined {
+        return this.context.audio || undefined;
+    }
+
+    /**
+     * Returns the message document.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getDocument(): Record<string, any>|undefined {
+        return this.context.document || undefined;
+    }
+
+    /**
+     * Returns the message photo.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getPhoto(): Record<string, any>[]|undefined {
+        return this.context.photo || undefined;
+    }
+
+    /**
+     * Returns the message sticker.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getSticker(): Record<string, any>|undefined {
+        return this.context.sticker || undefined;
+    }
+
+    /**
+     * Returns the message video.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getVideo(): Record<string, any>|undefined {
+        return this.context.video || undefined;
+    }
+
+    /**
+     * Returns the message video note.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getVideoNote(): Record<string, any>|undefined {
+        return this.context.videoNote || undefined;
+    }
+
+    /**
+     * Returns the message voice.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getVoice(): Record<string, any>|undefined {
+        return this.context.voice || undefined;
+    }
+
+    /**
+     * Returns the message caption.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getCaption(): string|undefined {
+        return this.context.caption || undefined;
+    }
+
+    /**
+     * Returns the message caption entities.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getCaptionEntities(): Record<string, any>[]|undefined {
+        return this.context.captionEntities || undefined;
+    }
+
+    /**
+     * Returns the message contact.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-19
+     *
+     * @return {Record<string, any>|undefined}
+     */
+    public getContact(): Record<string, any>|undefined {
+        return this.context.contact || undefined;
+    }
+
+    /**
      * Parses the reply to message.
      *
      * @author Marcos Leandro
