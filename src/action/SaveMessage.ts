@@ -46,13 +46,13 @@ export default class saveUserAndChat extends Action {
         const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
 
         switch (this.context.type) {
-            case "message":
-                this.saveNewMessage(user, chat);
-                break;
 
             case "editedMessage":
                 this.updateMessage(user, chat);
                 break;
+
+            default:
+                this.saveNewMessage(user, chat);
         }
 
         return Promise.resolve();
@@ -74,6 +74,7 @@ export default class saveUserAndChat extends Action {
         const message = new Messages();
         const insert = message.insert();
         insert
+            .set("type", this.context.type)
             .set("user_id", user.id)
             .set("chat_id", chat.id)
             .set("message_id", this.context.message.getId())
@@ -115,6 +116,7 @@ export default class saveUserAndChat extends Action {
         const message = new Messages();
         const update = message.update();
         update
+            .set("type", this.context.type)
             .set("content", this.context.message.getText())
             .set("date", this.context.message.getDate() || Math.floor(Date.now() / 1000))
             .where("user_id").equal(user.id)

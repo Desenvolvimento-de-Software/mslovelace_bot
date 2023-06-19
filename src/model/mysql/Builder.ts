@@ -524,7 +524,7 @@ export default abstract class Builder {
         switch (typeof value) {
 
             case "string":
-                return `'${value}'`;
+                return "'" + value.replace(/\n/g, "\\n").replace(/(['"])/g, "\\$1") + "'";
 
             case "object":
                 return JSON.stringify(value);
