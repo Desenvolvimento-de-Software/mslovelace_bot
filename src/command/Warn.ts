@@ -166,7 +166,7 @@ export default class Warn extends Command {
             this.reportWarnAndBan(contextUser, user, chat);
 
         } catch (error) {
-            Log.append(error as string);
+            Log.save(error as string);
         }
     }
 

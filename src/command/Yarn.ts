@@ -76,7 +76,7 @@ export default class Yarn extends Command {
             });
 
         } catch (err: any) {
-            Log.append(err.toString());
+            Log.save(err.toString());
         }
     }
 
@@ -93,12 +93,12 @@ export default class Yarn extends Command {
     private async processResponse(error: any, stdout: string, stderr: string): Promise<void> {
 
         if (error) {
-            Log.append(error.message);
+            Log.save(error.message);
             return;
         }
 
         if (stderr) {
-            Log.append(stderr);
+            Log.save(stderr);
             return;
         }
 

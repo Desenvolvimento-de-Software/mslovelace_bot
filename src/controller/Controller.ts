@@ -178,7 +178,7 @@ export default class Controller {
             return (action.isSync()) ? await action.run() : action.run();
 
         } catch (error: any) {
-            Log.append(error.toString());
+            Log.save(error.toString());
         }
     }
 
@@ -198,7 +198,7 @@ export default class Controller {
             !commandContext || command.run(commandContext);
 
         } catch (error: any) {
-            Log.append(error.toStirng());
+            Log.save(error.toString());
         }
     }
 
@@ -216,7 +216,7 @@ export default class Controller {
             !callback.isCalled() || callback.run();
 
         } catch (error: any) {
-            Log.append(error.toStirng());
+            Log.save(error.toString());
         }
     }
 }
