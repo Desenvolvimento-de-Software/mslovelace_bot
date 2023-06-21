@@ -12,6 +12,7 @@
 import App from "../App.js";
 import Controller from "./Controller.js";
 import GetUpdates from "../library/telegram/resource/GetUpdates.js";
+import Log from "../helper/Log.js";
 
 export default class Polling extends Controller {
 
@@ -39,7 +40,7 @@ export default class Polling extends Controller {
      */
     private async initializeLongPolling(offset?: number): Promise<void> {
 
-        console.log("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
+        Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
 
         const request = new GetUpdates();
         request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT || 60) as number);
@@ -55,7 +56,7 @@ export default class Polling extends Controller {
             offset = this.parseResponse(json);
 
         } catch (err) {
-            console.log(err);
+            Log.error(err);
         }
 
         this.initializeLongPolling(offset ? ++offset : undefined);
@@ -72,7 +73,7 @@ export default class Polling extends Controller {
     private parseResponse(response: Record<string, any>): number|undefined {
 
         if (!response.ok) {
-            console.error(response.description);
+            Log.error(response.description);
             return;
         }
 
