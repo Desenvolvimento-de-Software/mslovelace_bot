@@ -11,6 +11,7 @@
 
 import User from "../library/telegram/context/User.js";
 import Users from "../model/Users.js";
+import Log from "./Log.js";
 
 export default class UserHelper {
 
@@ -98,7 +99,7 @@ export default class UserHelper {
             return result.insertId;
 
         } catch (err) {
-            console.log(err);
+            Log.error(err);
             return null;
         }
     }

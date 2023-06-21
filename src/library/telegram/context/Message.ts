@@ -15,11 +15,12 @@ import SendMessage from "../resource/SendMessage.js";
 import Command from "./Command.js";
 import User from "./User.js";
 import Chat from "./Chat.js";
+import Log from "../../../helper/Log.js";
+import UserHelper from "../../../helper/User.js";
+import { MessageEntity } from "../type/MessageEntity.js";
 import { Message as MessageType } from "../type/Message.js";
 import { User as UserType } from "../type/User.js";
 import { Options as OptionsType } from "../../../type/Options.js";
-import UserHelper from "../../../helper/User.js";
-import { MessageEntity } from "../type/MessageEntity.js";
 
 export default class Message {
 
@@ -133,7 +134,7 @@ export default class Message {
             .then((response) => response.json())
             .then((json) => this.validateJsonResponse(json))
             .then((json) => new Message(json.result))
-            .catch((error) => console.error(error));
+            .catch((error) => Log.error(error));
     }
 
     /**
