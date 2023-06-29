@@ -54,7 +54,7 @@ export default {
     adminReportMessage : "Why would I report an admin?",
     selfWarnMessage : "Why would I warn myself?",
     adminWarnMessage : "Why would I warn an admin?",
-    warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warning.\n\nReason:\n",
+    warningSigleMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReason:\n",
     warningPluralMessage : "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReasons:\n",
     warningBanMessage : "❌ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings and has been banned.\n\nReasons:\n",
     reportMessage: "Reported to the admins."
