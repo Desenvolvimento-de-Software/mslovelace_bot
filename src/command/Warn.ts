@@ -199,18 +199,18 @@ export default class Warn extends Command {
         const chatConfig = await chatConfigs.execute();
         const warnLimit = chatConfig[0].warn_limit || 3;
 
-        const username = this.context.user.getFirstName() || this.context.user.getUsername();
+        const username = contextUser.getFirstName() || contextUser.getUsername();
         const langIndex = warns.length === 1 ? "warningSigleMessage" : "warningPluralMessage";
 
         let message = Lang.get(langIndex)
-            .replace("{userid}", this.context.user.getId())
+            .replace("{userid}", contextUser.getId())
             .replace("{username}", username)
             .replace("{warns}", warns.length.toString() + "/" + warnLimit.toString());
 
         if (warns.length >= warnLimit) {
             contextUser.ban();
             message = Lang.get("warningBanMessage")
-                .replace("{userid}", this.context.user.getId())
+                .replace("{userid}", contextUser.getId())
                 .replace("{username}", username)
                 .replace("{warns}", warns.length.toString() + "/" + warnLimit.toString());
         }
