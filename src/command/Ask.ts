@@ -45,7 +45,7 @@ export default class Ask extends Command {
 
         this.context.message.delete();
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         Lang.set(chat.language || "us");
 
         const replyToMessage = this.context.message.getReplyToMessage();

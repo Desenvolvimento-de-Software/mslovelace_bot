@@ -42,7 +42,7 @@ export default class AskToAsk extends Action {
             return;
         }
 
-        const chat = await ChatHelper.getChatByTelegramId(
+        const chat = await ChatHelper.getByTelegramId(
             this.context.chat.getId()
         );
 

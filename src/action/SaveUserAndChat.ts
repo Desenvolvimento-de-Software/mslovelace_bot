@@ -38,10 +38,10 @@ export default class saveUserAndChat extends Action {
     public async run(): Promise<void> {
 
         const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
-        const user = await UserHelper.getUserByTelegramId(contextUser.getId());
+        const user = await UserHelper.getByTelegramId(contextUser.getId());
         const userId = user === null ? await UserHelper.createUser(contextUser) : user.id;
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat.id;
 
         UserHelper.updateUser(contextUser);

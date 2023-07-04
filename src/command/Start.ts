@@ -39,7 +39,7 @@ export default class Start extends Command {
      */
     public async run(payload: Record<string, any>): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

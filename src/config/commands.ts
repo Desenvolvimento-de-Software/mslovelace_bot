@@ -12,6 +12,10 @@
 import AdaShield from "../command/AdaShield.js";
 import Ask from "../command/Ask.js";
 import Ban from "../command/Ban.js";
+import Federation from "../command/federation/Federation.js";
+import FederationGroup from "../command/federation/Group.js";
+import FederationManage from "../command/federation/Manage.js";
+import FederationUser from "../command/federation/User.js";
 import Greetings from "../command/Greetings.js";
 import Kick from "../command/Kick.js";
 import Npm from "../command/Npm.js";
@@ -27,6 +31,10 @@ export const commands = [
     AdaShield,
     Ask,
     Ban,
+    Federation,
+    FederationGroup,
+    FederationManage,
+    FederationUser,
     Greetings,
     Kick,
     Npm,

@@ -24,7 +24,7 @@ export default class ChatHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async getChatByTelegramId(chatId: number): Promise<any> {
+    public static async getByTelegramId(chatId: number): Promise<any> {
 
         const fields = [
             "chats.*",
@@ -96,7 +96,7 @@ export default class ChatHelper {
      */
     public static async updateChat(chat: Record<string, any>): Promise<number|undefined> {
 
-        const row = await ChatHelper.getChatByTelegramId(chat.getId());
+        const row = await ChatHelper.getByTelegramId(chat.getId());
         if (!row) {
             return;
         }
