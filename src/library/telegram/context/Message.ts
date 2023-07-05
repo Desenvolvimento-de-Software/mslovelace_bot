@@ -62,7 +62,7 @@ export default class Message {
      *
      * @var {User[]}
      */
-    private mentions: User[] = [];
+    private mentions?: User[];
 
     /**
      * The message commands.

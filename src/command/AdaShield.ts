@@ -68,7 +68,7 @@ export default class AdaShield extends Command {
      */
     public async index(): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }
@@ -112,7 +112,7 @@ export default class AdaShield extends Command {
      */
     public async change(status: number) {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

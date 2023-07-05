@@ -25,7 +25,7 @@ export default class UserHelper {
      *
      * @returns {Promise<any>}
      */
-    public static async getUserByTelegramId(userId: number): Promise<any> {
+    public static async getByTelegramId(userId: number): Promise<any> {
 
         const users = new Users();
 
@@ -116,7 +116,7 @@ export default class UserHelper {
      */
     public static async updateUser(user: User): Promise<any> {
 
-        const row = await UserHelper.getUserByTelegramId(user.getId());
+        const row = await UserHelper.getByTelegramId(user.getId());
         if (!row) {
             return;
         }

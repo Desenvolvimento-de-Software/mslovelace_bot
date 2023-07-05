@@ -43,11 +43,11 @@ export default class LeftChatMember extends Action {
             return;
         }
 
-        const user = await UserHelper.getUserByTelegramId(
+        const user = await UserHelper.getByTelegramId(
             this.context.user.getId()
         );
 
-        const chat = await ChatHelper.getChatByTelegramId(
+        const chat = await ChatHelper.getByTelegramId(
             this.context.chat.getId()
         );
 

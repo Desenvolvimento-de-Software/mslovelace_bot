@@ -42,7 +42,7 @@ export default class Report extends Command {
      */
     public async run(): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

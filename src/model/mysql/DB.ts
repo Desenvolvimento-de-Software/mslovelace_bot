@@ -101,6 +101,16 @@ export default class DB {
     private operation?: Builder;
 
     /**
+     * Last executed query.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @property {string}
+     */
+    private lastQuery?: string;
+
+    /**
      * Active connection.
      *
      * @author Marcos Leandro
@@ -207,8 +217,8 @@ export default class DB {
      */
     public execute(): any {
         if (this.operation) {
-            const query = this.operation.build();
-            return this.query(query);
+            this.lastQuery = this.operation.build();
+            return this.query(this.lastQuery);
         }
 
         return null;
@@ -230,6 +240,18 @@ export default class DB {
                 }
             });
         });
+    }
+
+    /**
+     * Returns the last query.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @return {string}
+     */
+    public getLastQuery(): string {
+        return this.lastQuery || "";
     }
 
     /**

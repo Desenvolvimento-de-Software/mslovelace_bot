@@ -50,7 +50,7 @@ export default class Npm extends Command {
             return;
         }
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

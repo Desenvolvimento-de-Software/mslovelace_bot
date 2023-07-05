@@ -42,11 +42,11 @@ export default class AskToAsk extends Action {
             return;
         }
 
-        const chat = await ChatHelper.getChatByTelegramId(
+        const chat = await ChatHelper.getByTelegramId(
             this.context.chat.getId()
         );
 
-        if (!chat.warn_ask_to_ask) {
+        if (!chat?.warn_ask_to_ask) {
             return;
         }
         if (this.context.message.getReplyToMessage()) {
