@@ -48,11 +48,11 @@ export default class saveUserAndChat extends Action {
         switch (this.context.type) {
 
             case "editedMessage":
-                this.updateMessage(user, chat);
+                this.updateMessage(user, chat!);
                 break;
 
             default:
-                this.saveNewMessage(user, chat);
+                this.saveNewMessage(user, chat!);
         }
 
         return Promise.resolve();

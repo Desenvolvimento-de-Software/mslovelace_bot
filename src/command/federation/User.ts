@@ -27,8 +27,12 @@ export default class User extends Federation {
         this.setCommands([
             "fpromote",
             "fdemote",
-            "fban",
-            "funban"
         ]);
+    }
+
+    private async promote(): Promise<void> {
+    }
+
+    private async demote(): Promise<void> {
     }
 }

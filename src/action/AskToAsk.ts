@@ -46,7 +46,7 @@ export default class AskToAsk extends Action {
             this.context.chat.getId()
         );
 
-        if (!chat.warn_ask_to_ask) {
+        if (!chat?.warn_ask_to_ask) {
             return;
         }
         if (this.context.message.getReplyToMessage()) {

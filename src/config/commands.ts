@@ -12,7 +12,7 @@
 import AdaShield from "../command/AdaShield.js";
 import Ask from "../command/Ask.js";
 import Ban from "../command/Ban.js";
-import Federation from "../command/federation/Federation.js";
+import FederationBan from "../command/federation/Ban.js";
 import FederationGroup from "../command/federation/Group.js";
 import FederationManage from "../command/federation/Manage.js";
 import FederationUser from "../command/federation/User.js";
@@ -31,7 +31,7 @@ export const commands = [
     AdaShield,
     Ask,
     Ban,
-    Federation,
+    FederationBan,
     FederationGroup,
     FederationManage,
     FederationUser,

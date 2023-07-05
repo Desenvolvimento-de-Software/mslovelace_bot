@@ -149,7 +149,7 @@ export default class AdaShield extends Action {
             .update()
             .set("joined", 0)
             .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
+            .and("chat_id").equal(chat!.id);
 
         return relUserChat.execute();
     }

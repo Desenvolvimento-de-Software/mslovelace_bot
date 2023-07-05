@@ -15,6 +15,10 @@ import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
 import Lang from "../../helper/Lang.js";
 import UserHelper from "../../helper/User.js";
+import FederationHelper from "../../helper/Federation.js";
+import { Message as MessageType } from "../../library/telegram/type/Message.js";
+import { Chat as ChatType } from "../../library/telegram/type/Chat.js";
+import { User as UserType } from "../../library/telegram/type/User.js";
 
 export default class Federation extends Command {
 
@@ -33,6 +37,14 @@ export default class Federation extends Command {
      * @since  2023-07-04
      */
     protected chat?: Record<string, any>;
+
+    /**
+     * Federation object.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     */
+    protected federation?: Record<string, any>;
 
     /**
      * Command context.
@@ -71,10 +83,59 @@ export default class Federation extends Command {
             return;
         }
 
+        if (!this.chat?.federation_id) {
+            return;
+        }
+
+        this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
+        if (!this.federation) {
+            return;
+        }
+
         Lang.set(this.chat!.language || "us");
 
         this.command = command;
-        const action = this.command.getCommand().substring(1);
+        const action = this.command!.getCommand().substring(1);
         this[action as keyof typeof Federation.prototype](true as never);
+    }
+
+    /**
+     * Creates a context.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @param user
+     * @param chat
+     *
+     * @return {Message}
+     */
+    protected getContext(user: Record<string, any>, chat: Record<string, any>): Context {
+
+        const userType: UserType = {
+            id: user.user_id,
+            isBot: user.is_bot,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            username: user.username
+        };
+
+        const chatType: ChatType = {
+            id: chat.chat_id,
+            type: chat.type,
+            title: chat.title,
+            username: chat.username,
+            firstName: chat.first_name,
+            lastName: chat.last_name
+        };
+
+        const messageType: MessageType = {
+            messageId: 0,
+            from: userType,
+            chat: chatType,
+            date: Math.floor(Date.now() / 1000)
+        };
+
+        return new Context({ message: messageType });
     }
 }

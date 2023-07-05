@@ -82,4 +82,7 @@ export default {
     federationDeleteConfirm: "A federação {name} possui {groups} grupos vinculados.\nPara excluir esta federação, envie <code>force</code> como segundo parâmetro.\n\nEx.: <code>/fdelete {hash} force</code>",
     federationDeleteError: "Ocorreu um erro ao excluir a federação. Por favor, tente novamente mais tarde.",
     federationDeleteSuccess: "Federação excluída com sucesso!",
+    fedBannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido na federação.\nMotivo: {reason}",
+    fedBanOnlyAdminError: "Somente administradores podem banir usuários da federação.",
+    fedBanAdminError: "Você não pode banir administradores da federação.",
 };

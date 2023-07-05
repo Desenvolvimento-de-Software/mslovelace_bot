@@ -42,7 +42,7 @@ export default class saveUserAndChat extends Action {
         const userId = user === null ? await UserHelper.createUser(contextUser) : user.id;
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat.id;
+        const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat!.id;
 
         UserHelper.updateUser(contextUser);
         ChatHelper.updateChat(this.context.chat);
