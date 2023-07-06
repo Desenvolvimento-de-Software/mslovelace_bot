@@ -28,7 +28,7 @@ export default class AdaShield extends Action {
      *
      * @var string
      */
-    private banMessage: string = "adaShield";
+    private banMessage: string = "adaShieldMessage";
 
     /**
      * The constructor.
