@@ -72,7 +72,7 @@ export default class AdaShield extends Action {
             .replace("{userid}", userId)
             .replace("{username}", username);
 
-        this.context.chat.sendMessage(lang);
+        this.context.chat.sendMessage(lang, { parseMode: "HTML" });
         await this.updateRelationship();
     }
 
