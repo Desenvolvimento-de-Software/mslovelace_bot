@@ -9,46 +9,39 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
+import Callback from "./Callback.js";
 import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
 
-export default class Unban extends Command {
+export default class DeleteMessage extends Callback {
 
     /**
      * The constructor.
      *
      * @author Marcos Leandro
      * @since 1.0.0
-     *
-     * @param {Context} context
      */
      public constructor(context: Context) {
         super(context);
-        this.setCommands(["send"]);
+        this.setCallbacks(["deleteMessage"]);
     }
 
     /**
-     * Command main route.
+     * Callback main route.
      *
      * @author Marcos Leandro
-     * @since 1.0.0
-     *
-     * @param payload
+     * @since  2023-07-12
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
+        const isAdmin = await this.context.user.isAdmin();
+        const isAuthor = this.context.callbackQuery?.callbackData.data.userId !== this.context.user.getId();
+
+        if (!isAuthor && !isAdmin) {
+            this.answer("You cannot delete this message.");
             return;
         }
 
         this.context.message.delete();
-
-        const params = command.getParams();
-        if (!params || !params.length) {
-            return;
-        }
-
-        this.context.chat.sendMessage(params.join(" "));
+        this.answer("Message removed.");
     }
 }

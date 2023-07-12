@@ -19,15 +19,7 @@ export default class TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    protected endpoint = "https://api.telegram.org";
-
-    /**
-     * Telegram Bot API method.
-     *
-     * @author Marcos Leandro
-     * @since  1.0.0
-     */
-    protected method: string;
+    protected static endpoint = "https://api.telegram.org";
 
     /**
      * Telegram Bot token.
@@ -36,6 +28,14 @@ export default class TelegramBotApi {
      * @since  1.0.0
      */
     protected static token: string;
+
+    /**
+     * Telegram Bot API method.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     */
+    protected method: string;
 
     /**
      * Request payload.
@@ -53,6 +53,20 @@ export default class TelegramBotApi {
      */
     public constructor(method: string) {
         this.method = method;
+    }
+
+    /**
+     * Returns the file URL.
+     *
+     * @author Marcos Leandro
+     * @since  1.0.0
+     *
+     * @param path
+     *
+     * @returns File URL.
+     */
+    public static getFileUrl(path: string): string {
+        return `${TelegramBotApi.endpoint}/file/bot${TelegramBotApi.token}/${path}`;
     }
 
     /**
@@ -133,7 +147,7 @@ export default class TelegramBotApi {
             payload = { method: this.method, ...payload };
         }
 
-        const url = `${this.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
+        const url = `${TelegramBotApi.endpoint}/bot${TelegramBotApi.token}/${this.method}`;
         const body = JSON.stringify(payload) || "";
 
         const headers = {
@@ -150,7 +164,31 @@ export default class TelegramBotApi {
             params.body = body;
         }
 
-        return fetch(url, params);
+        return fetch(url, params)
+            .then((response) => response.json())
+            .then((json) => this.validateJsonResponse(json as Record<string, any>))
+            .then((json) => this.snakeToCamelCase(json))
+            .catch((error: any) => {
+                console.error(error.toString());
+            });
+    }
+
+    /**
+     * Validates the json response.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-15
+     *
+     * @param {Record<string, any>} response
+     *
+     * @return {Record<string, any>}
+     */
+    private validateJsonResponse(response: Record<string, any>): Record<string, any> {
+        if (!response.result) {
+            throw new Error(JSON.stringify(response));
+        }
+
+        return response;
     }
 
     /**
@@ -179,6 +217,37 @@ export default class TelegramBotApi {
         for (const key of keys) {
             const snakeKey = key.replace(/([A-Z])/g, (_, letter) => "_" + letter.toLowerCase()).toLowerCase();
             result[snakeKey] = this.camelCaseToSnakeCase(payload[key]);
+        }
+
+        return result;
+    };
+
+    /**
+     * Converts the payload from snake_case to camelCase.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @param payload
+     *
+     * @returns
+     */
+    private snakeToCamelCase = (payload: Record<string, any>): Record<string, any> => {
+
+        if (Array.isArray(payload)) {
+            return payload.map(this.snakeToCamelCase);
+        }
+
+        if (typeof payload !== "object" || payload === null) {
+            return payload;
+        }
+
+        const keys = Object.keys(payload);
+        const result = <Record<string, any>> {};
+
+        for (const key of keys) {
+            const camelKey = key.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+            result[camelKey] = this.snakeToCamelCase(payload[key]);
         }
 
         return result;

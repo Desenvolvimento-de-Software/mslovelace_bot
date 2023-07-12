@@ -12,15 +12,16 @@
 import DeleteMessage from "../resource/DeleteMessage.js";
 import EditMessageText from "../resource/EditMessageText.js";
 import SendMessage from "../resource/SendMessage.js";
+import GetFile from "../resource/GetFile.js";
 import Command from "./Command.js";
 import User from "./User.js";
 import Chat from "./Chat.js";
 import Log from "../../../helper/Log.js";
-import UserHelper from "../../../helper/User.js";
 import { MessageEntity } from "../type/MessageEntity.js";
 import { Message as MessageType } from "../type/Message.js";
 import { User as UserType } from "../type/User.js";
 import { Options as OptionsType } from "../../../type/Options.js";
+import TelegramBotApi from "../TelegramBotApi.js";
 
 export default class Message {
 
@@ -117,7 +118,7 @@ export default class Message {
      *
      * @return {Promise<Message>}
      */
-    public async reply(content: string, options?: Record<string, any>): Promise<any> {
+    public async reply(content: string, options?: Record<string, any>): Promise<Record<string, any>|void> {
 
         const sendMessage = new SendMessage();
         sendMessage
@@ -131,9 +132,7 @@ export default class Message {
 
         return sendMessage
             .post()
-            .then((response) => response.json())
-            .then((json) => this.validateJsonResponse(json))
-            .then((json) => new Message(json.result))
+            .then((response) => new Message(response.result))
             .catch((error) => Log.error(error));
     }
 
@@ -152,8 +151,8 @@ export default class Message {
 
         const editMessage = new EditMessageText();
         editMessage
-            .setChatId(this.context.chat.id)
             .setMessageId(this.context.messageId)
+            .setChatId(this.context.chat.id)
             .setText(content);
 
         if (options) {
@@ -162,8 +161,7 @@ export default class Message {
 
         return editMessage
             .post()
-            .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((response) => new Message(response.result));
     }
 
     /**
@@ -180,7 +178,7 @@ export default class Message {
             .setMessageId(this.context.messageId)
             .setChatId(this.context.chat.id);
 
-        return deleteMessage.post().then((response) => response.json());
+        return deleteMessage.post();
     }
 
     /**
@@ -430,6 +428,31 @@ export default class Message {
     }
 
     /**
+     * Returns the file data.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-12
+     *
+     * @param  {string} fileId
+     */
+    public async getFileData(fileId: string): Promise<Record<string, any>|undefined> {
+
+        const getFile = new GetFile();
+        getFile.setFileId(fileId);
+
+        const response = await getFile
+            .post()
+            .catch((error: any) => Log.error(error.toString()));
+
+        if (!response || !response.ok) {
+            throw new Error(JSON.stringify(response));
+        }
+
+        response.result.fileUrl = TelegramBotApi.getFileUrl(response.result.filePath);
+        return response;
+    }
+
+    /**
      * Parses the reply to message.
      *
      * @author Marcos Leandro
@@ -533,32 +556,32 @@ export default class Message {
             return;
         }
 
-        const username = this.context.text?.substring(
-            ++entity.offset, entity.offset + entity.length
-        );
+        // const username = this.context.text?.substring(
+        //     ++entity.offset, entity.offset + entity.length
+        // );
 
-        if (!username || !username.length) {
-            return;
-        }
+        // if (!username || !username.length) {
+        //     return;
+        // }
 
-        const user = await UserHelper.getUserByUsername(username);
-        if (!user) {
-            return;
-        }
+        // const user = await UserHelper.getUserByUsername(username);
+        // if (!user) {
+        //     return;
+        // }
 
-        const mention: UserType = {
-            id: user.user_id,
-            isBot: user.is_bot,
-            firstName: user.first_name,
-            lastName: user.last_name,
-            username: user.username,
-            languageCode: user.language_code,
-            isPremium: user.is_premium
-        };
+        // const mention: UserType = {
+        //     id: user.user_id,
+        //     isBot: user.is_bot,
+        //     firstName: user.first_name,
+        //     lastName: user.last_name,
+        //     username: user.username,
+        //     languageCode: user.language_code,
+        //     isPremium: user.is_premium
+        // };
 
-        this.mentions!.push(
-            new User(mention, new Chat(this.context))
-        );
+        // this.mentions!.push(
+        //     new User(mention, new Chat(this.context))
+        // );
     }
 
     /**
@@ -586,23 +609,5 @@ export default class Message {
         };
 
         this.commands.push(new Command(command, options));
-    }
-
-    /**
-     * Validates the json response.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-15
-     *
-     * @param {Record<string, any>} response
-     *
-     * @return {Record<string, any>}
-     */
-    private validateJsonResponse(response: Record<string, any>): Record<string, any> {
-        if (!response.result) {
-            throw new Error(JSON.stringify(response));
-        }
-
-        return response;
     }
 }

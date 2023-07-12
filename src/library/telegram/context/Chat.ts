@@ -389,15 +389,13 @@ export default class Chat {
         request.setChatId(this.context.chat.id);
 
         const response = await request.post();
-        const json = await response.json();
-
-        if (!json.hasOwnProperty("ok") || json.ok !== true) {
+        if (!response.hasOwnProperty("ok") || response.ok !== true) {
             return [];
         }
 
         let admins: Array<number> = [];
-        for (let i = 0, length = json.result.length; i < length; i++) {
-            admins.push(json.result[i].user.id);
+        for (let i = 0, length = response.result.length; i < length; i++) {
+            admins.push(response.result[i].user.id);
         }
 
         return Promise.resolve(admins);
@@ -427,7 +425,9 @@ export default class Chat {
 
         return sendMessage
             .post()
-            .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((response) => new Message(response.result))
+            .catch((error: any) => {
+                throw new Error(error);
+            });
     }
 }
