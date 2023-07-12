@@ -132,7 +132,7 @@ export default class Context {
      */
     public constructor(payload: Record<string, any>) {
 
-        this.payload = payload;
+        this.payload = this.snakeToCamelCase(payload);
         this.type = this.parseType();
 
         if (typeof this.type === "undefined") {
@@ -193,4 +193,35 @@ export default class Context {
 
         return this.payload[this.type!] || undefined;
     }
+
+    /**
+     * Converts the payload from snake_case to camelCase.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-02
+     *
+     * @param payload
+     *
+     * @returns
+     */
+    private snakeToCamelCase = (payload: Record<string, any>): Record<string, any> => {
+
+        if (Array.isArray(payload)) {
+            return payload.map(this.snakeToCamelCase);
+        }
+
+        if (typeof payload !== "object" || payload === null) {
+            return payload;
+        }
+
+        const keys = Object.keys(payload);
+        const result = <Record<string, any>> {};
+
+        for (const key of keys) {
+            const camelKey = key.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+            result[camelKey] = this.snakeToCamelCase(payload[key]);
+        }
+
+        return result;
+    };
 }

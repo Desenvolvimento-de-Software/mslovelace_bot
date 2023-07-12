@@ -57,20 +57,6 @@ export default abstract class Callback {
     }
 
     /**
-     * Answers a callback query.
-     *
-     * @author Marcos Leandro
-     * @since  2023-07-12
-     *
-     * @param {string} response
-     *
-     * @return {Promise<Record<string, any>>}
-     */
-    public async answer(response: string): Promise<Record<string, any>> {
-        return this.context.callbackQuery!.answer(response);
-    }
-
-    /**
      * Returns whether the command is valid.
      *
      * @author Marcos Leandro

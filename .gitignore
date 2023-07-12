@@ -1,10 +1,7 @@
 *.DS_Store
 dist/*
-!dist/.gitkeep
 package-lock.json
 .env
-log/*
 !log/.gitkeep
-tmp/*
-!tmp/.gitkeep
+log/*
 node_modules

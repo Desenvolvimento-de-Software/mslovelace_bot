@@ -69,10 +69,11 @@ export default class CallbackQuery {
         const answer = new AnswerCallbackQuery();
         answer
             .setCallbackQueryId(this.payload.callbackQuery.id)
-            .setText(content);
+            .setText(this.callbackData.data.package.toUpperCase());
 
         return answer
             .post()
-            .then((response) => new Message(response.result));
+            .then((response) => response.json())
+            .then((json) => new Message(json.result));
     }
 }
