@@ -50,7 +50,7 @@ export default class Yarn extends Command {
             return;
         }
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }
@@ -125,7 +125,7 @@ export default class Yarn extends Command {
      */
     async sendNewMessage(yarnPackage: YarnPackage): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

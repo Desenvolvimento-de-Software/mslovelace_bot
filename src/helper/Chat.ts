@@ -15,16 +15,54 @@ import ChatConfigs from "../model/ChatConfigs.js";
 export default class ChatHelper {
 
     /**
-     * Returns the user by the Telegram ID.
+     * Returns the chat by it's ID.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @param id
+     *
+     * @return {Promise<Record<string, any>|undefined>}
+     */
+    public static async getById(id: number): Promise<Record<string, any>|undefined> {
+
+        const fields = [
+            "chats.*",
+            "chat_configs.greetings",
+            "chat_configs.goodbye",
+            "chat_configs.warn_name_changing",
+            "chat_configs.remove_event_messages",
+            "chat_configs.restrict_new_users",
+            "chat_configs.captcha",
+            "chat_configs.warn_ask_to_ask",
+            "chat_configs.adashield"
+        ];
+
+        const chats = new Chats();
+        chats
+            .select(fields)
+            .leftOuterJoin("chat_configs", "chat_configs.chat_id = chats.id")
+            .where("chats.id").equal(id);
+
+        const chat = await chats.execute();
+        if (chat.length) {
+            return chat[0];
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Returns the chat by the Telegram ID.
      *
      * @author Marcos Leandro
      * @since  1.0.0
      *
      * @param chatId
      *
-     * @returns {Promise<any>}
+     * @return {Promise<Record<string, any>|undefined>}
      */
-    public static async getChatByTelegramId(chatId: number): Promise<any> {
+    public static async getByTelegramId(chatId: number): Promise<Record<string, any>|undefined> {
 
         const fields = [
             "chats.*",
@@ -49,7 +87,7 @@ export default class ChatHelper {
             return chat[0];
         }
 
-        return null;
+        return undefined;
     }
 
     /**
@@ -96,7 +134,7 @@ export default class ChatHelper {
      */
     public static async updateChat(chat: Record<string, any>): Promise<number|undefined> {
 
-        const row = await ChatHelper.getChatByTelegramId(chat.getId());
+        const row = await ChatHelper.getByTelegramId(chat.getId());
         if (!row) {
             return;
         }

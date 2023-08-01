@@ -65,7 +65,7 @@ export default class Restrict extends Command {
      */
     private async index(): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }
@@ -97,7 +97,7 @@ export default class Restrict extends Command {
      */
     private async on(): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }
@@ -116,7 +116,7 @@ export default class Restrict extends Command {
      */
     private async off(): Promise<void> {
 
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat.id) {
             return;
         }

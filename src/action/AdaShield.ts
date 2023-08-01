@@ -28,7 +28,7 @@ export default class AdaShield extends Action {
      *
      * @var string
      */
-    private banMessage: string = "adaShield";
+    private banMessage: string = "adaShieldMessage";
 
     /**
      * The constructor.
@@ -72,7 +72,7 @@ export default class AdaShield extends Action {
             .replace("{userid}", userId)
             .replace("{username}", username);
 
-        this.context.chat.sendMessage(lang);
+        this.context.chat.sendMessage(lang, { parseMode: "HTML" });
         await this.updateRelationship();
     }
 
@@ -142,14 +142,14 @@ export default class AdaShield extends Action {
      */
     private async updateRelationship(): Promise<void> {
 
-        const user = await UserHelper.getUserByTelegramId(this.context.newChatMember!.getId());
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const user = await UserHelper.getByTelegramId(this.context.newChatMember!.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         const relUserChat = new RelUsersChats();
         relUserChat
             .update()
             .set("joined", 0)
             .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
+            .and("chat_id").equal(chat!.id);
 
         return relUserChat.execute();
     }

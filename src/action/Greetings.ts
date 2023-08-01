@@ -68,7 +68,7 @@ export default class Greetings extends Action {
             return;
         }
 
-        this.chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!this.chat || !this.chat?.id) {
             return;
         }
@@ -81,7 +81,7 @@ export default class Greetings extends Action {
             return;
         }
 
-        this.user = await UserHelper.getUserByTelegramId(this.context.user.getId());
+        this.user = await UserHelper.getByTelegramId(this.context.user.getId());
         if (!await this.isUserJoined()) {
             return;
         }

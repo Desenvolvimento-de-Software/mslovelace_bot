@@ -132,8 +132,8 @@ export default class Warn extends Command {
      */
     private async warn(contextUser: User, reason: string): Promise<void> {
 
-        const user = await UserHelper.getUserByTelegramId(contextUser.getId());
-        const chat = await ChatHelper.getChatByTelegramId(this.context.chat.getId());
+        const user = await UserHelper.getByTelegramId(contextUser.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
         if (!user || !chat) {
             return;

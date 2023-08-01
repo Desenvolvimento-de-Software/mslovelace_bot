@@ -41,4 +41,25 @@ export default class Text {
     public static markdownEscape(text: string): string {
         return text.replace(/[_*[\]()~`>#+-=|{}.!]/g, "\\$&");
     }
+
+    /**
+     * Generates a random string.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @param {number} length
+     *
+     * @return {string}
+     */
+    public static generateRandomString(length: number): string {
+        const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        return result;
+    }
 }
