@@ -11,10 +11,20 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
-import Message from "src/library/telegram/context/Message.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import ChatHelper from "../helper/Chat.js";
+import Chats from "../model/Chats.js";
+import Macros from "../model/Macros.js";
 
 export default class Macro extends Command {
+
+    /**
+     * Current loaded chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-11-18
+     */
+    private chat: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -41,17 +51,25 @@ export default class Macro extends Command {
 
         this.context.message.delete();
 
-        const methods = {
-            am : this.add,
-            lm : this.list
-            rm : this.remove
-        };
-
-        if (!methods.hasOwnProperty(command.getCommand())) {
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        if (!chat) {
             return;
         }
 
-        this.methods[command.getCommand()](command);
+        this.chat = chat;
+
+        const params = command.getParams();
+        if (!Array.isArray(params)) {
+            return;
+        }
+
+        let action = "index";
+        if (params && params.length) {
+            action = this.isRegisteredParam(params[0]) ? params[0] : "index";
+        }
+
+        const method = action as keyof typeof Macro.prototype;
+        await this[method](params as never);
     }
 
     /**
@@ -62,13 +80,11 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private add(command: CommandContext): void {
+    private add(params: string[]): void {
 
-        const params = command.getParams() || [];
         if (!params.length || params.length < 2) {
             return;
         }
-
 
     }
 
@@ -80,8 +96,8 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private list(command: commandContext) {
-
+    private list(params: string[]) {
+        this.context.message.reply(params.join(" "));
     }
 
     /**
@@ -92,7 +108,7 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private remove(command: CommandContext) {
+    private remove(params: string[]) {
 
     }
 }
