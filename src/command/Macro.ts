@@ -147,7 +147,7 @@ export default class Macro extends Command {
         macros
             .select()
             .where("chat_id").equal(this.chat.id)
-            .and("macro").equal(macro);
+            .and("macro").equal(macro.toLowerCase());
 
         const result = await macros.execute();
 
@@ -160,7 +160,7 @@ export default class Macro extends Command {
         macros
             .insert()
             .set("chat_id", this.chat.id)
-            .set("macro", macro)
+            .set("macro", macro.toLowerCase())
             .set("content", content);
 
         if (await macros.execute()) {
@@ -238,7 +238,7 @@ export default class Macro extends Command {
             macros
                 .delete()
                 .where("chat_id").equal(this.chat.id)
-                .and("macro").equal(macro);
+                .and("macro").equal(macro.toLowerCase());
 
             macros.execute();
         }
