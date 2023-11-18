@@ -79,7 +79,40 @@ export default class Macro extends Command {
      * @param command
      */
     private index(command: CommandContext): void {
-        // this.list(command);
+
+        const params = command.getParams();
+        if (!Array.isArray(params) || params.length < 1) {
+            return;
+        }
+
+        const macro = params.shift()?.trim();
+        if (!macro || !macro.length) {
+            return;
+        }
+
+        const macros = new Macros();
+        macros
+            .select()
+            .where("chat_id").equal(this.chat.id)
+            .and("macro").equal(macro);
+
+        macros.execute().then((result: Record<string, any>) => {
+
+            if (!result.length) {
+                return;
+            }
+
+            const content = result[0].content;
+            const replyToMessage = this.context.message.getReplyToMessage();
+            console.log(replyToMessage);
+
+            if (replyToMessage) {
+                replyToMessage.reply(content, { parseMode : "HTML" });
+                return;
+            }
+
+            this.context.chat.sendMessage(content, { parseMode : "HTML" });
+        });
     }
 
     /**
@@ -97,11 +130,45 @@ export default class Macro extends Command {
         }
 
         let params = command.getParams();
-        console.log(params);
         if (!Array.isArray(params) || params.length < 2) {
             this.context.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
             return;
         }
+
+        const macro = params.shift()?.trim();
+        const content = params.join(" ").trim();
+
+        if (!macro || !macro.length || !content.length) {
+            this.context.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
+            return;
+        }
+
+        const macros = new Macros();
+        macros
+            .select()
+            .where("chat_id").equal(this.chat.id)
+            .and("macro").equal(macro);
+
+        const result = await macros.execute();
+
+        if (result.length) {
+            const alreadyExistLang = Lang.get("macroAlreadyExists").replace("{macro}", macro);
+            this.context.chat.sendMessage(alreadyExistLang, { parseMode : "HTML" });
+            return;
+        }
+
+        macros
+            .insert()
+            .set("chat_id", this.chat.id)
+            .set("macro", macro)
+            .set("content", content);
+
+        if (await macros.execute()) {
+            this.mlist(command);
+            return;
+        }
+
+        this.context.chat.sendMessage(Lang.get("macroAddError"), { parseMode : "HTML" });
     }
 
     /**
@@ -142,7 +209,40 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private mremove(command: CommandContext) {
+    private async mremove(command: CommandContext): Promise<void> {
 
+        if (!await this.context.user.isAdmin()) {
+            return;
+        }
+
+        const params = command.getParams();
+        if (!Array.isArray(params) || params.length < 1) {
+            return;
+        }
+
+        const macro = params.shift()?.trim();
+        if (!macro || !macro.length) {
+            return;
+        }
+
+        const macros = new Macros();
+        macros
+            .select()
+            .where("chat_id").equal(this.chat.id)
+            .and("macro").equal(macro);
+
+        const result = await macros.execute();
+
+        if (result.length) {
+
+            macros
+                .delete()
+                .where("chat_id").equal(this.chat.id)
+                .and("macro").equal(macro);
+
+            macros.execute();
+        }
+
+        this.mlist(command);
     }
 }

@@ -111,10 +111,17 @@ export default class Controller {
      * @param {Record<string, any>} payload
      */
     protected async handle(payload: Record<string, any>): Promise<void> {
-        const context = new Context(payload);
-        this.handleActions(context);
-        this.handleCommands(context);
-        this.handleCallbacks(context);
+
+        try {
+
+            const context = new Context(payload);
+            this.handleActions(context);
+            this.handleCommands(context);
+            this.handleCallbacks(context);
+
+        } catch (error: any) {
+            Log.save(error.toString(), true, "error");
+        }
     }
 
     /**
