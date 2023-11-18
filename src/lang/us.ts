@@ -85,4 +85,7 @@ export default {
     fedBannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned in federation.\nReason: {reason}",
     fedBanOnlyAdminError: "Only admins can ban users in a federation.",
     fedBanAdminError: "You can't ban admins in a federation.",
+    macroNoMacroFound: "No macros found.\nTo add a macro, use the command <code>/madd</code> .",
+    macroMalformedCommandError: "Malformed command. Please use the following syntax:\n<code>/madd {#name} {content}</code>",
+    macroList: "The following macros are available:\n\n",
 };

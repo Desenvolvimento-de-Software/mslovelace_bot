@@ -15,6 +15,7 @@ import CommandContext from "../library/telegram/context/Command.js";
 import ChatHelper from "../helper/Chat.js";
 import Chats from "../model/Chats.js";
 import Macros from "../model/Macros.js";
+import Lang from "../helper/Lang.js";
 
 export default class Macro extends Command {
 
@@ -36,7 +37,7 @@ export default class Macro extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["am", "rm", "lm"]);
+        this.setCommands(["macro", "madd", "mlist", "mremove"]);
     }
 
     /**
@@ -56,20 +57,29 @@ export default class Macro extends Command {
             return;
         }
 
+        Lang.set(chat.language || "us");
+
         this.chat = chat;
 
-        const params = command.getParams();
-        if (!Array.isArray(params)) {
-            return;
-        }
-
         let action = "index";
-        if (params && params.length) {
-            action = this.isRegisteredParam(params[0]) ? params[0] : "index";
+        if (Macro.prototype.hasOwnProperty(command.getCommand())) {
+            action = command.getCommand();
         }
 
         const method = action as keyof typeof Macro.prototype;
-        await this[method](params as never);
+        await this[method](command as never);
+    }
+
+    /**
+     * Shows a macro.
+     *
+     * @author Marcos Leandro
+     * @since  2023-11-18
+     *
+     * @param command
+     */
+    private index(command: CommandContext): void {
+        // this.list(command);
     }
 
     /**
@@ -80,12 +90,18 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private add(params: string[]): void {
+    private async madd(command: CommandContext): Promise<void> {
 
-        if (!params.length || params.length < 2) {
+        if (!await this.context.user.isAdmin()) {
             return;
         }
 
+        let params = command.getParams();
+        console.log(params);
+        if (!Array.isArray(params) || params.length < 2) {
+            this.context.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
+            return;
+        }
     }
 
     /**
@@ -96,8 +112,26 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private list(params: string[]) {
-        this.context.message.reply(params.join(" "));
+    private async mlist(command: CommandContext): Promise<void> {
+
+        const macros = new Macros();
+        macros
+            .select()
+            .where("chat_id").equal(this.chat.id)
+            .orderBy("macro", "asc");
+
+        const result = await macros.execute();
+        if (!result.length) {
+            this.context.chat.sendMessage(Lang.get("macroNoMacroFound"), { parseMode : "HTML" });
+            return;
+        }
+
+        let message = Lang.get("macroList");
+        for (const row of result) {
+            message += ` • ${row.macro}\n`;
+        }
+
+        this.context.chat.sendMessage(message, { parseMode : "HTML" });
     }
 
     /**
@@ -108,7 +142,7 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private remove(params: string[]) {
+    private mremove(command: CommandContext) {
 
     }
 }
