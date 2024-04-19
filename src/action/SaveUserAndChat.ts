@@ -15,7 +15,7 @@ import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 
-export default class saveUserAndChat extends Action {
+export default class SaveUserAndChat extends Action {
 
     /**
      * The constructor.
