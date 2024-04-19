@@ -141,7 +141,7 @@ export default class Ban extends Command {
         };
 
         const contextUser = new UserContext(userType, this.context.chat);
-        if (contextUser.ban()) {
+        if (await contextUser.ban()) {
             this.saveBan(contextUser, reason);
         }
 
