@@ -120,7 +120,7 @@ export default class Controller {
             this.handleCallbacks(context);
 
         } catch (error: any) {
-            Log.save(error.toString(), true, "error");
+            Log.save(error.message, error.stack, true, "error");
         }
     }
 
@@ -185,7 +185,7 @@ export default class Controller {
             return (action.isSync()) ? await action.run() : action.run();
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 
@@ -210,7 +210,7 @@ export default class Controller {
             await command.run(commandContext);
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 
@@ -228,7 +228,7 @@ export default class Controller {
             !callback.isCalled() || callback.run();
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 }
