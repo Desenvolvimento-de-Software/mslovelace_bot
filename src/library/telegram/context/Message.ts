@@ -599,6 +599,7 @@ export default class Message {
      * @return {Record<string, any>}
      */
     private validateJsonResponse(response: Record<string, any>): Record<string, any> {
+
         if (!response.result) {
             throw new Error(JSON.stringify(response));
         }

@@ -304,7 +304,7 @@ export default class Log {
      * @param {string}  content
      * @param {boolean} print
      */
-    public static save(content: string, print?: boolean, level?: string): void {
+    public static save(content: string, stack?: string, print?: boolean, level?: string): void {
 
         const date = new Date();
 
@@ -318,7 +318,7 @@ export default class Log {
 
         const directory = path.resolve();
         const filename = `${year}-${month}-${day}.log`;
-        fs.appendFileSync(`${directory}/log/${filename}`, `${hours}:${minutes}:${seconds} :: ${content}\n`);
+        fs.appendFileSync(`${directory}/log/${filename}`, `${hours}:${minutes}:${seconds} :: ${content}\n${stack}\n`);
 
         type LogLevel = "assert" | "clear" | "count" | "countReset" | "debug" | "dir" | "dirxml" | "error" | "group" | "groupCollapsed" | "groupEnd" | "info" | "log" | "table" | "time" | "timeEnd" | "timeLog" | "trace" | "warn";
         const method: LogLevel = level?.toLowerCase() as LogLevel || "log";
