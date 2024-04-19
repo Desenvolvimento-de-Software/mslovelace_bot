@@ -171,7 +171,7 @@ export default class Ban extends Command {
 
             await ban.execute();
             const message = Lang.get("bannedMessage")
-                .replace("{userId}", contextUser.getId())
+                .replace("{userid}", contextUser.getId())
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername())
                 .replace("{reason}", reason.length ? reason : "Unknown");
 

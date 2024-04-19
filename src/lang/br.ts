@@ -85,4 +85,10 @@ export default {
     fedBannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido na federação.\nMotivo: {reason}",
     fedBanOnlyAdminError: "Somente administradores podem banir usuários da federação.",
     fedBanAdminError: "Você não pode banir administradores da federação.",
+    macroNoMacroFound: "A lista de macros está vazia.\nPara adicionar uma macro, use o comando <code>/madd</code> .",
+    macroMalformedCommandError: "Para adicionar uma nova macro, utilize o seguinte comando:\n<code>/madd {macro} {conteúdo}</code>",
+    macroList: "As seguintes macros estão disponíveis:\n\n",
+    macroAlreadyExists: "A macro {macro} já existe.",
+    macroAddError: "Ocorreu um erro ao adicionar a macro. Por favor, tente novamente mais tarde.",
+    macroRemoveError: "Ocorreu um erro ao remover a macro. Por favor, tente novamente mais tarde.",
 };

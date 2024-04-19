@@ -18,6 +18,7 @@ import FederationManage from "../command/federation/Manage.js";
 import FederationUser from "../command/federation/User.js";
 import Greetings from "../command/Greetings.js";
 import Kick from "../command/Kick.js";
+import Macro from "../command/Macro.js";
 import Npm from "../command/Npm.js";
 import Report from "../command/Report.js";
 import Restrict from "../command/Restrict.js";
@@ -37,6 +38,7 @@ export const commands = [
     FederationUser,
     Greetings,
     Kick,
+    Macro,
     Npm,
     Report,
     Restrict,
