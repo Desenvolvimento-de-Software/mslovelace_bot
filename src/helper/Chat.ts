@@ -102,6 +102,7 @@ export default class ChatHelper {
      */
     public static async createChat(chat: Record<string, any>): Promise<any> {
 
+        console.log("Abc");
         const title = chat.getTitle() || chat.getUsername() || (`${chat.getFirstName()} ${chat.getLastName()}`).trim();
         const newChat = new Chats();
         newChat

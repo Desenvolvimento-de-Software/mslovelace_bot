@@ -197,12 +197,17 @@ export default class Controller {
      *
      * @param command
      */
-    private executeCommand(command: Command): void {
+    private async executeCommand(command: Command): Promise<void> {
 
         const commandContext = command.isCalled();
 
+        if (!commandContext) {
+            return Promise.resolve();
+        }
+
         try {
-            !commandContext || command.run(commandContext);
+
+            await command.run(commandContext);
 
         } catch (error: any) {
             Log.save(error.toString());
