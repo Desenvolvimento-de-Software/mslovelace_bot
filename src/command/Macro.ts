@@ -104,7 +104,6 @@ export default class Macro extends Command {
 
             const content = result[0].content;
             const replyToMessage = this.context.message.getReplyToMessage();
-            console.log(replyToMessage);
 
             if (replyToMessage) {
                 replyToMessage.reply(content, { parseMode : "HTML" });

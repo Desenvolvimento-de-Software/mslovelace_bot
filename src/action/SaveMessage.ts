@@ -75,10 +75,9 @@ export default class SaveMessage extends Action {
      */
     private async saveNewMessage(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
 
-
-        console.log(chat);
         const message = new Messages();
         const insert = message.insert();
+
         insert
             .set("type", this.context.type)
             .set("user_id", user.id)
