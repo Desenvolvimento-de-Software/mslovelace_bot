@@ -15,7 +15,7 @@ import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import Messages from "../model/Messages.js";
 
-export default class saveUserAndChat extends Action {
+export default class SaveMessage extends Action {
 
     /**
      * The constructor.
@@ -45,6 +45,10 @@ export default class saveUserAndChat extends Action {
         const user = await UserHelper.getByTelegramId(contextUser.getId());
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
+        if (!user || !chat) {
+            return Promise.resolve();
+        }
+
         switch (this.context.type) {
 
             case "editedMessage":
@@ -73,6 +77,7 @@ export default class saveUserAndChat extends Action {
 
         const message = new Messages();
         const insert = message.insert();
+
         insert
             .set("type", this.context.type)
             .set("user_id", user.id)

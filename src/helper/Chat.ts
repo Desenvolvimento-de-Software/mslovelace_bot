@@ -11,6 +11,7 @@
 
 import Chats from "../model/Chats.js";
 import ChatConfigs from "../model/ChatConfigs.js";
+import Log from "./Log.js";
 
 export default class ChatHelper {
 
@@ -111,15 +112,23 @@ export default class ChatHelper {
             .set("type", chat.getType())
             .set("joined", 1);
 
-        const result = await newChat.execute();
-        const chatId = result.insertId;
+        try {
 
-        const newChatConfig = new ChatConfigs();
-        newChatConfig
-            .insert()
-            .set("chat_id", chatId);
+            const result = await newChat.execute();
+            const chatId = result.insertId;
 
-        newChatConfig.execute();
+            const newChatConfig = new ChatConfigs();
+            newChatConfig
+                .insert()
+                .set("chat_id", chatId);
+
+            await newChatConfig.execute();
+            return chatId;
+
+        } catch (err) {
+            Log.error(err);
+            return null;
+        }
     }
 
     /**

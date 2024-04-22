@@ -111,10 +111,17 @@ export default class Controller {
      * @param {Record<string, any>} payload
      */
     protected async handle(payload: Record<string, any>): Promise<void> {
-        const context = new Context(payload);
-        this.handleActions(context);
-        this.handleCommands(context);
-        this.handleCallbacks(context);
+
+        try {
+
+            const context = new Context(payload);
+            this.handleActions(context);
+            this.handleCommands(context);
+            this.handleCallbacks(context);
+
+        } catch (error: any) {
+            Log.save(error.message, error.stack, true, "error");
+        }
     }
 
     /**
@@ -178,7 +185,7 @@ export default class Controller {
             return (action.isSync()) ? await action.run() : action.run();
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 
@@ -190,15 +197,20 @@ export default class Controller {
      *
      * @param command
      */
-    private executeCommand(command: Command): void {
+    private async executeCommand(command: Command): Promise<void> {
 
         const commandContext = command.isCalled();
 
+        if (!commandContext) {
+            return Promise.resolve();
+        }
+
         try {
-            !commandContext || command.run(commandContext);
+
+            await command.run(commandContext);
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 
@@ -213,10 +225,11 @@ export default class Controller {
     private executeCallback(callback: Callback): void {
 
         try {
+
             !callback.isCalled() || callback.run();
 
         } catch (error: any) {
-            Log.save(error.toString());
+            Log.save(error.message, error.stack);
         }
     }
 }

@@ -9,12 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation.js";
-import Warning from "../callback/Warning.js";
-import YarnCallback from "../callback/Yarn.js";
+import DefaultModel from "./Model.js";
 
-export const callbacks = [
-    CaptchaConfirmationCallback,
-    Warning,
-    YarnCallback
-];
+export default class Macros extends DefaultModel {
+
+    /**
+     * The constructor.
+     *
+     * @author Marcos Leandro
+     * @since  2023-11-18
+     */
+    public constructor() {
+        super("macros");
+    }
+}

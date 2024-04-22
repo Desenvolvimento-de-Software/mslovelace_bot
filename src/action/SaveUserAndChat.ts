@@ -15,7 +15,7 @@ import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 
-export default class saveUserAndChat extends Action {
+export default class SaveUserAndChat extends Action {
 
     /**
      * The constructor.
@@ -39,10 +39,10 @@ export default class saveUserAndChat extends Action {
 
         const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
         const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const userId = user === null ? await UserHelper.createUser(contextUser) : user.id;
+        const userId = user?.id ?? await UserHelper.createUser(contextUser);
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        const chatId = chat === null ? await ChatHelper.createChat(this.context.chat) : chat!.id;
+        const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
 
         UserHelper.updateUser(contextUser);
         ChatHelper.updateChat(this.context.chat);

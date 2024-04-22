@@ -207,7 +207,7 @@ export default class User {
      *
      * @param  untilDate
      */
-    public async ban(untilDate?: number): Promise<Record<string, any>> {
+    public async ban(untilDate?: number): Promise<boolean> {
 
         const ban = new BanChatMember();
         ban
@@ -218,7 +218,16 @@ export default class User {
             ban.setUntilDate(untilDate);
         }
 
-        return ban.post().then((response) => response.json());
+        try {
+
+            const response = await ban.post();
+            const json = await response.json();
+
+            return Promise.resolve(json?.ok || false);
+
+        } catch (error) {
+            return Promise.resolve(false);
+        }
     }
 
     /**
@@ -229,7 +238,7 @@ export default class User {
      *
      * @param  onlyIfBanned
      */
-    public async unban(onlyIfBanned?: boolean): Promise<Record<string, any>> {
+    public async unban(onlyIfBanned?: boolean): Promise<boolean> {
 
         const unban = new UnbanChatMember();
         unban
@@ -240,7 +249,16 @@ export default class User {
             unban.setOnlyIfBanned(false);
         }
 
-        return unban.post().then((response) => response.json());
+        try {
+
+            const response = await unban.post();
+            const json = await response.json();
+
+            return Promise.resolve(json?.ok || false);
+
+        } catch (error) {
+            return Promise.resolve(false);
+        }
     }
 
     /**
@@ -249,7 +267,7 @@ export default class User {
      * @author Marcos Leandro
      * @since  2023-06-02
      */
-    public async kick(): Promise<Record<string, any>> {
+    public async kick(): Promise<boolean> {
         return this.unban(false);
     }
 

@@ -147,8 +147,8 @@ export default class Greetings extends Action {
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaButton"),
             callbackData: JSON.stringify({
-                callback: "captchaconfirmation",
-                data: {
+                c: "captchaconfirmation",
+                d: {
                     userId: this.context.newChatMember!.getId()
                 }
             })

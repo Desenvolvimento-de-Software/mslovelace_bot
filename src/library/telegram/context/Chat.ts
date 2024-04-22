@@ -16,6 +16,7 @@ import { ChatLocation } from "../type/ChatLocation.js";
 import { ChatPermissions } from "../type/ChatPermissions.js";
 import { ChatPhoto } from "../type/ChatPhoto.js";
 import { Message as MessageType } from "../type/Message.js";
+import Log from "../../../helper/Log.js";
 
 export default class Chat {
 
@@ -421,13 +422,17 @@ export default class Chat {
             .setChatId(this.context.chat.id)
             .setText(text);
 
+        if (typeof this.context.messageThreadId !== "undefined") {
+            sendMessage.setThreadId(this.context.messageThreadId);
+        }
+
         if (options) {
             sendMessage.setOptions(options);
         }
 
-        return sendMessage
-            .post()
+        return sendMessage.post()
             .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((json) => new Message(json.result))
+            .catch((error) => console.error(error));
     }
 }

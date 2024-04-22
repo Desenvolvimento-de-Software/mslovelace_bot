@@ -64,7 +64,7 @@ export default class Npm extends Command {
             });
 
         } catch (err: any) {
-            Log.save(err.toString());
+            Log.save(err.toString(), err.stack);
         }
     }
 
@@ -81,7 +81,7 @@ export default class Npm extends Command {
     private async processResponse(error: any, stdout: string, stderr: string): Promise<void> {
 
         if (error) {
-            Log.save(error.message);
+            Log.save(error.message, error.skack || undefined);
             return;
         }
 

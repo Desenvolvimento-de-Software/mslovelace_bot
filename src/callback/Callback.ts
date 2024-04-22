@@ -66,11 +66,11 @@ export default abstract class Callback {
      */
     public isCalled(): boolean {
 
-        if (!this.context.callbackQuery?.callbackData || !this.context.callbackQuery?.callbackData.callback) {
+        if (!this.context.callbackQuery?.callbackData || !this.context.callbackQuery?.callbackData.c) {
             return false;
         }
 
-        return this.callbacks.includes(this.context.callbackQuery?.callbackData.callback);
+        return this.callbacks.includes(this.context.callbackQuery?.callbackData.c);
     }
 
     /**

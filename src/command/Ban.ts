@@ -93,9 +93,13 @@ export default class Ban extends Command {
      *
      * @returns void
      */
-    private async banByReply(replyToMessage: Message, reason: string): Promise<Record<string, any>> {
-        this.saveBan(replyToMessage.getUser(), reason);
-        return replyToMessage.getUser().ban();
+    private async banByReply(replyToMessage: Message, reason: string): Promise<void> {
+
+        if (await replyToMessage.getUser().ban()) {
+            this.saveBan(replyToMessage.getUser(), reason);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -106,9 +110,13 @@ export default class Ban extends Command {
      *
      * @returns void
      */
-    private async banByMention(mention: User, reason: string): Promise<Record<string, any>> {
-        this.saveBan(mention, reason);
-        return mention.ban();
+    private async banByMention(mention: User, reason: string): Promise<void> {
+
+        if (await mention.ban()) {
+            this.saveBan(mention, reason);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -120,7 +128,7 @@ export default class Ban extends Command {
      * @param userId
      * @param reason
      */
-    private async banByUserId(userId: number, reason: string): Promise<Record<string, any>|undefined> {
+    private async banByUserId(userId: number, reason: string): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(userId);
 
@@ -133,8 +141,11 @@ export default class Ban extends Command {
         };
 
         const contextUser = new UserContext(userType, this.context.chat);
-        this.saveBan(contextUser, reason);
-        return contextUser.ban();
+        if (await contextUser.ban()) {
+            this.saveBan(contextUser, reason);
+        }
+
+        return Promise.resolve();
     }
 
     /**

@@ -67,6 +67,21 @@ export default class SendMessage extends TelegramBotApi {
     }
 
     /**
+     * Sets the thread id.
+     *
+     * @author Marcos Leandro
+     * @since  2024-04-22
+     *
+     * @param threadId
+     *
+     * @return
+     */
+    public setThreadId(threadId: number): SendMessage {
+        this.payload.messageThreadId = threadId;
+        return this;
+    }
+
+    /**
      * Sets the message content.
      *
      * @author Marcos Leandro

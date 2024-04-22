@@ -32,7 +32,7 @@ export default class App {
      *
      * @var {number}
      */
-    private port: number;
+    private readonly port: number;
 
     /**
      * The constructor.
