@@ -11,7 +11,7 @@
 
 import DefaultModel from "./Model.js";
 
-export default class Warns extends DefaultModel {
+export default class Warnings extends DefaultModel {
 
      /**
       * The constructor.
@@ -20,6 +20,6 @@ export default class Warns extends DefaultModel {
       * @since  2023-06-14
       */
     public constructor() {
-        super("warns");
+        super("warnings");
     }
 }

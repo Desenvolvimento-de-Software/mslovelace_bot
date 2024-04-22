@@ -64,8 +64,8 @@ export default class YarnPackage extends JsPackage {
             const button: InlineKeyboardButton = {
                 text : `${key} ${this.package.data.dependencies[key]}`,
                 callbackData : JSON.stringify({
-                    callback : "yarn",
-                    data : {
+                    c : "yarn",
+                    d : {
                         package : key
                     }
                 })

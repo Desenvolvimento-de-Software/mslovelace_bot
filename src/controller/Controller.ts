@@ -225,6 +225,7 @@ export default class Controller {
     private executeCallback(callback: Callback): void {
 
         try {
+
             !callback.isCalled() || callback.run();
 
         } catch (error: any) {

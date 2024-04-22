@@ -55,9 +55,12 @@ export default {
     adminReportMessage: "Why would I report an admin?",
     selfWarnMessage: "Why would I warn myself?",
     adminWarnMessage: "Why would I warn an admin?",
+    warningNoneMessage: "✔ <a href=\"tg://user?id={userid}\">{username}</a> has no warnings.",
     warningSigleMessage: "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReason:\n",
     warningPluralMessage: "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings.\n\nReasons:\n",
     warningBanMessage: "❌ <a href=\"tg://user?id={userid}\">{username}</a> has {warns} warnings and has been banned.\n\nReasons:\n",
+    warningAdminRemovedLast: "Last warning of <a href=\"tg://user?id={userid}\">{username}</a> removed by <a href=\"tg://user?id={adminId}\">{adminUsername}</a>.",
+    warningAdminRemovedAll: "All warnings of <a href=\"tg://user?id={userid}\">{username}</a> removed by <a href=\"tg://user?id={adminId}\">{adminUsername}</a>.",
     reportMessage: "Reported to the admins.",
     federationCreateOnlyPrivate: "PM me if you want to create a federation.",
     federationCreateSuccess: "Federation <code>{name}</code> successfully created.\nYou can now add groups to your federation using the command <code>/fjoin {hash}</code>.",
@@ -91,4 +94,7 @@ export default {
     macroAlreadyExists: "The macro {macro} already exists.",
     macroAddError: "An error occurred while adding the macro. Please try again later.",
     macroRemoveError: "An error occurred while removing the macro. Please try again later.",
+    lastWarningRemovalButton: "Remove warning (admin only)",
+    warningsRemovalButton: "Remove all warnings (admin only)",
+    adminOnlyAction: "This action can only be performed by admins."
 };

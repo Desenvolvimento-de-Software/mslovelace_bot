@@ -25,7 +25,8 @@ import Restrict from "../command/Restrict.js";
 import Send from "../command/Send.js";
 import Start from "../command/Start.js";
 import Unban from "../command/Unban.js";
-import Warn from "../command/Warn.js";
+import Warn from "../command/Warning/Warn.js";
+import Warnings from "../command/Warning/Warnings.js";
 import Yarn from "../command/Yarn.js";
 
 export const commands = [
@@ -46,5 +47,6 @@ export const commands = [
     Start,
     Unban,
     Warn,
+    Warnings,
     Yarn
 ];

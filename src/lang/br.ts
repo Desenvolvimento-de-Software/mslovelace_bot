@@ -55,9 +55,12 @@ export default {
     adminReportMessage: "Por que eu reportaria um administrador?",
     selfWarnMessage: "Por que eu me daria advertência?",
     adminWarnMessage: "Por que eu daria advertência em um administrador?",
+    warningNoneMessage: "✔ <a href=\"tg://user?id={userid}\">{username}</a> não tem advertências.",
     warningSigleMessage: "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertências.\n\nMotivo:\n",
     warningPluralMessage: "⚠️ <a href=\"tg://user?id={userid}\">{username}</a> tem {warns} advertências.\n\nMotivos:\n",
     warningBanMessage: "❌ <a href=\"tg://user?id={userid}\">{username}</a> levou ban por ter {warns} advertências.\n\nMotivos:\n",
+    warningAdminRemovedLast: "Última advertência de <a href=\"tg://user?id={userid}\">{username}</a> removida por <a href=\"tg://user?id={adminId}\">{adminUsername}</a>.",
+    warningAdminRemovedAll: "Todas as advertências de <a href=\"tg://user?id={userid}\">{username}</a> foram removidas por <a href=\"tg://user?id={adminId}\">{adminUsername}</a>.",
     reportMessage: "Reportado aos administradores.",
     federationCreateOnlyPrivate: "Me chame no privado pra criar uma federação.",
     federationCreateSuccess: "Federação <code>{name}</code> criada com sucesso!\nVocê já pode adicionar grupos usando o comando <code>/fjoin {hash}</code>",
@@ -91,4 +94,7 @@ export default {
     macroAlreadyExists: "A macro {macro} já existe.",
     macroAddError: "Ocorreu um erro ao adicionar a macro. Por favor, tente novamente mais tarde.",
     macroRemoveError: "Ocorreu um erro ao remover a macro. Por favor, tente novamente mais tarde.",
+    lastWarningRemovalButton: "Remover Advertência (somente admins)",
+    warningsRemovalButton: "Remover todas as advertências (somente admins)",
+    adminOnlyAction: "Esta ação só pode ser executada por administradores."
 };

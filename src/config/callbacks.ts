@@ -10,9 +10,11 @@
  */
 
 import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation.js";
+import Warning from "../callback/Warning.js";
 import YarnCallback from "../callback/Yarn.js";
 
 export const callbacks = [
     CaptchaConfirmationCallback,
+    Warning,
     YarnCallback
 ];

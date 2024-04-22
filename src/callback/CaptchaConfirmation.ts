@@ -40,7 +40,7 @@ export default class CaptchaConfirmation extends Callback {
      */
     public async run(): Promise<void> {
 
-        if (this.context.callbackQuery?.callbackData.data.userId !== this.context.user.getId()) {
+        if (this.context.callbackQuery?.callbackData.d.userId !== this.context.user.getId()) {
             return;
         }
 

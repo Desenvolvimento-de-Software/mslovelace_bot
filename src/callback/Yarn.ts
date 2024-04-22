@@ -37,12 +37,12 @@ export default class Yarn extends Callback {
      */
      public async run(): Promise<void> {
 
-        if (!this.context.callbackQuery?.callbackData.data.package) {
+        if (!this.context.callbackQuery?.callbackData.d.package) {
             return;
         }
 
         const yarnCommand = new YarnCommand(this.context);
-        await yarnCommand.getPackage(this.context.callbackQuery?.callbackData.data.package);
-        this.context.callbackQuery.answer(this.context.callbackQuery?.callbackData.data.package.toUpperCase());
+        await yarnCommand.getPackage(this.context.callbackQuery?.callbackData.d.package);
+        this.context.callbackQuery.answer(this.context.callbackQuery?.callbackData.d.package.toUpperCase());
     }
 }

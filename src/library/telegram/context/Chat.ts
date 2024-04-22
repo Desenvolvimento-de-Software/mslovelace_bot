@@ -422,6 +422,10 @@ export default class Chat {
             .setChatId(this.context.chat.id)
             .setText(text);
 
+        if (typeof this.context.messageThreadId !== "undefined") {
+            sendMessage.setThreadId(this.context.messageThreadId);
+        }
+
         if (options) {
             sendMessage.setOptions(options);
         }
