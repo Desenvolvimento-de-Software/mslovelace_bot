@@ -11,10 +11,8 @@
 
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
-import User from "../../library/telegram/context/User.js";
 import WarningsBase from "./Base.js";
 import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
 
 export default class Warnings extends WarningsBase {
 

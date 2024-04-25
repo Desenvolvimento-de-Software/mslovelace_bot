@@ -22,6 +22,7 @@ export default {
     askToAskRegex: /^(algu[eé]?m|preciso)\s(tem|a[kqu]+[ií]\s)?([doesnt]+ grupo\s)?(.*)?(ajuda|duvida|sabe|manja|entende|conhe[cs]|usa|help|m[aã]o|for[cç]a|me[xch]+e)(.*)\??/i,
     askToAskLink: "https://dontasktoask.com/pt-br",
     bannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: {reason}",
+    unbannedMessage: "Tudo bem. <a href=\"tg://user?id={userid}\">{username}</a> pode se juntar ao grupo novamente.",
     adaShieldMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: AdaShield.",
     casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: <a href=\"https://cas.chat/\">CAS</a>.",
     adaShieldStatus: "Status do AdaShield: {status}",
