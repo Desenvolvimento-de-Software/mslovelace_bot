@@ -12,8 +12,21 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 
-export default class Unban extends Command {
+export default class setCommands extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "send", description: "Sends a message as the bot." }
+    ];
 
     /**
      * The constructor.
@@ -25,7 +38,6 @@ export default class Unban extends Command {
      */
      public constructor(context: Context) {
         super(context);
-        this.setCommands(["send"]);
     }
 
     /**

@@ -15,7 +15,6 @@ import Action from "../action/Action.js";
 import Command from "../command/Command.js";
 import Callback from "../callback/Callback.js";
 import Context from "../library/telegram/context/Context.js";
-import TelegramBotApi from "../library/telegram/TelegramBotApi.js";
 import Log from "../helper/Log.js";
 import { actions } from "../config/actions.js";
 import { commands } from "../config/commands.js";
@@ -64,7 +63,6 @@ export default class Controller {
         this.app = app;
         this.path = path || "/";
         this.initializeRoutes();
-        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
     }
 
     /**
@@ -148,9 +146,8 @@ export default class Controller {
      * @param context
      */
     private async handleCommands(context: Context): Promise<void> {
-        for (const commandName of commands) {
-            const command = new commandName(context);
-            this.executeCommand(command);
+        for (const commandClass of commands) {
+            Command.isCalled(commandClass, context) === undefined || (this.executeCommand(commandClass, context));
         }
     }
 
@@ -195,18 +192,15 @@ export default class Controller {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
+     * @param commandClass
      */
-    private async executeCommand(command: Command): Promise<void> {
+    private async executeCommand(commandClass: Command, context: Context): Promise<void> {
 
-        const commandContext = command.isCalled();
-
-        if (!commandContext) {
-            return Promise.resolve();
-        }
+        const commandContext = Command.isCalled(commandClass, context);
 
         try {
 
+            const command = new commandClass(context);
             await command.run(commandContext);
 
         } catch (error: any) {

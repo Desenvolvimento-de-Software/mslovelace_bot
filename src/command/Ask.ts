@@ -11,10 +11,23 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 
 export default class Ask extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "ask", description: "Shows the ask to ask answering status. Manages it with [on | off]." }
+    ];
 
     /**
      * The constructor.
@@ -26,7 +39,6 @@ export default class Ask extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["ask"]);
     }
 
     /**

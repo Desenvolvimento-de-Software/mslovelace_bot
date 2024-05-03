@@ -13,6 +13,7 @@ import Federation from "./Federation.js";
 import Context from "../../library/telegram/context/Context.js";
 import Message from "../../library/telegram/context/Message.js";
 import User from "../../library/telegram/context/User.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
 import FederationHelper from "../../helper/Federation.js";
@@ -21,6 +22,16 @@ import Log from "../../helper/Log.js";
 import Bans from "../../model/Bans.js";
 
 export default class Ban extends Federation {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "fban", description: "Bans an user in the federation." }
+    ];
 
     /**
      * The constructor.
@@ -32,7 +43,6 @@ export default class Ban extends Federation {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["fban"]);
     }
 
     /**

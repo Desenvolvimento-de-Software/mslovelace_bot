@@ -11,6 +11,7 @@
 
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 
 export default abstract class Command {
 
@@ -28,11 +29,11 @@ export default abstract class Command {
      * Commands list.
      *
      * @author Marcos Leandro
-     * @since  2023-06-07
+     * @since  2024-05-03
      *
-     * @var {string[]}
+     * @var {BotCommand[]}
      */
-    private commands: string[] = [];
+    public static readonly commands: BotCommand[] = [];
 
     /**
      * Params list.
@@ -67,6 +68,18 @@ export default abstract class Command {
     }
 
     /**
+     * Returns the commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @return {Record<string, string>}
+     */
+    public getCommands(): Record<string, string> {
+        return this.commands;
+    }
+
+    /**
      * Defines the params list.
      *
      * @author Marcos Leandro
@@ -84,19 +97,23 @@ export default abstract class Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
+     * @param commandClass
+     * @param context
      */
-    public isCalled(): CommandContext|undefined {
+    public static isCalled(commandClass: Command, context: Context): CommandContext|undefined {
 
-        let isCalled = false;
-        let currentCommand;
-
-        for (const command of this.context.message.getCommands()) {
-            isCalled = isCalled || this.commands.includes(command.getCommand());
-            !isCalled || (currentCommand = command);
+        if (typeof commandClass.commands === "undefined") {
+            return;
         }
 
-        return currentCommand;
+        const commandList: string[] = [];
+        commandClass.commands.map((command) => commandList.push(command.command));
+
+        for (const command of context.message.getCommands()) {
+            if (commandList.includes(command.getCommand())) {
+                return command;
+            }
+        }
     }
 
     /**
@@ -111,20 +128,5 @@ export default abstract class Command {
      */
     protected isRegisteredParam(param: string): boolean {
         return this.params.includes(param);
-    }
-
-    /**
-     * Defines the commands list.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-07
-     *
-     * @param command
-     */
-    protected setCommands(commands: string[]): void {
-        for (const command of commands) {
-            this.commands.push(command);
-            this.commands.push(`${command}@${process.env.TELEGRAM_USERNAME}`);
-        }
     }
 }

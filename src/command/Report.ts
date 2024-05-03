@@ -11,11 +11,26 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 import Text from "../helper/Text.js";
 
 export default class Report extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "adm", description: "Reports a message to the group administrators." },
+        { command: "admin", description: "Reports a message to the group administrators." },
+        { command: "report", description: "Reports a message to the group administrators." }
+    ];
 
     /**
      * The constructor.
@@ -27,7 +42,6 @@ export default class Report extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["admin", "adm", "report"]);
     }
 
     /**

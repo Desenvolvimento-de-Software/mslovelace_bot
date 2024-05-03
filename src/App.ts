@@ -10,7 +10,11 @@
  */
 
 import express from "express";
+import TelegramBotApi from "./library/telegram/TelegramBotApi.js";
+import SetMyCommands from "./library/telegram/resource/SetMyCommands.js";
+import Log from "./helper/Log.js";
 import { controllers } from "./config/controllers.js";
+import { commands } from "./config/commands.js";
 
 export default class App {
 
@@ -41,9 +45,22 @@ export default class App {
      * @since  1.0.0
      */
     constructor() {
+
         this.expressApp = express();
         this.port = (process.env.PORT || 3000) as number;
 
+        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
+        this.init();
+    }
+
+    /**
+     * Initializes the application.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     */
+    public async init() {
+        await this.registerCommands();
         this.initializeMiddlewares();
         this.initializeControllers();
     }
@@ -58,7 +75,7 @@ export default class App {
      */
     public listen(): void {
         this.expressApp.listen(this.port, () => {
-            console.log(`Listening on port ${this.port}`);
+            Log.warn(`Listening on port ${this.port}`);
         });
     }
 
@@ -85,5 +102,33 @@ export default class App {
     private initializeMiddlewares(): void {
         this.expressApp.use(express.json());
         this.expressApp.use(express.urlencoded({ extended : true }));
+    }
+
+    /**
+     * Registers the bot commands.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     */
+    private async registerCommands(): Promise<void> {
+
+        Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
+        const availableCommands = [];
+        for (const commandClass of commands) {
+            availableCommands.push(...commandClass.commands);
+        }
+
+        if (!availableCommands.length) {
+            return;
+        }
+
+        Log.info("Registering " + availableCommands.length + " commands...");
+        const request = new SetMyCommands();
+        request.setCommands(availableCommands);
+
+        const response = await request.post();
+        if (response.ok) {
+            Log.info("Commands successfully registered.");
+        }
     }
 }

@@ -11,12 +11,23 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
 import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class Start extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "start", description: "Starts the bot." }
+    ];
 
     /**
      * The constructor.
@@ -26,7 +37,6 @@ export default class Start extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["start"]);
     }
 
     /**

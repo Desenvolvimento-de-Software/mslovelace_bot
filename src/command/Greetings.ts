@@ -12,12 +12,25 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import ChatConfigs from "../model/ChatConfigs.js";
 import ChatMessages from "../model/ChatMessages.js";
 import Lang from "../helper/Lang.js";
 
 export default class GreetingsCommand extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "greetings", description: "Manages the greetings message with [on | off | set]." }
+    ];
 
     /**
      * Command context.
@@ -35,7 +48,6 @@ export default class GreetingsCommand extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["greetings", "greeting"]);
         this.setParams(["on", "off", "set"]);
     }
 

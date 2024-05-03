@@ -40,7 +40,7 @@ export default class Polling extends Controller {
      */
     private async initializeLongPolling(offset?: number): Promise<void> {
 
-        Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
+        Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : "") + "...");
 
         const request = new GetUpdates();
         request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT || 60) as number);

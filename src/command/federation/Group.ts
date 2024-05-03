@@ -12,11 +12,25 @@
 import Federation from "./Federation.js";
 import Chats from "../../model/Chats.js";
 import Context from "../../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import FederationsHelper from "../../helper/Federation.js";
 import Lang from "../../helper/Lang.js";
 import Log from "../../helper/Log.js";
 
 export default class Group extends Federation {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command: "fjoin", description: "Joins a federation." },
+        { command: "fleave", description: "Leaves a federation." }
+    ];
 
     /**
      * The constructor.
@@ -28,7 +42,6 @@ export default class Group extends Federation {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["fjoin", "fleave"]);
     }
 
     /**

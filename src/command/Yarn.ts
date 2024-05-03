@@ -10,6 +10,7 @@
  */
 
 import Context from "../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import Command from "./Command.js";
 import ChatHelper from "../helper/Chat.js";
 import YarnPackage from "../helper/YarnPackage.js";
@@ -18,6 +19,18 @@ import Log from "../helper/Log.js";
 import { exec } from "child_process";
 
 export default class Yarn extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    public static readonly commands: BotCommand[] = [
+        { command : "yarn", description : "Shows a package details from yarn with [yarn package]." }
+    ];
 
     /**
      * The constructor.
@@ -29,7 +42,6 @@ export default class Yarn extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["yarn"]);
     }
 
     /**
