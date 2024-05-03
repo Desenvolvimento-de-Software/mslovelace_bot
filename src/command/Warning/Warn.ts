@@ -41,7 +41,7 @@ export default class Warn extends WarningsBase {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["warn"]);
+        this.setCommands(["warn", "delwarn"]);
     }
 
     /**
@@ -81,6 +81,10 @@ export default class Warn extends WarningsBase {
         const users = [];
         const warningLimit = await this.getWarningLimit(chat);
         const replyToMessage = this.context.message.getReplyToMessage();
+
+        if (replyToMessage && command.command === "delwarn") {
+            replyToMessage.delete();
+        }
 
         if (replyToMessage) {
             users.push(replyToMessage.getUser());
