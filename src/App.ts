@@ -50,9 +50,17 @@ export default class App {
         this.port = (process.env.PORT || 3000) as number;
 
         TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
+        this.init();
+    }
 
-        this.registerCommands();
-
+    /**
+     * Initializes the application.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     */
+    public async init() {
+        await this.registerCommands();
         this.initializeMiddlewares();
         this.initializeControllers();
     }
@@ -67,7 +75,7 @@ export default class App {
      */
     public listen(): void {
         this.expressApp.listen(this.port, () => {
-            console.log(`Listening on port ${this.port}`);
+            Log.warn(`Listening on port ${this.port}`);
         });
     }
 
