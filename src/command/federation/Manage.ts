@@ -14,6 +14,7 @@ import ChatHelper from "../../helper/Chat.js";
 import Chats from "../../model/Chats.js";
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import FederationHelper from "../../helper/Federation.js";
 import Federations from "../../model/Federations.js";
 import Lang from "../../helper/Lang.js";
@@ -22,6 +23,20 @@ import Text from "../../helper/Text.js";
 import UserHelper from "../../helper/User.js";
 
 export default class Manage extends Federation {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "fcreate", description: "Creates a federation." },
+        { command: "flist", description: "List your federations." },
+        { command: "fdelete", description: "Deletes a federation." }
+    ];
 
     /**
      * User object.
@@ -57,7 +72,11 @@ export default class Manage extends Federation {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["fcreate", "flist", "fdelete"]);
+        this.setCommands({
+            fcreate : "Creates a federation.",
+            flist : "List your federations.",
+            fdelete : "Deletes a federation."
+        });
     }
 
     /**

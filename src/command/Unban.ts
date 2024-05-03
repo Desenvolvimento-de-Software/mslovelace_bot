@@ -11,8 +11,9 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
-import Message from "src/library/telegram/context/Message.js";
-import User from "src/library/telegram/context/User.js";
+import Message from "../library/telegram/context/Message.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
+import User from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
@@ -20,6 +21,18 @@ import Lang from "../helper/Lang.js";
 import Log from "../helper/Log.js";
 
 export default class Unban extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "unban", description: "Unbans an user from group." }
+    ];
 
     /**
      * The constructor.
@@ -31,7 +44,6 @@ export default class Unban extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["unban"]);
     }
 
     /**

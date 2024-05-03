@@ -12,12 +12,28 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Chats from "../model/Chats.js";
 import Macros from "../model/Macros.js";
 import Lang from "../helper/Lang.js";
 
 export default class Macro extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command : "macro", description : "Shows a macro with [macro name]." },
+        { command : "madd", description : "Adds a macro with [madd name content]." },
+        { command : "mlist", description : "Lists the macros." },
+        { command : "mremove", description : "Removes a macro with [mremove name]." }
+    ];
 
     /**
      * Current loaded chat.
@@ -37,7 +53,6 @@ export default class Macro extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["macro", "madd", "mlist", "mremove"]);
     }
 
     /**

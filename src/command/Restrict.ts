@@ -12,11 +12,24 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatConfigs from "../model/ChatConfigs.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 
 export default class Restrict extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "restrict", description: "Shows the new users restriction status. Manages new users from sending messages with [on | off]." }
+    ];
 
     /**
      * The constructor.
@@ -26,7 +39,6 @@ export default class Restrict extends Command {
      */
      public constructor(context: Context) {
         super(context);
-        this.setCommands(["restrict"]);
         this.setParams(["index", "on", "off"]);
     }
 

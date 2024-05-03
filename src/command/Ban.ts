@@ -13,16 +13,30 @@ import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import Message from "../library/telegram/context/Message.js";
 import User from "../library/telegram/context/User.js";
+import UserContext from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
-import UserContext from "../library/telegram/context/User.js";
 import Bans from "../model/Bans.js";
 import Lang from "../helper/Lang.js";
 import Log from "../helper/Log.js";
 import { User as UserType } from "../library/telegram/type/User.js";
 
 export default class Ban extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "ban", description: "Bans an user from group." },
+        { command: "delban", description: "Bans an user from group and deletes their's message." }
+    ];
 
     /**
      * Command context.
@@ -42,7 +56,6 @@ export default class Ban extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["ban", "delban"]);
     }
 
     /**

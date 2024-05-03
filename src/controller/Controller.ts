@@ -41,6 +41,8 @@ export default class Controller {
      */
     protected path: string;
 
+    protected commands: Command[] = [];
+
     /**
      * Controller routes.
      *
@@ -65,6 +67,9 @@ export default class Controller {
         this.path = path || "/";
         this.initializeRoutes();
         TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
+
+        this.initializeCommands();
+        // this.registerCommands();
     }
 
     /**
@@ -121,6 +126,19 @@ export default class Controller {
 
         } catch (error: any) {
             Log.save(error.message, error.stack, true, "error");
+        }
+    }
+
+    private async registerCommands(): Promise<void> {
+
+        const telegramCommands: Record<string, any>[] = [];
+        for (const commandName of commands) {
+            const commandObject = new commandName(new Context({}));
+            const commands = commandObject.getCommands();
+
+            for (const command in commands) {
+                telegramCommands[command] = commands[command];
+            }
         }
     }
 

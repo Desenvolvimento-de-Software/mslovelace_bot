@@ -11,8 +11,22 @@
 
 import Federation from "./Federation.js";
 import Context from "../../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 
 export default class User extends Federation {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "fpromote", description: "Promotes a user in the active federation." },
+        { command: "fdemote", description: "Demotes a user in the active federation." }
+    ];
 
     /**
      * The constructor.
@@ -24,10 +38,6 @@ export default class User extends Federation {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands([
-            "fpromote",
-            "fdemote",
-        ]);
     }
 
     private async promote(): Promise<void> {

@@ -11,6 +11,7 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import NpmPackage from "../helper/NpmPackage.js";
 import Lang from "../helper/Lang.js";
@@ -18,6 +19,18 @@ import Log from "../helper/Log.js";
 import { exec } from "child_process";
 
 export default class Npm extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "npm", description: "Shows a package details from npm with [npm package]." }
+    ];
 
     /**
      * The constructor.
@@ -29,7 +42,6 @@ export default class Npm extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["npm"]);
     }
 
     /**

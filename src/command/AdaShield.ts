@@ -15,8 +15,21 @@ import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 
 export default class AdaShield extends Command {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "adashield", description: "Shows the AdaShield status. Manages it with [on | off]." }
+    ];
 
     /**
      * The constructor.
@@ -28,7 +41,6 @@ export default class AdaShield extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["adashield"]);
         this.setParams(["index", "on", "off"]);
     }
 

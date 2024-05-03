@@ -11,10 +11,24 @@
 
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
+import BotCommand from "../library/telegram/type/BotCommand.js";
 import WarningsBase from "./Base.js";
 import ChatHelper from "../../helper/Chat.js";
 
 export default class Warnings extends WarningsBase {
+
+    /**
+     * Commands list.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-03
+     *
+     * @var {BotCommand[]}
+     */
+    private static commands: BotCommand[] = [
+        { command: "warnings", description: "Lists the user's warnings." },
+        { command: "warns", description: "Lists the user's warnings (alternative)." }
+    ];
 
     /**
      * Command context.
@@ -36,7 +50,6 @@ export default class Warnings extends WarningsBase {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["warnings", "warns"]);
     }
 
     /**
