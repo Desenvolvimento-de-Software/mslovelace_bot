@@ -14,6 +14,10 @@ import Context from "../library/telegram/context/Context.js";
 import Message from "src/library/telegram/context/Message.js";
 import User from "src/library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
+import UserHelper from "../helper/User.js";
+import ChatHelper from "../helper/Chat.js";
+import Lang from "../helper/Lang.js";
+import Log from "../helper/Log.js";
 
 export default class Unban extends Command {
 
@@ -69,11 +73,13 @@ export default class Unban extends Command {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
-     *
-     * @returns void
      */
-    private async unbanByReply(replyToMessage: Message): Promise<Record<string, any>> {
-        return replyToMessage.getUser().unban();
+    private async unbanByReply(replyToMessage: Message):  Promise<void> {
+        if (await replyToMessage.getUser().unban()) {
+            this.saveUnban(replyToMessage.getUser());
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -81,10 +87,45 @@ export default class Unban extends Command {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
-     *
-     * @returns void
      */
-    private async unbanByMention(mention: User): Promise<Record<string, any>> {
-        return mention.unban();
+    private async unbanByMention(mention: User):  Promise<void> {
+
+        if (await mention.unban()) {
+            this.saveUnban(mention);
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Saves the unban.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     *
+     * @param {User} contextUser User object.
+     */
+    private async saveUnban(contextUser: User): Promise<void> {
+
+        const user = await UserHelper.getByTelegramId(contextUser.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+
+        if (!user || !chat) {
+            return;
+        }
+
+        Lang.set(chat.language || "us");
+
+        try {
+
+            const message = Lang.get("unbannedMessage")
+                .replace("{userid}", contextUser.getId())
+                .replace("{username}", contextUser.getFirstName() || contextUser.getUsername());
+
+            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+
+        } catch (err: any) {
+            Log.error(err.toString());
+        }
     }
 }

@@ -12,8 +12,6 @@
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
 import User from "../../library/telegram/context/User.js";
-import Message from "../../library/telegram/context/Message.js";
-import ChatConfigs from "../../model/ChatConfigs.js";
 import WarningsModel from "../../model/Warnings.js";
 import WarningsBase from "./Base.js";
 import UserHelper from "../../helper/User.js";
@@ -43,7 +41,7 @@ export default class Warn extends WarningsBase {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["warn"]);
+        this.setCommands(["warn", "delwarn"]);
     }
 
     /**
@@ -83,6 +81,10 @@ export default class Warn extends WarningsBase {
         const users = [];
         const warningLimit = await this.getWarningLimit(chat);
         const replyToMessage = this.context.message.getReplyToMessage();
+
+        if (replyToMessage && command.command === "delwarn") {
+            replyToMessage.delete();
+        }
 
         if (replyToMessage) {
             users.push(replyToMessage.getUser());

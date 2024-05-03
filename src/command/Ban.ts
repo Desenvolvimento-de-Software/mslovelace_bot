@@ -42,7 +42,7 @@ export default class Ban extends Command {
      */
     public constructor(context: Context) {
         super(context);
-        this.setCommands(["ban"]);
+        this.setCommands(["ban", "delban"]);
     }
 
     /**
@@ -65,6 +65,10 @@ export default class Ban extends Command {
         let params = command.getParams() || [];
 
         const replyToMessage = this.context.message.getReplyToMessage();
+        if (replyToMessage && command.command === "delban") {
+            replyToMessage.delete();
+        }
+
         if (replyToMessage) {
             this.banByReply(replyToMessage, params.join(" ").trim());
             return;

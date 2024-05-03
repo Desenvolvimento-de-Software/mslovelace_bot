@@ -99,5 +99,4 @@ export default class CaptchaConfirmation extends Callback {
 
         await warnings.execute();
     }
-
 }

@@ -125,7 +125,7 @@ export default class Greetings extends Action {
 
         setTimeout(() => {
             this.deleteMessage(message);
-        }, 500000); /* 5 minutes */
+        }, 300000); /* 5 minutes */
     }
 
     /**

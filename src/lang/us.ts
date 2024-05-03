@@ -22,6 +22,7 @@ export default {
     askToAskRegex: /(Any)\s(.*)\s(expert\s|dev\s)?(can\s)?(here|help)(.*)\??/i,
     askToAskLink: "https://dontasktoask.com",
     bannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: {reason}",
+    unbannedMessage: "Alright. <a href=\"tg://user?id={userid}\">{username}</a> can join the group again.",
     adaShieldMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: AdaShield banned.",
     casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: <a href=\"https://cas.chat/\">CAS banned</a>.",
     adaShieldStatus: "AdaShield status: {status}",
