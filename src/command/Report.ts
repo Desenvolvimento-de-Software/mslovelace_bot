@@ -26,7 +26,7 @@ export default class Report extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "adm", description: "Reports a message to the group administrators." },
         { command: "admin", description: "Reports a message to the group administrators." },
         { command: "report", description: "Reports a message to the group administrators." }

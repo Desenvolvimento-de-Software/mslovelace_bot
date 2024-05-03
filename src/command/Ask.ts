@@ -25,7 +25,7 @@ export default class Ask extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "ask", description: "Shows the ask to ask answering status. Manages it with [on | off]." }
     ];
 

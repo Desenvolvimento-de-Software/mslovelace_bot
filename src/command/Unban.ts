@@ -30,7 +30,7 @@ export default class Unban extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "unban", description: "Unbans an user from group." }
     ];
 

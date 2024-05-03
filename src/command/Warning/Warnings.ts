@@ -25,7 +25,7 @@ export default class Warnings extends WarningsBase {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "warnings", description: "Lists the user's warnings." },
         { command: "warns", description: "Lists the user's warnings (alternative)." }
     ];

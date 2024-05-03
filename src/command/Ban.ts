@@ -33,7 +33,7 @@ export default class Ban extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "ban", description: "Bans an user from group." },
         { command: "delban", description: "Bans an user from group and deletes their's message." }
     ];

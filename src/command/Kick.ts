@@ -26,7 +26,7 @@ export default class Kick extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "kick", description: "Kicks an user from group." }
     ];
 

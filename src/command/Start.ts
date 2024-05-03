@@ -25,7 +25,7 @@ export default class Start extends Command {
      * @author Marcos Leandro
      * @since  2024-05-03
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "start", description: "Starts the bot." }
     ];
 

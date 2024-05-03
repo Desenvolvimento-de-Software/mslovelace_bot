@@ -27,7 +27,7 @@ export default class AdaShield extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "adashield", description: "Shows the AdaShield status. Manages it with [on | off]." }
     ];
 

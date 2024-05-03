@@ -32,7 +32,7 @@ export default class Manage extends Federation {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "fcreate", description: "Creates a federation." },
         { command: "flist", description: "List your federations." },
         { command: "fdelete", description: "Deletes a federation." }

@@ -27,7 +27,7 @@ export default class Restrict extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "restrict", description: "Shows the new users restriction status. Manages new users from sending messages with [on | off]." }
     ];
 

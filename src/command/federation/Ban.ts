@@ -29,7 +29,7 @@ export default class Ban extends Federation {
      * @author Marcos Leandro
      * @since  2024-05-03
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "fban", description: "Bans an user in the federation." }
     ];
 

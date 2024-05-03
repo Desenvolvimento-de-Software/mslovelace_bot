@@ -24,7 +24,7 @@ export default class setCommands extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "send", description: "Sends a message as the bot." }
     ];
 

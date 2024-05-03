@@ -27,7 +27,7 @@ export default class Group extends Federation {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "fjoin", description: "Joins a federation." },
         { command: "fleave", description: "Leaves a federation." }
     ];

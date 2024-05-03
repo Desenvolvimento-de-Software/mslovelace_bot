@@ -28,7 +28,7 @@ export default class GreetingsCommand extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "greetings", description: "Manages the greetings message with [on | off | set]." }
     ];
 

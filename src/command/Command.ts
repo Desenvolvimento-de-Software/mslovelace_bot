@@ -33,7 +33,7 @@ export default abstract class Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [];
+    public static readonly commands: BotCommand[] = [];
 
     /**
      * Params list.
@@ -97,12 +97,20 @@ export default abstract class Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
+     * @param commandClass
+     * @param context
      */
-    public isCalled(): CommandContext|undefined {
+    public static isCalled(commandClass: Command, context: Context): CommandContext|undefined {
 
-        for (const command of this.commands) {
-            if (command.isCalled(this.context)) {
+        if (typeof commandClass.commands === "undefined") {
+            return;
+        }
+
+        const commandList: string[] = [];
+        commandClass.commands.map((command) => commandList.push(command.command));
+
+        for (const command of context.message.getCommands()) {
+            if (commandList.includes(command.getCommand())) {
                 return command;
             }
         }

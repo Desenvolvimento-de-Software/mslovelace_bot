@@ -28,7 +28,7 @@ export default class Macro extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command : "macro", description : "Shows a macro with [macro name]." },
         { command : "madd", description : "Adds a macro with [madd name content]." },
         { command : "mlist", description : "Lists the macros." },

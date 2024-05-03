@@ -28,7 +28,7 @@ export default class Npm extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "npm", description: "Shows a package details from npm with [npm package]." }
     ];
 

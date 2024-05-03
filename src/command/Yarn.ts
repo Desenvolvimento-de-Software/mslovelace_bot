@@ -28,7 +28,7 @@ export default class Yarn extends Command {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command : "yarn", description : "Shows a package details from yarn with [yarn package]." }
     ];
 

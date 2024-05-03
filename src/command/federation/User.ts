@@ -23,7 +23,7 @@ export default class User extends Federation {
      *
      * @var {BotCommand[]}
      */
-    private static commands: BotCommand[] = [
+    public static readonly commands: BotCommand[] = [
         { command: "fpromote", description: "Promotes a user in the active federation." },
         { command: "fdemote", description: "Demotes a user in the active federation." }
     ];
