@@ -97,5 +97,7 @@ export default {
     macroRemoveError: "An error occurred while removing the macro. Please try again later.",
     lastWarningRemovalButton: "Remove warning (admin only)",
     warningsRemovalButton: "Remove all warnings (admin only)",
-    adminOnlyAction: "This action can only be performed by admins."
+    adminOnlyAction: "This action can only be performed by admins.",
+    adminOnlyActionMessage: "<a href=\"tg://user?id={userid}\">{username}</a> do you know what \"admin only\" means? What do you think you're doing?",
+    reasonUnknown: "Unknown",
 };

@@ -201,7 +201,7 @@ export default class Ban extends Command {
             const message = Lang.get("bannedMessage")
                 .replace("{userid}", contextUser.getId())
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername())
-                .replace("{reason}", reason.length ? reason : "Unknown");
+                .replace("{reason}", reason.length ? reason : Lang.get("reasonUnknown"));
 
             this.context.chat.sendMessage(message, { parseMode: "HTML" });
 

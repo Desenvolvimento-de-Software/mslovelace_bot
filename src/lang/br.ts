@@ -97,5 +97,7 @@ export default {
     macroRemoveError: "Ocorreu um erro ao remover a macro. Por favor, tente novamente mais tarde.",
     lastWarningRemovalButton: "Remover Advertência (somente admins)",
     warningsRemovalButton: "Remover todas as advertências (somente admins)",
-    adminOnlyAction: "Esta ação só pode ser executada por administradores."
+    adminOnlyAction: "Esta ação só pode ser executada por administradores.",
+    adminOnlyActionMessage: "<a href=\"tg://user?id={userid}\">{username}</a> você sabe o que quer dizer \"somente admins\"? O que você pensa que está fazendo?",
+    reasonUnknown: "Desconhecido",
 };

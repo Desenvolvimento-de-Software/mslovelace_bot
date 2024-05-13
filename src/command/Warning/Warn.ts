@@ -157,7 +157,7 @@ export default class Warn extends WarningsBase {
             .set("user_id", user.id)
             .set("chat_id", chat.id)
             .set("date", Math.ceil(Date.now() / 1000))
-            .set("reason", reason);
+            .set("reason", reason.length ? reason : Lang.get("reasonUnknown"));
 
         try {
 

@@ -21,5 +21,6 @@ export type ChatMemberUpdated = {
     oldChatMember: ChatMember;
     newChatMember: ChatMember;
     inviteLink?: ChatInviteLink;
+    viaJoinRequest?: boolean;
     viaChatFolderInviteLink?: boolean;
 };

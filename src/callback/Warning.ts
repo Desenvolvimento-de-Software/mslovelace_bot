@@ -17,7 +17,7 @@ import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 import { parse } from "dotenv";
 
-export default class CaptchaConfirmation extends Callback {
+export default class Warning extends Callback {
 
     /**
      * The constructor.
@@ -44,14 +44,20 @@ export default class CaptchaConfirmation extends Callback {
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
         if (!user || !chat) {
-            this.context.callbackQuery?.answer(Lang.get("adminOnlyAction"));
-            return;
+            return Promise.resolve();
         }
 
         Lang.set(chat.language || "us");
 
         if (!await this.context.user.isAdmin()) {
             this.context.callbackQuery?.answer(Lang.get("adminOnlyAction"));
+
+            const message = Lang.get("adminOnlyActionMessage")
+                .replace("{userid}", this.context.user.getId())
+                .replace("{username}", this.context.user.getFirstName() || this.context.user.getUsername());
+
+            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            return Promise.resolve();
         }
 
         const [userId, chatId, warningId] = this.context.callbackQuery?.callbackData?.d?.split(",");
