@@ -435,4 +435,31 @@ export default class Chat {
             .then((json) => new Message(json.result))
             .catch((error) => console.error(error));
     }
+
+    /**
+     * Sends a chat action to the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-23
+     *
+     * @param action
+     *
+     * @returns {Promise<Message>}
+     */
+    public async sendChatAction(action: string): Promise<any> {
+
+        const sendChatAction = new SendChatAction();
+        sendChatAction
+            .setChatId(this.context.chat.id)
+            .setAction(action);
+
+        if (typeof this.context.messageThreadId !== "undefined") {
+            sendChatAction.setThreadId(this.context.messageThreadId);
+        }
+
+        return sendChatAction.post()
+            .then((response) => response.json())
+            .then((json) => new Message(json.result))
+            .catch((error) => console.error(error));
+    }
 }
