@@ -112,7 +112,6 @@ export default class App {
      */
     private async registerCommands(): Promise<void> {
 
-        Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : ""));
         const availableCommands = [];
         for (const commandClass of commands) {
             availableCommands.push(...commandClass.commands);

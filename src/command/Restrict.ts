@@ -12,7 +12,7 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatConfigs from "../model/ChatConfigs.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";

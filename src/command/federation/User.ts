@@ -11,7 +11,7 @@
 
 import Federation from "./Federation.js";
 import Context from "../../library/telegram/context/Context.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 
 export default class User extends Federation {
 

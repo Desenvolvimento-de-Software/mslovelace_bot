@@ -69,6 +69,6 @@ export default class AskToAsk extends Action {
         const link = Lang.get("askToAskLink");
         const content = `<a href="tg://user?id=${userId}">${username}</a>,\n\n${link}`;
 
-        this.context.chat.sendMessage(content);
+        this.context.chat.sendMessage(content, { parseMode : "HTML" });
     }
 }

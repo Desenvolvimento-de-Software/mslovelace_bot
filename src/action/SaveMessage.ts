@@ -14,6 +14,7 @@ import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import Messages from "../model/Messages.js";
+import Log from "../helper/Log.js";
 
 export default class SaveMessage extends Action {
 
@@ -46,6 +47,11 @@ export default class SaveMessage extends Action {
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
         if (!user || !chat) {
+            return Promise.resolve();
+        }
+
+        if (!user?.id?.length) {
+            Log.save("User ID not found " + this.context.getPayload());
             return Promise.resolve();
         }
 

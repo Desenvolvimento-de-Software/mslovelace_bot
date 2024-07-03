@@ -15,7 +15,7 @@ import Message from "../library/telegram/context/Message.js";
 import User from "../library/telegram/context/User.js";
 import UserContext from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import Bans from "../model/Bans.js";
@@ -201,7 +201,7 @@ export default class Ban extends Command {
             const message = Lang.get("bannedMessage")
                 .replace("{userid}", contextUser.getId())
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername())
-                .replace("{reason}", reason.length ? reason : "Unknown");
+                .replace("{reason}", reason.length ? reason : Lang.get("reasonUnknown"));
 
             this.context.chat.sendMessage(message, { parseMode: "HTML" });
 

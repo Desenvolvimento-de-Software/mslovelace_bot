@@ -97,5 +97,16 @@ export default {
     macroRemoveError: "Ocorreu um erro ao remover a macro. Por favor, tente novamente mais tarde.",
     lastWarningRemovalButton: "Remover Advertência (somente admins)",
     warningsRemovalButton: "Remover todas as advertências (somente admins)",
-    adminOnlyAction: "Esta ação só pode ser executada por administradores."
+    adminOnlyAction: "Esta ação só pode ser executada por administradores.",
+    adminOnlyActionMessage: "<a href=\"tg://user?id={userid}\">{username}</a> você sabe o que quer dizer \"somente admins\"? O que você pensa que está fazendo?",
+    reasonUnknown: "Desconhecido",
+    privacyPolicy: (() => [
+        "Olá! Eu sou a Ada Lovelace, um bot pro Telegram. Estou aqui para ajudar, mas antes, é importante que você saiba como trato seus dados.",
+        "<b>Coleta de Dados:</b> Eu salvo e mantenho apenas dados públicos dos usuários e grupos dos quais faço parte. Isso inclui mensagens enviadas em grupos e informações de perfil público.",
+        "<b>Uso dos Dados:</b> Os dados coletados são usados exclusivamente para que eu possa gerenciar os grupos dos quais faço parte.",
+        "<b>Compartilhamento de Dados:</b> Eu não compartilho seus dados com terceiros. As informações coletadas ficam restritas ao funcionamento do bot.",
+        "<b>Segurança:</b> Tomo medidas para garantir que seus dados estejam seguros, protegendo-os contra acesso não autorizado.",
+        "<b>Seus Direitos:</b> Você tem o direito de solicitar a exclusão de seus dados a qualquer momento. Para isso, basta entrar em contato comigo através deste canal.",
+        "Se tiver alguma dúvida sobre esta política de privacidade, estou à disposição para ajudar!"
+    ].join("\n\n"))()
 };

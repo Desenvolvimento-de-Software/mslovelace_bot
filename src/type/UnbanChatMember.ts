@@ -10,7 +10,7 @@
  */
 
 export type UnbanChatMemberType = {
-    chat_id?         : number,
-    user_id?         : number,
-    only_if_banned?  : boolean
+    chat_id? : number,
+    user_id? : number,
+    only_if_banned? : boolean
 };

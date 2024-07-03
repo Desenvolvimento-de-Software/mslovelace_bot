@@ -10,8 +10,8 @@
  */
 
 export type BanChatMemberType = {
-    chat_id?         : number,
-    user_id?         : number,
-    until_date?      : number,
+    chat_id? : number,
+    user_id? : number,
+    until_date? : number,
     revoke_messages? : boolean
 };

@@ -12,7 +12,7 @@
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
 import User from "../../library/telegram/context/User.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import WarningsModel from "../../model/Warnings.js";
 import WarningsBase from "./Base.js";
 import UserHelper from "../../helper/User.js";
@@ -157,7 +157,7 @@ export default class Warn extends WarningsBase {
             .set("user_id", user.id)
             .set("chat_id", chat.id)
             .set("date", Math.ceil(Date.now() / 1000))
-            .set("reason", reason);
+            .set("reason", reason.length ? reason : Lang.get("reasonUnknown"));
 
         try {
 

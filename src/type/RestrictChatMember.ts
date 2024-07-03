@@ -12,8 +12,8 @@
 import { ChatPermissionsType } from "../type/ChatPermissions.js";
 
 export type RestrictChatMemberType = {
-    chat_id?     : number,
-    user_id?     : number,
+    chat_id? : number,
+    user_id? : number,
     permissions? : ChatPermissionsType,
-    until_date?  : number
+    until_date? : number
 };

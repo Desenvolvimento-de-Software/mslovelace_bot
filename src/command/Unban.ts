@@ -12,7 +12,7 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import Message from "../library/telegram/context/Message.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import User from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
 import UserHelper from "../helper/User.js";
