@@ -162,6 +162,18 @@ export default class Context {
     }
 
     /**
+     * Returns the payload.
+     *
+     * @author Marcos Leandro
+     * @since  2024-06-30
+     *
+     * @returns Record<string, any>
+     */
+    public getPayload(): Record<string, any> {
+        return this.payload;
+    }
+
+    /**
      * Returns the type of the context.
      *
      * @author Marcos Leandro

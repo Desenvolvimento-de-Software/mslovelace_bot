@@ -100,4 +100,13 @@ export default {
     adminOnlyAction: "This action can only be performed by admins.",
     adminOnlyActionMessage: "<a href=\"tg://user?id={userid}\">{username}</a> do you know what \"admin only\" means? What do you think you're doing?",
     reasonUnknown: "Unknown",
+    privacyPolicy: (() => [
+        "Hello! I'm Ada Lovelace, a Telegram bot. I'm here to help, but first, it's important that you know how I handle your data.",
+        "<b>Data Collection:</b> I only save and maintain public data from users and groups that I'm a part of. This includes messages sent in groups and public profile information.",
+        "<b>Data Usage:</b> The collected data is used exclusively to manage the groups I am part of.",
+        "<b>Data Sharing:</b> I do not share your data with third parties. The information collected is restricted to the operation of the bot.",
+        "<b>Security:</b> I take measures to ensure that your data is secure, protecting it from unauthorized access.",
+        "<b>Your Rights:</b> You have the right to request the deletion of your data at any time. To do so, just contact me through this channel.",
+        "If you have any questions about this privacy policy, I am here to help!"
+    ].join("\n\n"))()
 };

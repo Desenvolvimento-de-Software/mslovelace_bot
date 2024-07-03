@@ -14,7 +14,7 @@ import Context from "../library/telegram/context/Context.js";
 import Message from "../library/telegram/context/Message.js";
 import User from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 
 export default class Kick extends Command {
 

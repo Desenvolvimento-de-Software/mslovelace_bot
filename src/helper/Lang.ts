@@ -60,7 +60,8 @@ export default class Lang {
     public static set(country: string) {
 
         if (!Lang.langs.hasOwnProperty(country)) {
-            throw new Error("Country not found.");
+            Lang.country = "us";
+            return;
         }
 
         Lang.country = country;

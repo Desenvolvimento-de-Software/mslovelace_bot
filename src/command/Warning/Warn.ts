@@ -12,7 +12,7 @@
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
 import User from "../../library/telegram/context/User.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import WarningsModel from "../../model/Warnings.js";
 import WarningsBase from "./Base.js";
 import UserHelper from "../../helper/User.js";

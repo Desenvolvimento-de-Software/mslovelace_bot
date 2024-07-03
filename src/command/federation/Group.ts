@@ -12,7 +12,7 @@
 import Federation from "./Federation.js";
 import Chats from "../../model/Chats.js";
 import Context from "../../library/telegram/context/Context.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import FederationsHelper from "../../helper/Federation.js";
 import Lang from "../../helper/Lang.js";
 import Log from "../../helper/Log.js";

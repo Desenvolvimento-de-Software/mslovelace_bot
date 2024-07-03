@@ -11,7 +11,7 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
 import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";

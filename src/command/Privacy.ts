@@ -12,10 +12,11 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
+import Text from "../helper/Text.js";
+import UserHelper from "../helper/User.js";
 
-export default class Ask extends Command {
+export default class Privacy extends Command {
 
     /**
      * Commands list.
@@ -26,7 +27,7 @@ export default class Ask extends Command {
      * @var {BotCommand[]}
      */
     public static readonly commands: BotCommand[] = [
-        { command: "ask", description: "Shows the ask to ask answering status. Manages it with [on | off]." }
+        { command: "privacy", description: "Shows the privacy policy." }
     ];
 
     /**
@@ -42,30 +43,29 @@ export default class Ask extends Command {
     }
 
     /**
-     * Run the command.
+     * Executes the command.
      *
      * @author Marcos Leandro
-     * @since  2023-06-12
+     * @since  2023-06-07
      *
-     * @return {Promise<void>}
+     * @param command
+     *
+     * @returns
      */
     public async run(): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
+        if (this.context.chat.getType() !== "private") {
+            return Promise.resolve();
+        }
+
+        const user = await UserHelper.getByTelegramId(this.context.user.getId());
+        if (!user || !user.id) {
             return;
         }
 
-        this.context.message.delete();
+        Lang.set(user.language_code || "us");
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        Lang.set(chat?.language || "us");
-
-        const replyToMessage = this.context.message.getReplyToMessage();
-        if (replyToMessage) {
-            replyToMessage.reply(Lang.get("askToAskLink"));
-            return;
-        }
-
-        this.context.chat.sendMessage(Lang.get("askToAskLink"));
+        this.context.chat.sendMessage(Lang.get("privacyPolicy"), { parseMode: "HTML" });
+        return Promise.resolve();
     }
 }

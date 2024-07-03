@@ -10,7 +10,7 @@
  */
 
 import Context from "../library/telegram/context/Context.js";
-import BotCommand from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import Command from "./Command.js";
 import ChatHelper from "../helper/Chat.js";
 import YarnPackage from "../helper/YarnPackage.js";
