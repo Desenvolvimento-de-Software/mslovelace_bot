@@ -50,7 +50,7 @@ export default class Yarn extends Command {
      * @author Marcos Leandro
      * @since  2023-06-13
      */
-    public async run(): Promise<void> {
+    public async run(payload: Record<string, any>): Promise<void> {
 
         const text = this.context.message.getText().split(/\s+/);
         if (!text.length || text.length < 2) {
@@ -69,6 +69,8 @@ export default class Yarn extends Command {
 
         Lang.set(chat.language || "us");
         this.getPackage(library);
+
+        return Promise.resolve();
     }
 
     /**
@@ -102,26 +104,26 @@ export default class Yarn extends Command {
      * @param stdout
      * @param stderr
      */
-    private async processResponse(error: any, stdout: string, stderr: string): Promise<void> {
+    private processResponse = async (error: any, stdout: string, stderr: string): Promise<void> => {
 
         if (error) {
             Log.save(error.message, error.stack);
-            return;
+            return Promise.resolve();
         }
 
         if (stderr) {
             Log.save(stderr);
-            return;
+            return Promise.resolve();
         }
 
         const library = await JSON.parse(stdout);
         if (!library) {
-            return;
+            return Promise.resolve();
         }
 
         const yarnPackage = new YarnPackage(library);
         if (this.context.callbackQuery) {
-            return this.updateMessage(yarnPackage);
+            // return this.updateMessage(yarnPackage);
         }
 
         return this.sendNewMessage(yarnPackage);
@@ -159,6 +161,8 @@ export default class Yarn extends Command {
         }
 
         this.context.chat.sendMessage(yarnPackage.getMessage(), options);
+
+        return Promise.resolve();
     }
 
     /**

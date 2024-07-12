@@ -110,6 +110,11 @@ export default class Controller {
      */
     protected async handle(payload: Record<string, any>): Promise<void> {
 
+        if (!payload.update_id) {
+            Log.save("Invalid payload.\n" + JSON.stringify(payload), "", false, "error");
+            return Promise.resolve();
+        }
+
         try {
 
             const context = new Context(payload);
