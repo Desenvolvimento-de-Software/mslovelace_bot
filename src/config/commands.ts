@@ -23,11 +23,12 @@ import Npm from "../command/Npm.js";
 import Privacy from "../command/Privacy.js";
 import Report from "../command/Report.js";
 import Restrict from "../command/Restrict.js";
+import Rules from "../command/Rules.js";
 import Send from "../command/Send.js";
 import Start from "../command/Start.js";
 import Unban from "../command/Unban.js";
-import Warn from "../command/Warning/Warn.js";
-import Warnings from "../command/Warning/Warnings.js";
+import Warn from "../command/warning/Warn.js";
+import Warnings from "../command/warning/Warnings.js";
 import Yarn from "../command/Yarn.js";
 
 export const commands = [
@@ -45,6 +46,7 @@ export const commands = [
     Privacy,
     Report,
     Restrict,
+    Rules,
     Send,
     Start,
     Unban,

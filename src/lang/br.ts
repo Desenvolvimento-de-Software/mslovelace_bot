@@ -100,6 +100,9 @@ export default {
     adminOnlyAction: "Esta ação só pode ser executada por administradores.",
     adminOnlyActionMessage: "<a href=\"tg://user?id={userid}\">{username}</a> você sabe o que quer dizer \"somente admins\"? O que você pensa que está fazendo?",
     reasonUnknown: "Desconhecido",
+    rulesNotFound: "Não há regras configuradas para este grupo.",
+    rulesDeleted: "As regras do grupo foram removidas.",
+    rulesUpdated: "As regras do grupo foram atualizadas.",
     privacyPolicy: (() => [
         "Olá! Eu sou a Ada Lovelace, um bot pro Telegram. Estou aqui para ajudar, mas antes, é importante que você saiba como trato seus dados.",
         "<b>Coleta de Dados:</b> Eu salvo e mantenho apenas dados públicos dos usuários e grupos dos quais faço parte. Isso inclui mensagens enviadas em grupos e informações de perfil público.",

@@ -14,6 +14,7 @@ import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
+import Log from "../helper/Log.js";
 
 export default class SaveUserAndChat extends Action {
 
@@ -45,7 +46,7 @@ export default class SaveUserAndChat extends Action {
         const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
 
         if (!userId) {
-            Log.save("User ID not found " + this.context.getPayload());
+            Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
 
