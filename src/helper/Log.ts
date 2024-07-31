@@ -318,7 +318,13 @@ export default class Log {
 
         const directory = path.resolve();
         const filename = `${year}-${month}-${day}.log`;
-        fs.appendFileSync(`${directory}/log/${filename}`, `${hours}:${minutes}:${seconds} :: ${content}\n${stack}\n`);
+
+        let log = `${hours}:${minutes}:${seconds} :: ${content}\n`;
+        if (stack) {
+            log += `${stack}\n`;
+        }
+
+        fs.appendFileSync(`${directory}/log/${filename}`, log);
 
         type LogLevel = "assert" | "clear" | "count" | "countReset" | "debug" | "dir" | "dirxml" | "error" | "group" | "groupCollapsed" | "groupEnd" | "info" | "log" | "table" | "time" | "timeEnd" | "timeLog" | "trace" | "warn";
         const method: LogLevel = level?.toLowerCase() as LogLevel || "log";
