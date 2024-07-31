@@ -27,7 +27,7 @@ export default class SaveMessage extends Action {
      * @param context
      */
     public constructor(context: Context) {
-        super(context, "async");
+        super(context, "sync");
     }
 
     /**
@@ -44,14 +44,18 @@ export default class SaveMessage extends Action {
 
         const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
         const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const userId = user?.id ?? await UserHelper.createUser(contextUser);
 
-        if (!user || !chat) {
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
+
+        if (!userId) {
+            Log.save("SaveMessage :: User ID not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
 
-        if (!user?.id?.length) {
-            Log.save("User ID not found " + this.context.getPayload());
+        if (!chatId) {
+            Log.save("SaveMessage :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
 

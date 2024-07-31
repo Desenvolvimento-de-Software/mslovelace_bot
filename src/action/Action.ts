@@ -35,7 +35,7 @@ export default abstract class Action {
      * The constructor.
      *
      * @author Marcos Leandro
-     * @since 1.0.0
+     * @since  2023-06-07
      *
      * @param context
      * @param type
