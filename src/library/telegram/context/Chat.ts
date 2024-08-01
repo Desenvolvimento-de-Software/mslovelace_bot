@@ -433,7 +433,8 @@ export default class Chat {
         try {
 
             const response = await sendMessage.post();
-            return await response.json();
+            const json = await response.json();
+            return new Message(json.result);
 
         } catch (error: any) {
             Log.save(error.message);
@@ -466,8 +467,8 @@ export default class Chat {
         try {
 
             const response = await sendChatAction.post();
-            console.log(response);
-            return await response.json();
+            const json = await response.json();
+            return new Message(json.result);
 
         } catch (error: any) {
             Log.save(error.message);
