@@ -10,6 +10,7 @@
  */
 
 import SendMessage from "../resource/SendMessage.js";
+import SendChatAction from "../resource/SendChatAction.js";
 import GetChatAdministrators from "../resource/GetChatAdministrators.js";
 import Message from "./Message.js";
 import { ChatLocation } from "../type/ChatLocation.js";
@@ -46,7 +47,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns {number}
+     * @return {number}
      */
     public getId(): number {
         return this.context.chat.id;
@@ -58,7 +59,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns {string}
+     * @return {string}
      */
     public getType(): string {
         return this.context.chat.type;
@@ -70,7 +71,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getTitle(): string|undefined {
         return this.context.chat.title;
@@ -82,7 +83,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getUsername(): string|undefined {
         return this.context.chat.username;
@@ -94,7 +95,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getFirstName(): string|undefined {
         return this.context.chat.firstName;
@@ -106,7 +107,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getLastName(): string|undefined {
         return this.context.chat.lastName;
@@ -118,7 +119,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getIsForum(): boolean|undefined {
         return this.context.chat.isForum;
@@ -130,7 +131,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getPhoto(): ChatPhoto|undefined {
         return this.context.chat.photo;
@@ -142,7 +143,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getActiveUsernames(): string[]|undefined {
         return this.context.chat.activeUsernames;
@@ -154,7 +155,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getEmojiStatusCustomEmojiId(): string|undefined {
         return this.context.chat.emojiStatusCustomEmojiId;
@@ -166,7 +167,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getBio(): string|undefined {
         return this.context.chat.bio;
@@ -178,7 +179,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getHasPrivateForwards(): boolean|undefined {
         return this.context.chat.hasPrivateForwards;
@@ -190,7 +191,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getHasRestrictedVoiceAndVideoMessages(): boolean|undefined {
         return this.context.chat.hasRestrictedVoiceAndVideoMessages;
@@ -202,7 +203,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getJoinToSendMessages(): boolean|undefined {
         return this.context.chat.joinToSendMessages;
@@ -214,7 +215,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getJoinByRequest(): boolean|undefined {
         return this.context.chat.joinByRequest;
@@ -226,7 +227,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getDescription(): string|undefined {
         return this.context.chat.description;
@@ -238,7 +239,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getInviteLink(): string|undefined {
         return this.context.chat.inviteLink;
@@ -250,7 +251,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {MessageType|undefined}
+     * @return {MessageType|undefined}
      */
     public getPinnedMessage(): MessageType|undefined {
         return this.context.chat.pinnedMessage;
@@ -262,7 +263,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {ChatPermissions|undefined}
+     * @return {ChatPermissions|undefined}
      */
     public getPermissions(): ChatPermissions|undefined {
         return this.context.chat.permissions;
@@ -274,7 +275,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {number|undefined}
+     * @return {number|undefined}
      */
     public getSlowModeDelay(): number|undefined {
         return this.context.chat.slowModeDelay;
@@ -286,7 +287,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {number|undefined}
+     * @return {number|undefined}
      */
     public getMessageAutoDeleteTime(): number|undefined {
         return this.context.chat.messageAutoDeleteTime;
@@ -298,7 +299,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getHasAggressiveAntiSpamEnabled(): boolean|undefined {
         return this.context.chat.hasAggressiveAntiSpamEnabled;
@@ -310,7 +311,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getHasHiddenMembers(): boolean|undefined {
         return this.context.chat.hasHiddenMembers;
@@ -322,7 +323,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getHasProtectedContent(): boolean|undefined {
         return this.context.chat.hasProtectedContent;
@@ -334,7 +335,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {string|undefined}
+     * @return {string|undefined}
      */
     public getStickerSetName(): string|undefined {
         return this.context.chat.stickerSetName;
@@ -346,7 +347,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {boolean|undefined}
+     * @return {boolean|undefined}
      */
     public getCanSetStickerSet(): boolean|undefined {
         return this.context.chat.canSetStickerSet;
@@ -358,7 +359,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {number|undefined}
+     * @return {number|undefined}
      */
     public getLinkedChatId(): number|undefined {
         return this.context.chat.linkedChatId;
@@ -370,7 +371,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @returns {ChatLocation|undefined}
+     * @return {ChatLocation|undefined}
      */
     public getLocation(): ChatLocation|undefined {
         return this.context.chat.location;
@@ -382,7 +383,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-05
      *
-     * @returns
+     * @return {Promise<Array<number>>}
      */
     public async getChatAdministrators(): Promise<Array<number>> {
 
@@ -413,7 +414,7 @@ export default class Chat {
      * @param text
      * @param parseMode
      *
-     * @returns {Promise<Message>}
+     * @return {Promise<any>}
      */
     public async sendMessage(text: string, options?: Record<string, any>): Promise<any> {
 
@@ -451,7 +452,7 @@ export default class Chat {
      *
      * @param action
      *
-     * @returns {Promise<Message>}
+     * @return {Promise<any>}
      */
     public async sendChatAction(action: string): Promise<any> {
 
@@ -461,7 +462,7 @@ export default class Chat {
             .setAction(action);
 
         if (typeof this.context.messageThreadId !== "undefined") {
-            sendChatAction.setThreadId(this.context.messageThreadId);
+            sendChatAction.setMessageThreadId(this.context.messageThreadId);
         }
 
         try {

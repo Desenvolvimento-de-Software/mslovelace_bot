@@ -56,7 +56,7 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @return {SendChatAction}
      */
-    public messageThreadId(messageThreadId: number): SendChatAction {
+    public setMessageThreadId(messageThreadId: number): SendChatAction {
         this.payload.messageThreadId = messageThreadId;
         return this;
     }
@@ -71,7 +71,7 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @return {SendChatAction}
      */
-    public businessConnectionId(businessConnectionId: String): SendChatAction {
+    public setBusinessConnectionId(businessConnectionId: String): SendChatAction {
         this.payload.businessConnectionId = businessConnectionId;
         return this;
     }
