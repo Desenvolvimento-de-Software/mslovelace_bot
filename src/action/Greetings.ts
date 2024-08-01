@@ -113,6 +113,7 @@ export default class Greetings extends Action {
         }
 
         text = text.replace("{userid}", this.context.newChatMember!.getId());
+        text = text.replace(/\n/g, "<br>");
         text = text.replace(
             "{username}",
             this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
@@ -143,6 +144,8 @@ export default class Greetings extends Action {
         if (!this.chat?.captcha) {
             return options;
         }
+
+        Lang.set(this.chat.language || "us");
 
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaButton"),

@@ -127,7 +127,7 @@ export default class App {
 
         const response = await request.post();
         if (response.ok) {
-            Log.info("Commands successfully registered.");
+            Log.info("Commands successfully registered");
         }
     }
 }

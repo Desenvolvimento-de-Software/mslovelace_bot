@@ -50,6 +50,11 @@ export default class SaveUserAndChat extends Action {
             return Promise.resolve();
         }
 
+        if (!chatId) {
+            Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
+            return Promise.resolve();
+        }
+
         UserHelper.updateUser(contextUser);
         ChatHelper.updateChat(this.context.chat);
 

@@ -81,7 +81,7 @@ export default class Rules extends Command {
         }
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        Lang.set(chat.language || "us");
+        Lang.set(chat?.language || "us");
 
         this.command = command;
         this.chat = chat;
@@ -125,6 +125,7 @@ export default class Rules extends Command {
             return this.context.chat.sendMessage(Lang.get("rulesNotFound"));
         }
 
+        const text = result[0].rules.replace(/\n/g, "<br>");
         return this.context.chat.sendMessage(result[0].rules, { parseMode: "HTML" });
     }
 
