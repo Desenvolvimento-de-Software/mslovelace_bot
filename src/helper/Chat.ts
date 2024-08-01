@@ -159,7 +159,8 @@ export default class ChatHelper {
             .where("id").equal(row.id);
 
         try {
-            currentChat.execute();
+
+            await currentChat.execute();
 
         } catch (err) {
             return;
