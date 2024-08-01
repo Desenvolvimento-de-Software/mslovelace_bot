@@ -113,7 +113,6 @@ export default class Greetings extends Action {
         }
 
         text = text.replace("{userid}", this.context.newChatMember!.getId());
-        text = text.replace(/\n/g, "<br>");
         text = text.replace(
             "{username}",
             this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()

@@ -430,10 +430,16 @@ export default class Chat {
             sendMessage.setOptions(options);
         }
 
-        return sendMessage.post()
-            .then((response) => response.json())
-            .then((json) => new Message(json.result))
-            .catch((error) => console.error(error));
+        try {
+
+            const response = await sendMessage.post();
+            return await response.json();
+
+        } catch (error: any) {
+            Log.save(error.message);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -457,9 +463,16 @@ export default class Chat {
             sendChatAction.setThreadId(this.context.messageThreadId);
         }
 
-        return sendChatAction.post()
-            .then((response) => response.json())
-            .then((json) => new Message(json.result))
-            .catch((error) => console.error(error));
+        try {
+
+            const response = await sendChatAction.post();
+            console.log(response);
+            return await response.json();
+
+        } catch (error: any) {
+            Log.save(error.message);
+        }
+
+        return Promise.resolve();
     }
 }
