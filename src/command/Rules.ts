@@ -40,7 +40,7 @@ export default class Rules extends Command {
      * @author Marcos Leandro
      * @since  2024-07-30
      */
-    private chat: Record<string, any>;
+    private chat: Record<string, any> | undefined;
 
     /**
      * Command context.
@@ -50,7 +50,7 @@ export default class Rules extends Command {
      *
      * @var {CommandContext}
      */
-    private command: CommandContext;
+    private command: CommandContext | undefined;
 
     /**
      * The constructor.
@@ -84,7 +84,7 @@ export default class Rules extends Command {
         Lang.set(chat?.language || "us");
 
         this.command = command;
-        this.chat = chat;
+        this.chat = chat || { id: null };
 
         this.context.message.delete();
         switch (this.command.getCommand()) {
@@ -136,7 +136,7 @@ export default class Rules extends Command {
      */
     private async addrules(): Promise<void> {
 
-        const text = this.context.message.getText().replace(`/${this.command.getCommand()}`, "").trim();
+        const text = this.context.message.getText().replace(`/${this.command!.getCommand()}`, "").trim();
         if (!text.length || text.length < 2) {
             return;
         }
@@ -168,7 +168,7 @@ export default class Rules extends Command {
         const chatRules = new ChatRules();
         chatRules
             .delete()
-            .where("chat_id").equal(this.chat.id);
+            .where("chat_id").equal(this.chat!.id);
 
         await chatRules.execute();
     }
@@ -187,7 +187,7 @@ export default class Rules extends Command {
 
         chatRules
             .select()
-            .where("chat_id").equal(this.chat.id);
+            .where("chat_id").equal(this.chat!.id);
 
         const result = await chatRules.execute();
         if (result.length) {
@@ -195,14 +195,14 @@ export default class Rules extends Command {
             chatRules
                 .update()
                 .set("rules", rules)
-                .where("chat_id").equal(this.chat.id);
+                .where("chat_id").equal(this.chat!.id);
 
             return await chatRules.execute();
         }
 
         chatRules
             .insert()
-            .set("chat_id", this.chat.id)
+            .set("chat_id", this.chat!.id)
             .set("rules", rules);
 
         return await chatRules.execute();
