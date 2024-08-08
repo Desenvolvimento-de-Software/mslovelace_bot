@@ -136,17 +136,12 @@ export default class Rules extends Command {
      */
     private async addrules(): Promise<void> {
 
-        const text = this.context.message.getText().split(/\s+/);
+        const text = this.context.message.getText().replace(`/${this.command.getCommand()}`, "").trim();
         if (!text.length || text.length < 2) {
             return;
         }
 
-        const rules = text
-            .slice(1)
-            .join(" ")
-            .replace(/^\\n/, "")
-            .replace(/\\n$/, "")
-            .trim();
+        const rules = text.replace(/^\\n/, "").replace(/\\n$/, "").trim();
 
         try {
 

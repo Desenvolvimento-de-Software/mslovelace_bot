@@ -78,7 +78,7 @@ export default class Ban extends Command {
         let params = command.getParams() || [];
 
         const replyToMessage = this.context.message.getReplyToMessage();
-        if (replyToMessage && command.command === "delban") {
+        if (replyToMessage && command.getCommand() === "delban") {
             replyToMessage.delete();
         }
 
@@ -112,10 +112,12 @@ export default class Ban extends Command {
      */
     private async banByReply(replyToMessage: Message, reason: string): Promise<void> {
 
-        if (await replyToMessage.getUser().ban()) {
-            this.saveBan(replyToMessage.getUser(), reason);
+        if (!await replyToMessage.getUser().ban()) {
+            const message = Lang.get("banErrorMessage");
+            return this.context.chat.sendMessage(message, { parseMode: "HTML" });
         }
 
+        this.saveBan(replyToMessage.getUser(), reason);
         return Promise.resolve();
     }
 
@@ -129,10 +131,12 @@ export default class Ban extends Command {
      */
     private async banByMention(mention: User, reason: string): Promise<void> {
 
-        if (await mention.ban()) {
-            this.saveBan(mention, reason);
+        if (!await mention.ban()) {
+            const message = Lang.get("banErrorMessage");
+            return this.context.chat.sendMessage(message, { parseMode: "HTML" });
         }
 
+        this.saveBan(mention, reason);
         return Promise.resolve();
     }
 
