@@ -15,7 +15,6 @@ import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
-import { parse } from "dotenv";
 
 export default class Warning extends Callback {
 

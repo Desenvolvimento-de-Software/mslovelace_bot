@@ -54,13 +54,16 @@ export default class setCommands extends Command {
             return;
         }
 
+        const currentCommand = command.getCommand();
+        let text = this.context.message.getText();
+        text = text.replace(`/${currentCommand}`, "").trim();
+
         this.context.message.delete();
 
-        const params = command.getParams();
-        if (!params || !params.length) {
-            return;
+        if (!text.length) {
+            return Promise.resolve();
         }
 
-        this.context.chat.sendMessage(params.join(" "));
+        this.context.chat.sendMessage(text, { parseMode: "HTML" });
     }
 }

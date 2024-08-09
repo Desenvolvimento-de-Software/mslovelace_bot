@@ -216,7 +216,20 @@ export default class Message {
      * @return {string}
      */
     public getText(): string {
-        return this.context.text || "";
+
+        let text = this.context.text || "";
+        let entities = this.getEntities();
+
+        if (!entities.length) {
+            return text;
+        }
+
+        for (let i = entities.length - 1; i >= 0; i--) {
+            const entity = entities[i];
+            text = this.addEntity(entity, text);
+        }
+
+        return text;
     }
 
     /**
@@ -609,5 +622,36 @@ export default class Message {
         }
 
         return response;
+    }
+
+    private addEntity(entity: Record<string, any>, message: string): string {
+
+        const entities = {
+            spoiler: "<tg-spoiler>$1</tg-spoiler>",
+            blockquote: "<blockquote>$1</blockquote>",
+            code: "<code>$1</code>",
+            strikethrough: "<s>$1</s>",
+            underline: "<u>$1</u>",
+            italic: "<i>$1</i>",
+            bold: "<b>$1</b>",
+            text_link: "<a href=\"$2\">$1</a>"
+        };
+
+        const start = entity.offset;
+        const end = start + entity.length;
+
+        const prefix = message.substring(0, start);
+        const content = message.substring(start, end);
+        const suffix = message.substring(end);
+
+        let tag = entities[entity.type as keyof typeof entities];
+        if (!tag) {
+            return message;
+        }
+
+        tag = tag.replace("$2", entity.url || "");
+        tag = tag.replace("$1", content);
+
+        return `${prefix}${tag}${suffix}`;
     }
 }

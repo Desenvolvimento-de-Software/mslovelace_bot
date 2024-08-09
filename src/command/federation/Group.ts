@@ -10,12 +10,15 @@
  */
 
 import Federation from "./Federation.js";
+import ChatHelper from "../../helper/Chat.js";
 import Chats from "../../model/Chats.js";
 import Context from "../../library/telegram/context/Context.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import CommandContext from "../../library/telegram/context/Command.js";
+import { BotCommand } from "../../library/telegram/type/BotCommand.js";
 import FederationsHelper from "../../helper/Federation.js";
 import Lang from "../../helper/Lang.js";
 import Log from "../../helper/Log.js";
+import UserHelper from "../../helper/User.js";
 
 export default class Group extends Federation {
 
@@ -28,6 +31,7 @@ export default class Group extends Federation {
      * @var {BotCommand[]}
      */
     public static readonly commands: BotCommand[] = [
+        { command: "fshow", description: "Shows the federation information." },
         { command: "fjoin", description: "Joins a federation." },
         { command: "fleave", description: "Leaves a federation." }
     ];
@@ -42,6 +46,39 @@ export default class Group extends Federation {
      */
     public constructor(context: Context) {
         super(context);
+    }
+
+    /**
+     * Shows the group federation.
+     *
+     * @author Marcos Leandro
+     * @since  2024-09-09
+     *
+     * @return {Promise<void>}
+     */
+    private async show(): Promise<void> {
+
+        if (this.context.chat.getType() === "private") {
+            this.context.message.reply(Lang.get("federationCommandOnlyGroupError"));
+            return;
+        }
+
+        if (!this.chat?.federation_id) {
+            this.context.message.reply(Lang.get("federationLeaveNoFederationError"));
+            return;
+        }
+
+        const federation = await FederationsHelper.getById(this.chat!.federation_id);
+        if (!federation) {
+            this.context.message.reply(Lang.get("federationLeaveNoFederationError"));
+            return;
+        }
+
+        const message = Lang.get("federationDetails")
+            .replace("{federation}", federation.description)
+            .replace("{hash}", federation.hash);
+
+        this.context.message.reply(message, { parseMode: "HTML" });
     }
 
     /**

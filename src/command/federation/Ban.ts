@@ -13,7 +13,7 @@ import Federation from "./Federation.js";
 import Context from "../../library/telegram/context/Context.js";
 import Message from "../../library/telegram/context/Message.js";
 import User from "../../library/telegram/context/User.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../../library/telegram/type/BotCommand.js";
 import UserHelper from "../../helper/User.js";
 import ChatHelper from "../../helper/Chat.js";
 import FederationHelper from "../../helper/Federation.js";
@@ -46,16 +46,16 @@ export default class Ban extends Federation {
     }
 
     /**
-     * Bans an user in the federation.
+     * Bans an user from the federation.
      *
      * @author Marcos Leandro
-     * @since  2023-07-04
+     * @since  2023-08-09
      *
-     * @return
+     * @return Promise<void>
      */
     private async ban(): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
+        if (!this.federation) {
             return;
         }
 
@@ -99,7 +99,7 @@ export default class Ban extends Federation {
      */
     private async banByReply(replyToMessage: Message, reason: string): Promise<void> {
 
-        const user = UserHelper.getByTelegramId(replyToMessage.getUser().getId());
+        const user = await UserHelper.getByTelegramId(replyToMessage.getUser().getId());
         const federationChats = await FederationHelper.getChats(this.federation!);
 
         for (const chat of federationChats) {
@@ -107,6 +107,13 @@ export default class Ban extends Federation {
             this.saveBan(context, reason);
             context.user.ban();
         }
+
+        const message = Lang.get("fedBannedMessage")
+            .replace("{userId}", user.user_id)
+            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{reason}", reason.length ? reason : "Unknown");
+
+        this.context.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**
@@ -127,6 +134,13 @@ export default class Ban extends Federation {
             this.saveBan(context, reason);
             context.user.ban();
         }
+
+        const message = Lang.get("fedBannedMessage")
+            .replace("{userId}", user.user_id)
+            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{reason}", reason.length ? reason : "Unknown");
+
+        this.context.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**
@@ -150,6 +164,13 @@ export default class Ban extends Federation {
             this.saveBan(context, reason);
             context.user.ban();
         }
+
+        const message = Lang.get("fedBannedMessage")
+            .replace("{userId}", user.user_id)
+            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{reason}", reason.length ? reason : "Unknown");
+
+        this.context.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**
@@ -189,12 +210,6 @@ export default class Ban extends Federation {
         try {
 
             await ban.execute();
-            const message = Lang.get("fedBannedMessage")
-                .replace("{userId}", context.user.getId())
-                .replace("{username}", context.user.getFirstName() || context.user.getUsername())
-                .replace("{reason}", reason.length ? reason : "Unknown");
-
-            this.context.chat.sendMessage(message, { parseMode: "HTML" });
 
         } catch (err: any) {
             Log.error(err.toString());

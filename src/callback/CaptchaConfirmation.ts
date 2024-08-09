@@ -14,6 +14,7 @@ import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
+import Lang from "../helper/Lang.js";
 import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
 
 export default class CaptchaConfirmation extends Callback {
@@ -40,7 +41,7 @@ export default class CaptchaConfirmation extends Callback {
      */
     public async run(): Promise<void> {
 
-        if (this.context.callbackQuery?.callbackData.d.userId !== this.context.user.getId()) {
+        if (!this.context.callbackQuery?.callbackData) {
             return;
         }
 
@@ -53,6 +54,12 @@ export default class CaptchaConfirmation extends Callback {
         );
 
         if (!user || !chat) {
+            return;
+        }
+
+        Lang.set(chat.language || "us");
+        if (this.context.callbackQuery.callbackData.d.userId !== this.context.user.getId()) {
+            this.context.callbackQuery.answer(Lang.get("captchaNotSameUser"));
             return;
         }
 
@@ -83,6 +90,7 @@ export default class CaptchaConfirmation extends Callback {
             canManageTopics: false
         };
 
+        this.context.callbackQuery.answer(Lang.get("captchaConfirmed"));
         await this.context.user.setPermissions(permissions);
 
         if (chat.restrict_new_users) {
