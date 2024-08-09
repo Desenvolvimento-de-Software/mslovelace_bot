@@ -39,7 +39,26 @@ export default class UserHelper {
             return user[0];
         }
 
-        return null;
+        users
+            .insert()
+            .set("user_id", userId)
+            .set("first_name", null)
+            .set("last_name", null)
+            .set("username", null)
+            .set("language_code", "us")
+            .set("is_channel", 0)
+            .set("is_bot", 0)
+            .set("is_premium", 0);
+
+        try {
+
+            await users.execute();
+            return await this.getByTelegramId(userId);
+
+        } catch (err) {
+            Log.error(err);
+            return null;
+        }
     }
 
     /**

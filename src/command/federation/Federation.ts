@@ -83,16 +83,11 @@ export default class Federation extends Command {
             return;
         }
 
-        if (!this.chat?.federation_id) {
-            return;
-        }
-
-        this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
-        if (!this.federation) {
-            return;
-        }
-
         Lang.set(this.chat!.language || "us");
+
+        if (this.chat.federation_id) {
+            this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
+        }
 
         this.command = command;
         const action = this.command!.getCommand().substring(1);

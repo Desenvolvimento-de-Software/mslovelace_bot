@@ -89,6 +89,7 @@ export default {
     federationDeleteConfirm: "The federation {name} has {groups} attached groups.\nTo delete it, send <code>force</code> as the second parameter.\n\n<code>/fdelete {hash} force</code>",
     federationDeleteError: "An error occurred while deleting the federation. Please try again later.",
     federationDeleteSuccess: "The federation has been successfully deleted.",
+    federationDetails: "This group is part of the federation {federation} <code>{hash}</code>.",
     fedBannedMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned in federation.\nReason: {reason}",
     fedBanOnlyAdminError: "Only admins can ban users in a federation.",
     fedBanAdminError: "You can't ban admins in a federation.",
