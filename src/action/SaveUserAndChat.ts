@@ -131,7 +131,6 @@ export default class SaveUserAndChat extends Action {
         relUserChat
             .update()
             .set("joined", 1)
-            .set("checked", 0)
             .where("user_id").equal(userId)
             .and("chat_id").equal(chatId);
 

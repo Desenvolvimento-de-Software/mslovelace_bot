@@ -209,7 +209,7 @@ export default class Macro extends Command {
 
         let message = Lang.get("macroList");
         for (const row of result) {
-            message += ` • ${row.macro}\n`;
+            message += ` • <code>${row.macro}</code>\n`;
         }
 
         this.context.chat.sendMessage(message, { parseMode : "HTML" });
