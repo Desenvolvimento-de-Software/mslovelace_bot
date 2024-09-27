@@ -15,6 +15,7 @@ export default {
     helpButton: "Ajuda",
     defaultGreetings: "Olá <a href=\"tg://user?id={userid}\">{username}</a>, te desejo as boas-vindas ao grupo! Em caso de dúvidas, por favor contate um administrador.",
     greetingsStatus: "Status das saudações: {status}",
+    captchaStatus: "Status do captcha: {status}",
     warnNameChanging: "<a href=\"tg://user?id={userid}\">{oldname}</a> mudou seu nome para <a href=\"tg://user?id={userid}\">{newname}</a>",
     unauthorizedCommand: "<a href=\"tg://user?id={userid}\">{username}</a>, você não está autorizado a enviar este comando aqui.\nEste incidente será reportado.",
     unauthorizedCommandReport: "O usuário <a href=\"tg://user?id={userid}\">{username}</a> está tentando enviar um comando não autorizado em <a href=\"https://t.me/{chaturl}\">{chatname}</a>:\n<pre>{content}</pre>",
