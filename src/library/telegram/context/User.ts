@@ -9,12 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import SendMessage from "../resource/SendMessage.js";
+import SendChatAction from "../resource/SendChatAction.js";
 import BanChatMember from "../resource/BanChatMember.js";
 import UnbanChatMember from "../resource/UnbanChatMember.js";
 import RestrictChatMember from "../resource/RestrictChatMember.js";
 import Chat from "./Chat.js";
+import Message from "./Message.js";
 import { User as UserType } from "../type/User.js";
 import { ChatPermissions } from "../type/ChatPermissions.js";
+import Log from "../../../helper/Log.js";
 
 export default class User {
 
@@ -197,6 +201,72 @@ export default class User {
 
         const admins = await this.chat.getChatAdministrators();
         return admins.includes(this.user.id);
+    }
+
+    /**
+     * Sends a message to the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     *
+     * @param text
+     * @param parseMode
+     *
+     * @return {Promise<any>}
+     */
+    public async sendMessage(text: string, options?: Record<string, any>): Promise<any> {
+
+        const sendMessage = new SendMessage();
+        sendMessage
+            .setChatId(this.user.id)
+            .setText(text);
+
+        if (options) {
+            sendMessage.setOptions(options);
+        }
+
+        try {
+
+            const response = await sendMessage.post();
+            const json = await response.json();
+            console.log(json);
+            return new Message(json.result);
+
+        } catch (error: any) {
+            Log.save(error.message, error.stack);
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Sends a chat action to the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2024-05-23
+     *
+     * @param action
+     *
+     * @return {Promise<any>}
+     */
+    public async sendChatAction(action: string): Promise<any> {
+
+        const sendChatAction = new SendChatAction();
+        sendChatAction
+            .setChatId(this.user.id)
+            .setAction(action);
+
+        try {
+
+            const response = await sendChatAction.post();
+            const json = await response.json();
+            return new Message(json.result);
+
+        } catch (error: any) {
+            Log.save(error.message, error.stack);
+        }
+
+        return Promise.resolve();
     }
 
     /**

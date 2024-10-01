@@ -135,7 +135,7 @@ export default class GreetingsCommand extends Command {
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get(greetingsMessage));
+            this.context.chat.sendMessage(greetingsMessage);
         }
     }
 
@@ -159,7 +159,7 @@ export default class GreetingsCommand extends Command {
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(Lang.get(greetingsMessage));
+            this.context.chat.sendMessage(greetingsMessage);
         }
     }
 
