@@ -31,7 +31,7 @@ export default {
     restrictStatus: "New users restriction status: {status}",
     textEnabled: "enabled",
     textDisabled: "disabled",
-    captchaButton: "Press here to confirm you are not a robot in a conversation with me",
+    captchaButton: "Press here to confirm you are not a robot",
     captchaMessage: "Hello! The group <b>{groupName}</b> has a captcha system enabled.\nTo confirm you are not a robot, please click the button below.",
     captchaNotSameUser: "You shouldn't try to confirm the captcha for another user.",
     captchaConfirmed: "Captcha confirmed successfully!",
