@@ -71,9 +71,10 @@ export default class Start extends Command {
             callbackData: "help"
         };
 
+        const username = process.env.TELEGRAM_USERNAME;
         const groupAddButton: InlineKeyboardButton = {
             text : Lang.get("startButton"),
-            url  : "http://t.me/mslovelace_bot?startgroup=botstart"
+            url  : `http://t.me/${username}?startgroup=botstart`
         };
 
         const markup: InlineKeyboardMarkup = {
