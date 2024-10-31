@@ -21,6 +21,7 @@ import Greetings from "../command/Greetings.js";
 import Kick from "../command/Kick.js";
 import Macro from "../command/Macro.js";
 import Npm from "../command/Npm.js";
+import Ping from "../command/Ping.js";
 import Privacy from "../command/Privacy.js";
 import Report from "../command/Report.js";
 import Restrict from "../command/Restrict.js";
@@ -45,6 +46,7 @@ export const commands = [
     Kick,
     Macro,
     Npm,
+    Ping,
     Privacy,
     Report,
     Restrict,
