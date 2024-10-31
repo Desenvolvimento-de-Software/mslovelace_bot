@@ -152,7 +152,6 @@ export default class Ban extends Command {
     private async banByUserId(userId: number, reason: string): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(userId);
-
         const userType: UserType = {
             id: userId,
             isBot: user?.is_bot,
