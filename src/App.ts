@@ -50,7 +50,6 @@ export default class App {
         this.port = (process.env.PORT || 3000) as number;
 
         TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
-        this.init();
     }
 
     /**
