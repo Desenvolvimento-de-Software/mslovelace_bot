@@ -264,16 +264,44 @@ export default class DB {
      */
     protected connection(): mysql.Connection {
 
-        if (!DB.connection) {
-            DB.connection = mysql.createConnection({
-                host     : process.env.MYSQL_HOST,
-                user     : process.env.MYSQL_USER,
-                password : process.env.MYSQL_PASSWORD,
-                database : process.env.MYSQL_SCHEMA,
-                charset  : process.env.MYSQL_CHARSET
-            });
+        if (!DB.connection || DB.connection.state !== "authenticated") {
+            this.disconnect();
+            DB.connection = this.connect();
         }
 
+        DB.connection.ping((err) => {
+            err && (this.disconnect());
+            err && (DB.connection = this.connect());
+        });
+
         return DB.connection;
+    }
+
+    /**
+     * Connects to the database.
+     *
+     * @author Marcos Leandro
+     * @since  2024-11-17
+     *
+     * @returns {mysql.Connection}
+     */
+    private connect(): mysql.Connection {
+        return mysql.createConnection({
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_SCHEMA,
+            charset: process.env.MYSQL_CHARSET
+        });
+    }
+
+    /**
+     * Disconnects from the database.
+     *
+     * @author Marcos Leandro
+     * @since  2024-11-20
+     */
+    private disconnect() {
+        DB?.connection?.end();
     }
 }

@@ -16,6 +16,7 @@ import Lang from "../helper/Lang.js";
 import ChatHelper from "../helper/Chat.js";
 import UserHelper from "../helper/User.js";
 import RelUsersChats from "../model/RelUsersChats.js";
+import ChatConfigs from "src/model/ChatConfigs.js";
 import ChatMessages from "../model/ChatMessages.js";
 import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
 import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
@@ -27,8 +28,6 @@ export default class Greetings extends Action {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
-     *
-     * @var {Record<string, any>}
      */
     private user?: Record<string, any>;
 
@@ -37,10 +36,24 @@ export default class Greetings extends Action {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
-     *
-     * @var {Record<string, any>}
      */
     private chat?: Record<string, any>;
+
+    /**
+     * Chat configs.
+     *
+     * @author Marcos Leandro
+     * @since  2025-01-03
+     */
+    private chatConfigs?: Record<string, any>;
+
+    /**
+     * Chat messages.
+     *
+     * @author Marcos Leandro
+     * @since  2025-01-03
+     */
+    private chatMessages?: Record<string, any>;
 
     /**
      * The constructor.
@@ -86,6 +99,26 @@ export default class Greetings extends Action {
             return;
         }
 
+        Lang.set(this.chat.language || "us");
+
+        const chatConfigs = new ChatConfigs();
+        chatConfigs
+            .select()
+            .where("chat_id").equal(this.chat!.id)
+            .offset(0)
+            .limit(1);
+
+        this.chatConfigs = await chatConfigs.execute();
+
+        const chatMessages = new ChatMessages();
+        chatMessages
+            .select()
+            .where("chat_id").equal(this.chat!.id)
+            .offset(0)
+            .limit(1);
+
+        this.chatMessages = await chatMessages.execute();
+
         this.greetings();
     }
 
@@ -99,17 +132,8 @@ export default class Greetings extends Action {
     private async greetings() {
 
         let text = Lang.get("defaultGreetings");
-
-        const chatMessages = new ChatMessages();
-        chatMessages
-            .select()
-            .where("chat_id").equal(this.chat!.id)
-            .offset(0)
-            .limit(1);
-
-        const chatMessage = await chatMessages.execute();
-        if (chatMessage.length) {
-            text = chatMessage[0].greetings;
+        if (this.chatMessages?.length) {
+            text = this.chatMessages[0].greetings;
         }
 
         text = text.replace("{userid}", this.context.newChatMember!.getId());
@@ -122,10 +146,11 @@ export default class Greetings extends Action {
         options = this.addCaptchaOptions(options);
 
         const message = await this.context.chat.sendMessage(text, options);
+        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
 
         setTimeout(() => {
             this.deleteMessage(message);
-        }, 300000); /* 5 minutes */
+        }, timeout);
     }
 
     /**
@@ -143,8 +168,6 @@ export default class Greetings extends Action {
         if (!this.chat?.captcha) {
             return options;
         }
-
-        Lang.set(this.chat.language || "us");
 
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaButton"),
@@ -201,7 +224,7 @@ export default class Greetings extends Action {
     private deleteMessage = (message: Message) => {
 
         message.delete();
-        if (this.chat!.captcha === 1) {
+        if (parseInt(this.chat!.captcha) === 1) {
             this.checkUserForKick();
         }
     }
@@ -233,5 +256,14 @@ export default class Greetings extends Action {
         }
 
         this.context.user.kick();
+
+        let text = Lang.get("captchaNotConfirmed");
+        text = text.replace("{userid}", this.context.newChatMember!.getId());
+        text = text.replace(
+            "{username}",
+            this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
+        );
+
+        this.context.chat.sendMessage(text, { parseMode : "HTML" });
     }
 }
