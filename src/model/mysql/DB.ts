@@ -265,10 +265,12 @@ export default class DB {
     protected connection(): mysql.Connection {
 
         if (!DB.connection || DB.connection.state !== "authenticated") {
+            this.disconnect();
             DB.connection = this.connect();
         }
 
         DB.connection.ping((err) => {
+            err && (this.disconnect());
             err && (DB.connection = this.connect());
         });
 
@@ -291,5 +293,15 @@ export default class DB {
             database: process.env.MYSQL_SCHEMA,
             charset: process.env.MYSQL_CHARSET
         });
+    }
+
+    /**
+     * Disconnects from the database.
+     *
+     * @author Marcos Leandro
+     * @since  2024-11-20
+     */
+    private disconnect() {
+        DB?.connection?.end();
     }
 }
