@@ -13,11 +13,20 @@ import Callback from "./Callback.js";
 import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
 import ChatHelper from "../helper/Chat.js";
+import ChatMessages from "../model/ChatMessages.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import Lang from "../helper/Lang.js";
 import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
 
 export default class CaptchaConfirmation extends Callback {
+
+    /**
+     * Chat row.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     */
+    private chat?: Record<string, any>;
 
     /**
      * The constructor.
@@ -57,7 +66,9 @@ export default class CaptchaConfirmation extends Callback {
             return;
         }
 
+        this.chat = chat;
         Lang.set(chat.language || "us");
+
         if (this.context.callbackQuery.callbackData.d.userId !== this.context.user.getId()) {
             this.context.callbackQuery.answer(Lang.get("captchaNotSameUser"));
             return;
@@ -79,15 +90,15 @@ export default class CaptchaConfirmation extends Callback {
             canSendDocuments: true,
             canSendPhotos: true,
             canSendVideos: true,
-            canSendVideoNotes: false,
-            canSendVoiceNotes: false,
-            canSendPolls: false,
+            canSendVideoNotes: true,
+            canSendVoiceNotes: true,
+            canSendPolls: true,
             canSendOtherMessages: true,
             canAddWebPagePreviews: true,
-            canChangeInfo: false,
+            canChangeInfo: true,
             canInviteUsers: true,
-            canPinMessages: false,
-            canManageTopics: false
+            canPinMessages: true,
+            canManageTopics: true
         };
 
         this.context.callbackQuery.answer(Lang.get("captchaConfirmed"));
@@ -96,6 +107,8 @@ export default class CaptchaConfirmation extends Callback {
         if (chat.restrict_new_users) {
             this.restrictUser();
         }
+
+        this.resendGreetings();
     }
 
     /**
@@ -117,12 +130,44 @@ export default class CaptchaConfirmation extends Callback {
             canSendPolls: false,
             canSendOtherMessages: false,
             canAddWebPagePreviews: false,
-            canChangeInfo: false,
-            canInviteUsers: false,
-            canPinMessages: false,
-            canManageTopics: false
+            canInviteUsers: false
         };
 
         await this.context.user.setPermissions(permissions, 60 * 60 * 24);
+    }
+
+    /**
+     * Resends the greetings without the captcha options.
+     *
+     * @author Marcos Leandro
+     * @since  2025-01-03
+     */
+    private async resendGreetings(): Promise<void> {
+
+        const chatMessagesRows = new ChatMessages();
+        chatMessagesRows
+            .select()
+            .where("chat_id").equal(this.chat!.id)
+            .offset(0)
+            .limit(1);
+
+        const chatMessages = await chatMessagesRows.execute();
+
+        let text = Lang.get("defaultGreetings");
+        if (chatMessages?.length) {
+            text = chatMessages[0].greetings;
+        }
+
+        text = text.replace("{userid}", this.context.user.getId());
+        text = text.replace(
+            "{username}",
+            this.context.user.getFirstName() || this.context.user.getUsername()
+        );
+
+        const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });
+
+        setTimeout(() => {
+            message.delete();
+        }, 300000);
     }
 }
