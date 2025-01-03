@@ -35,6 +35,7 @@ export default {
     captchaMessage: "Hello! The group <b>{groupName}</b> has a captcha system enabled.\nTo confirm you are not a robot, please click the button below.",
     captchaNotSameUser: "You shouldn't try to confirm the captcha for another user.",
     captchaConfirmed: "Captcha confirmed successfully!",
+    captchaNotConfirmed: "The account <a href=\"tg://user?id={userid}\">{username}</a> did not respond to the captcha and was removed from the group.",
     emptyGreetingsMessage: "There is no greetings message configured.",
     greetingsMessageDemo: "The current greetings message is:\n\n{greetings}",
     pongMessage: "Hey! It's me!",

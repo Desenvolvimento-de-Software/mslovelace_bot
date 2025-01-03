@@ -37,16 +37,16 @@ export default class Captcha extends Action {
     public async run(): Promise<void> {
 
         if (!this.context.newChatMember) {
-            return;
+            return Promise.resolve();
         }
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!chat || !chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         if (chat.captcha !== 1) {
-            return;
+            return Promise.resolve();
         }
 
         const permissions: ChatPermissions = {

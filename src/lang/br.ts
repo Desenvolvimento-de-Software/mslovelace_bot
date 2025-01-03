@@ -35,6 +35,7 @@ export default {
     captchaMessage: "Olá! O grupo <b>{groupName}</b> ativou a proteção contra spam por captcha.\nPara confirmar que você não é um robô, clique no botão abaixo.",
     captchaNotSameUser: "Você não deveria tentar confirmar o captcha para outro usuário.",
     captchaConfirmed: "Captcha confirmado com sucesso!",
+    captchaNotConfirmed: "A conta <a href=\"tg://user?id={userid}\">{username}</a> não respondeu ao captcha e foi removida do grupo.",
     emptyGreetingsMessage: "Não existe uma mensagem de boas-vindas configurada.",
     greetingsMessageDemo: "A mensagem de saudação atual é:\n\n{greetings}",
     pongMessage: "Esta sou eu!",
