@@ -114,8 +114,7 @@ export default class Warn extends WarningsBase {
         }
 
         for (let i = 0, length = users.length; i < length; i++) {
-            const contextUser = users[i];
-            await this.warn(contextUser, chat, warningLimit, params.join(" "));
+            await this.warn(users[i], chat, warningLimit, params.join(" "));
         }
 
         this.sendWarningMessages(users, chat);

@@ -456,10 +456,6 @@ export default class Message {
             return;
         }
 
-        if (this.context.replyToMessage.messageId === this.context.messageThreadId) {
-            return;
-        }
-
         this.replyToMessage = new Message(this.context.replyToMessage);
     }
 

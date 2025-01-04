@@ -423,7 +423,7 @@ export default class Chat {
             .setChatId(this.context.chat.id)
             .setText(text);
 
-        if (typeof this.context.messageThreadId !== "undefined") {
+        if (this.context.messageThreadId && this.context.messageThreadId !== this.context.replyToMessage.messageId) {
             sendMessage.setThreadId(this.context.messageThreadId);
         }
 
@@ -439,9 +439,8 @@ export default class Chat {
 
         } catch (error: any) {
             Log.save(error.message, error.stack);
+            return Promise.resolve();
         }
-
-        return Promise.resolve();
     }
 
     /**
