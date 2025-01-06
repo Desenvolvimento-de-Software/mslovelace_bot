@@ -55,15 +55,19 @@ export default class setCommands extends Command {
         }
 
         const currentCommand = command.getCommand();
+
         let text = this.context.message.getText();
         text = text.replace(`/${currentCommand}`, "").trim();
 
         this.context.message.delete();
 
-        if (!text.length) {
+        const options = { parseMode: "HTML" };
+        const replyToMessage = this.context.message.getReplyToMessage();
+        if (replyToMessage) {
+            replyToMessage.reply(text, options);
             return Promise.resolve();
         }
 
-        this.context.chat.sendMessage(text, { parseMode: "HTML" });
+        this.context.chat.sendMessage(text, options);
     }
 }
