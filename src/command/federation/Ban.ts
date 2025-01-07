@@ -29,7 +29,7 @@ export default class Ban extends Federation {
      * @author Marcos Leandro
      * @since  2024-05-03
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "fban", description: "Bans an user in the federation." }
     ];
 
@@ -38,11 +38,9 @@ export default class Ban extends Federation {
      *
      * @author Marcos Leandro
      * @since  2023-07-04
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -59,24 +57,24 @@ export default class Ban extends Federation {
             return;
         }
 
-        const isUserAdmin = await FederationHelper.isUserAdmin(Number(this.user!.id), this.federation!);
+        const isUserAdmin = await FederationHelper.isUserAdmin(Number(this.user!.id), this.federation);
         if (!isUserAdmin) {
-            this.context.message.reply(Lang.get("fedBanOnlyAdminError"));
+            this.context!.message.reply(Lang.get("fedBanOnlyAdminError"));
             return;
         }
 
-        this.context.message.delete();
+        this.context!.message.delete();
         let params = this.command!.getParams() || [];
 
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const replyToMessage = this.context!.message.getReplyToMessage();
         if (replyToMessage) {
-            this.banByReply(replyToMessage!, params.join(" ").trim());
+            this.banByReply(replyToMessage, params.join(" ").trim());
             return;
         }
 
-        const mentions = await this.context.message.getMentions();
+        const mentions = await this.context!.message.getMentions();
         if (mentions.length) {
-            params = params.filter((param) => param.indexOf("@") !== 0);
+            params = params.filter((param) => !param.startsWith("@"));
             mentions.forEach((mention) => {
                 this.banByMention(mention, params.join(" ").trim());
             });
@@ -113,7 +111,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**
@@ -140,7 +138,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**
@@ -170,7 +168,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
     }
 
     /**

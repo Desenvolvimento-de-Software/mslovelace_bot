@@ -26,7 +26,7 @@ export default class Kick extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "kick", description: "Kicks an user from group." }
     ];
 
@@ -35,11 +35,9 @@ export default class Kick extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -48,12 +46,12 @@ export default class Kick extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
-     *
-     * @returns
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -84,7 +82,7 @@ export default class Kick extends Command {
      *
      * @returns void
      */
-    private async kickByReply(replyToMessage: Message): Promise<Record<string, any>> {
+    private async kickByReply(replyToMessage: Message): Promise<boolean> {
         return replyToMessage.getUser().kick();
     }
 
@@ -96,7 +94,7 @@ export default class Kick extends Command {
      *
      * @returns void
      */
-    private async kickByMention(mention: User): Promise<Record<string, any>> {
+    private async kickByMention(mention: User): Promise<boolean> {
         return mention.kick();
     }
 }

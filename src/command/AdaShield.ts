@@ -27,7 +27,7 @@ export default class AdaShield extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "adashield", description: "Shows the AdaShield status. Manages it with [on | off]." }
     ];
 
@@ -36,11 +36,9 @@ export default class AdaShield extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
         this.setParams(["index", "on", "off"]);
     }
 
@@ -49,9 +47,13 @@ export default class AdaShield extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
+     *
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -59,14 +61,17 @@ export default class AdaShield extends Command {
         const params = command.getParams();
 
         let action = "index";
-        if (params && params.length) {
+        if (params?.length) {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
         this.context.message.delete();
 
-        const method = action as keyof typeof AdaShield.prototype;
-        await this[method](true as never);
+        const method = action as keyof AdaShield;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
+
         return Promise.resolve();
     }
 
@@ -80,8 +85,8 @@ export default class AdaShield extends Command {
      */
     public async index(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -89,7 +94,7 @@ export default class AdaShield extends Command {
         const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
         const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
-        this.context.chat.sendMessage(adaShieldMessage);
+        this.context!.chat.sendMessage(adaShieldMessage);
     }
 
     /**
@@ -124,8 +129,8 @@ export default class AdaShield extends Command {
      */
     public async change(status: number) {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 

@@ -30,7 +30,7 @@ export default class Unban extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "unban", description: "Unbans an user from group." }
     ];
 
@@ -39,11 +39,9 @@ export default class Unban extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -56,8 +54,9 @@ export default class Unban extends Command {
      *
      * @returns
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -120,7 +119,7 @@ export default class Unban extends Command {
     private async saveUnban(contextUser: User): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
 
         if (!user || !chat) {
             return;
@@ -134,7 +133,7 @@ export default class Unban extends Command {
                 .replace("{userid}", contextUser.getId())
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername());
 
-            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context!.chat.sendMessage(message, { parseMode: "HTML" });
 
         } catch (err: any) {
             Log.error(err.toString());

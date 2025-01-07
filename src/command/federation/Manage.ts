@@ -32,7 +32,7 @@ export default class Manage extends Federation {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "fcreate", description: "Creates a federation." },
         { command: "flist", description: "List your federations." },
         { command: "fdelete", description: "Deletes a federation." }
@@ -67,11 +67,9 @@ export default class Manage extends Federation {
      *
      * @author Marcos Leandro
      * @since  2023-07-04
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -80,10 +78,12 @@ export default class Manage extends Federation {
      * @author Marcos Leandro
      * @since  2023-07-04
      *
-     * @param command
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         this.user = await UserHelper.getByTelegramId(this.context.user.getId());
         this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
@@ -91,11 +91,15 @@ export default class Manage extends Federation {
             return;
         }
 
-        Lang.set(this.chat!.language || "us");
+        Lang.set(this.chat.language || "us");
 
         this.command = command;
-        const action = this.command.getCommand().substring(1);
-        this[action as keyof typeof Federation.prototype](true as never);
+        const method = this.command.getCommand().substring(1) as keyof Federation;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -106,8 +110,8 @@ export default class Manage extends Federation {
      */
     private async create(): Promise<void> {
 
-        if (this.context.chat.getType() !== "private") {
-            this.context.message.reply(Lang.get("federationCreateOnlyPrivate"));
+        if (this.context!.chat.getType() !== "private") {
+            this.context!.message.reply(Lang.get("federationCreateOnlyPrivate"));
             return;
         }
 
@@ -130,7 +134,7 @@ export default class Manage extends Federation {
 
             const result = await federations.execute();
             if (!result) {
-                this.context.message.reply(Lang.get("federationCreateError"));
+                this.context!.message.reply(Lang.get("federationCreateError"));
                 return;
             }
 
@@ -138,10 +142,10 @@ export default class Manage extends Federation {
                 .replace(/{name}/g, description.length ? description : federationHash)
                 .replace(/{hash}/g, federationHash);
 
-            this.context.message.reply(message, { parseMode: "HTML" });
+            this.context!.message.reply(message, { parseMode: "HTML" });
 
         } catch (err: any) {
-            this.context.message.reply(Lang.get("federationCreateError"));
+            this.context!.message.reply(Lang.get("federationCreateError"));
             Log.error(err.toString());
         }
     }
@@ -154,8 +158,8 @@ export default class Manage extends Federation {
      */
     private async list(): Promise<void> {
 
-        if (this.context.chat.getType() !== "private") {
-            this.context.message.reply(Lang.get("federationCommandOnlyPrivateError"));
+        if (this.context!.chat.getType() !== "private") {
+            this.context!.message.reply(Lang.get("federationCommandOnlyPrivateError"));
             return;
         }
 
@@ -167,7 +171,7 @@ export default class Manage extends Federation {
 
         const result = await federations.execute();
         if (!result.length) {
-            this.context.message.reply(Lang.get("federationListEmpty"));
+            this.context!.message.reply(Lang.get("federationListEmpty"));
             return;
         }
 
@@ -179,7 +183,7 @@ export default class Manage extends Federation {
                 .replace("{groups}", (await this.countGroups(federation.id)).toString());
         }
 
-        this.context.message.reply(message, { parseMode: "HTML" });
+        this.context!.message.reply(message, { parseMode: "HTML" });
     }
 
     /**
@@ -190,26 +194,26 @@ export default class Manage extends Federation {
      */
     private async delete(): Promise<void> {
 
-        if (this.context.chat.getType() !== "private") {
-            this.context.message.reply(Lang.get("federationCommandOnlyPrivateError"));
+        if (this.context!.chat.getType() !== "private") {
+            this.context!.message.reply(Lang.get("federationCommandOnlyPrivateError"));
             return;
         }
 
         const params = this.command?.getParams() || [];
         if (!params.length) {
-            this.context.message.reply(Lang.get("federationDeleteNoHashError"));
+            this.context!.message.reply(Lang.get("federationDeleteNoHashError"));
             return;
         }
 
         const hash = params[0].trim();
         const federation = await FederationHelper.getByHash(hash);
         if (!federation) {
-            this.context.message.reply(Lang.get("federationInvalidHashError"));
+            this.context!.message.reply(Lang.get("federationInvalidHashError"));
             return;
         }
 
         if (federation.user_id !== this.user!.id) {
-            this.context.message.reply(Lang.get("federationNotOwnerError"));
+            this.context!.message.reply(Lang.get("federationNotOwnerError"));
             return;
         }
 
@@ -224,7 +228,7 @@ export default class Manage extends Federation {
             .replace("{hash}", federation.hash)
             .replace("{groups}", groups.toString());
 
-        this.context.message.reply(message, { parseMode: "HTML" });
+        this.context!.message.reply(message, { parseMode: "HTML" });
     }
 
     /**
@@ -309,7 +313,7 @@ export default class Manage extends Federation {
             await chats.execute();
 
         } catch (err: any) {
-            this.context.message.reply(Lang.get("federationDeleteError"));
+            this.context!.message.reply(Lang.get("federationDeleteError"));
             Log.error(err.toString(), true);
             return;
         }
@@ -321,10 +325,10 @@ export default class Manage extends Federation {
 
         try {
             await federations.execute();
-            this.context.message.reply(Lang.get("federationDeleteSuccess"));
+            this.context!.message.reply(Lang.get("federationDeleteSuccess"));
 
         } catch (err: any) {
-            this.context.message.reply(Lang.get("federationDeleteError"));
+            this.context!.message.reply(Lang.get("federationDeleteError"));
             Log.error(err.toString(), true);
         }
     }

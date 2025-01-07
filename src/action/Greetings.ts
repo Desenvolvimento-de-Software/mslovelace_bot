@@ -16,7 +16,7 @@ import Lang from "../helper/Lang.js";
 import ChatHelper from "../helper/Chat.js";
 import UserHelper from "../helper/User.js";
 import RelUsersChats from "../model/RelUsersChats.js";
-import ChatConfigs from "src/model/ChatConfigs.js";
+import ChatConfigs from "../model/ChatConfigs.js";
 import ChatMessages from "../model/ChatMessages.js";
 import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
 import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
@@ -171,7 +171,7 @@ export default class Greetings extends Action {
 
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaButton"),
-            callbackData: JSON.stringify({
+            callback_data: JSON.stringify({
                 c: "captchaconfirmation",
                 d: {
                     userId: this.context.newChatMember!.getId()
@@ -180,7 +180,7 @@ export default class Greetings extends Action {
         };
 
         const markup: InlineKeyboardMarkup = {
-            inlineKeyboard: [[captchaButton]]
+            inline_keyboard: [[captchaButton]]
         };
 
         options.replyMarkup = markup;

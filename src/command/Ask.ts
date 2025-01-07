@@ -10,6 +10,7 @@
  */
 
 import Command from "./Command.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import Context from "../library/telegram/context/Context.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
@@ -25,7 +26,7 @@ export default class Ask extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "ask", description: "Shows the ask to ask answering status. Manages it with [on | off]." }
     ];
 
@@ -34,11 +35,9 @@ export default class Ask extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -47,10 +46,14 @@ export default class Ask extends Command {
      * @author Marcos Leandro
      * @since  2023-06-12
      *
+     * @param {CommandContext} command
+     * @param {Context}        context
+     *
      * @return {Promise<void>}
      */
-    public async run(): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }

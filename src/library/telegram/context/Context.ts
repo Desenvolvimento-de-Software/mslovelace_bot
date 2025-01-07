@@ -13,7 +13,6 @@ import Chat from "./Chat.js";
 import Message from "./Message.js";
 import User from "./User.js";
 import CallbackQuery from "./CallbackQuery.js";
-import Json from "../helper/Json.js";
 import { Message as MessageType } from "../type/Message.js";
 export default class Context {
 
@@ -132,7 +131,7 @@ export default class Context {
      */
     public constructor(payload: Record<string, any>) {
 
-        this.payload = Json.toCamelCase(payload);
+        this.payload = payload;
         this.type = this.parseType();
 
         if (typeof this.type === "undefined") {

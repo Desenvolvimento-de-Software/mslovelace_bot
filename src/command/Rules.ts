@@ -28,7 +28,7 @@ export default class Rules extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "rules", description: "Shows the group rules." },
         { command: "addrules", description: "Adds the group rules." },
         { command: "delrules", description: "Deletes the group rules." }
@@ -57,11 +57,9 @@ export default class Rules extends Command {
      *
      * @author Marcos Leandro
      * @since  2024-07-30
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -70,12 +68,12 @@ export default class Rules extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
-     *
-     * @returns
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -111,7 +109,7 @@ export default class Rules extends Command {
     private async rules(): Promise<void> {
 
         if (!this.chat) {
-            return this.context.chat.sendMessage(Lang.get("rulesNotFound"));
+            return this.context!.chat.sendMessage(Lang.get("rulesNotFound"));
         }
 
         const chatRules = new ChatRules();
@@ -122,10 +120,10 @@ export default class Rules extends Command {
         const result = await chatRules.execute();
 
         if (!result.length) {
-            return this.context.chat.sendMessage(Lang.get("rulesNotFound"));
+            return this.context!.chat.sendMessage(Lang.get("rulesNotFound"));
         }
 
-        return this.context.chat.sendMessage(result[0].rules, { parseMode: "HTML" });
+        return this.context!.chat.sendMessage(result[0].rules, { parseMode: "HTML" });
     }
 
     /**
@@ -136,7 +134,7 @@ export default class Rules extends Command {
      */
     private async addrules(): Promise<void> {
 
-        const text = this.context.message.getText().replace(`/${this.command!.getCommand()}`, "").trim();
+        const text = this.context!.message.getText().replace(`/${this.command!.getCommand()}`, "").trim();
         if (!text.length || text.length < 2) {
             return;
         }
@@ -150,7 +148,7 @@ export default class Rules extends Command {
             let message = Lang.get("rulesUpdated");
             message += "\n\n" + rules;
 
-            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context!.chat.sendMessage(message, { parseMode: "HTML" });
 
         } catch (error: any) {
             Log.save(error.message);

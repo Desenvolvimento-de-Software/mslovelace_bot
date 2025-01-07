@@ -10,6 +10,7 @@
  */
 
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import Command from "./Command.js";
 import ChatHelper from "../helper/Chat.js";
@@ -28,7 +29,7 @@ export default class Yarn extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command : "yarn", description : "Shows a package details from yarn with [yarn package]." }
     ];
 
@@ -37,11 +38,9 @@ export default class Yarn extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-10-11
-     *
-     * @param app
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -49,9 +48,13 @@ export default class Yarn extends Command {
      *
      * @author Marcos Leandro
      * @since  2023-06-13
+     *
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(payload: Record<string, any>): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         const text = this.context.message.getText().split(/\s+/);
         if (!text.length || text.length < 2) {
             return;
@@ -63,7 +66,7 @@ export default class Yarn extends Command {
         }
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        if (!chat?.id) {
             return;
         }
 
@@ -81,7 +84,7 @@ export default class Yarn extends Command {
      *
      * @param library
      */
-    public async getPackage(library: String): Promise<void> {
+    public async getPackage(library: string): Promise<void> {
 
         try {
 
@@ -104,7 +107,7 @@ export default class Yarn extends Command {
      * @param stdout
      * @param stderr
      */
-    private processResponse = async (error: any, stdout: string, stderr: string): Promise<void> => {
+    private readonly processResponse = async (error: any, stdout: string, stderr: string): Promise<void> => {
 
         if (error) {
             Log.save(error.message, error.stack);
@@ -122,8 +125,8 @@ export default class Yarn extends Command {
         }
 
         const yarnPackage = new YarnPackage(library);
-        if (this.context.callbackQuery) {
-            // return this.updateMessage(yarnPackage);
+        if (this.context!.callbackQuery) {
+            return this.updateMessage(yarnPackage);
         }
 
         return this.sendNewMessage(yarnPackage);
@@ -139,8 +142,8 @@ export default class Yarn extends Command {
      */
     async sendNewMessage(yarnPackage: YarnPackage): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -156,11 +159,11 @@ export default class Yarn extends Command {
             options.replyMarkup = dependencies;
         }
 
-        if (this.context.message.getReplyToMessage()) {
-            options.replyToMessageId = this.context.message.getReplyToMessage()?.getId();
+        if (this.context!.message.getReplyToMessage()) {
+            options.replyToMessageId = this.context!.message.getReplyToMessage()?.getId();
         }
 
-        this.context.chat.sendMessage(yarnPackage.getMessage(), options);
+        this.context!.chat.sendMessage(yarnPackage.getMessage(), options);
 
         return Promise.resolve();
     }
@@ -185,6 +188,6 @@ export default class Yarn extends Command {
             options.replyMarkup = dependencies;
         }
 
-        this.context.message.edit(yarnPackage.getMessage(), options);
+        this.context!.message.edit(yarnPackage.getMessage(), options);
     }
 }

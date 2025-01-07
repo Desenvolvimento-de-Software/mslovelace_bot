@@ -229,7 +229,6 @@ export default class User {
 
             const response = await sendMessage.post();
             const json = await response.json();
-            console.log(json);
             return new Message(json.result);
 
         } catch (error: any) {

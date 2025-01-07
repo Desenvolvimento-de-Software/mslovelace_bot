@@ -14,7 +14,7 @@ import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 
-export default class setCommands extends Command {
+export default class SetCommands extends Command {
 
     /**
      * Commands list.
@@ -24,7 +24,7 @@ export default class setCommands extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "send", description: "Sends a message as the bot." }
     ];
 
@@ -33,11 +33,9 @@ export default class setCommands extends Command {
      *
      * @author Marcos Leandro
      * @since 1.0.0
-     *
-     * @param {Context} context
      */
-     public constructor(context: Context) {
-        super(context);
+     public constructor() {
+        super();
     }
 
     /**
@@ -46,10 +44,12 @@ export default class setCommands extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      *
-     * @param payload
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }

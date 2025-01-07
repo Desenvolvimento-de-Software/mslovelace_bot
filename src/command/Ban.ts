@@ -12,7 +12,6 @@
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
 import Message from "../library/telegram/context/Message.js";
-import User from "../library/telegram/context/User.js";
 import UserContext from "../library/telegram/context/User.js";
 import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
@@ -33,7 +32,7 @@ export default class Ban extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "ban", description: "Bans an user from group." },
         { command: "delban", description: "Bans an user from group and deletes their's message." }
     ];
@@ -51,11 +50,9 @@ export default class Ban extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -64,10 +61,12 @@ export default class Ban extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -89,7 +88,7 @@ export default class Ban extends Command {
 
         const mentions = await this.context.message.getMentions();
         if (mentions.length) {
-            params = params.filter((param) => param.indexOf("@") !== 0);
+            params = params.filter((param) => !param.startsWith("@"));
             mentions.forEach((mention) => {
                 this.banByMention(mention, params.join(" ").trim());
             });
@@ -114,7 +113,7 @@ export default class Ban extends Command {
 
         if (!await replyToMessage.getUser().ban()) {
             const message = Lang.get("banErrorMessage");
-            return this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            return this.context!.chat.sendMessage(message, { parseMode: "HTML" });
         }
 
         this.saveBan(replyToMessage.getUser(), reason);
@@ -129,11 +128,11 @@ export default class Ban extends Command {
      *
      * @returns void
      */
-    private async banByMention(mention: User, reason: string): Promise<void> {
+    private async banByMention(mention: UserContext, reason: string): Promise<void> {
 
         if (!await mention.ban()) {
             const message = Lang.get("banErrorMessage");
-            return this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            return this.context!.chat.sendMessage(message, { parseMode: "HTML" });
         }
 
         this.saveBan(mention, reason);
@@ -154,13 +153,13 @@ export default class Ban extends Command {
         const user = await UserHelper.getByTelegramId(userId);
         const userType: UserType = {
             id: userId,
-            isBot: user?.is_bot,
-            firstName: user?.first_name,
-            lastName: user?.last_name,
+            is_bot: user?.is_bot,
+            first_name: user?.first_name,
+            last_name: user?.last_name,
             username: user?.username || userId
         };
 
-        const contextUser = new UserContext(userType, this.context.chat);
+        const contextUser = new UserContext(userType, this.context!.chat);
         if (await contextUser.ban()) {
             this.saveBan(contextUser, reason);
         }
@@ -174,12 +173,12 @@ export default class Ban extends Command {
      * @author Marcos Leandro
      * @since  2023-07-04
      *
-     * @param {User} contextUser User object.
+     * @param {UserContext} contextUser User object.
      */
-    private async saveBan(contextUser: User, reason: string): Promise<void> {
+    private async saveBan(contextUser: UserContext, reason: string): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
 
         if (!user || !chat) {
             return;
@@ -206,7 +205,7 @@ export default class Ban extends Command {
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername())
                 .replace("{reason}", reason.length ? reason : Lang.get("reasonUnknown"));
 
-            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context!.chat.sendMessage(message, { parseMode: "HTML" });
 
         } catch (err: any) {
             Log.error(err.toString());

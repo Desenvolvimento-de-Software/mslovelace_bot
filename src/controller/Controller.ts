@@ -151,8 +151,8 @@ export default class Controller {
      * @param context
      */
     private async handleCommands(context: Context): Promise<void> {
-        for (const commandClass of commands) {
-            Command.isCalled(commandClass, context) === undefined || (this.executeCommand(commandClass, context));
+        for (const command of this.app.getCommands()) {
+            this.executeCommand(command, context);
         }
     }
 
@@ -197,16 +197,18 @@ export default class Controller {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param commandClass
+     * @param command
      */
-    private async executeCommand(commandClass: Command, context: Context): Promise<void> {
+    private async executeCommand(command: Command, context: Context): Promise<void> {
 
-        const commandContext = Command.isCalled(commandClass, context);
+        const commandContext = command.isCalled(context);
+        if (!commandContext) {
+            return Promise.resolve();
+        }
 
         try {
 
-            const command = new commandClass(context);
-            await command.run(commandContext);
+            await command.run(commandContext, context);
 
         } catch (error: any) {
             Log.save(error.message, error.stack);

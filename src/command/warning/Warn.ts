@@ -12,7 +12,7 @@
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
 import User from "../../library/telegram/context/User.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../../library/telegram/type/BotCommand.js";
 import WarningsModel from "../../model/Warnings.js";
 import WarningsBase from "./Base.js";
 import UserHelper from "../../helper/User.js";
@@ -30,7 +30,7 @@ export default class Warn extends WarningsBase {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "warn", description: "Gives the user a warning." },
         { command: "delwarn", description: "Gives the user a warning and deletes their's message." }
     ];
@@ -50,11 +50,9 @@ export default class Warn extends WarningsBase {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -63,12 +61,12 @@ export default class Warn extends WarningsBase {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
-     *
-     * @returns
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -84,8 +82,8 @@ export default class Warn extends WarningsBase {
             return;
         }
 
-        const params = this.command!.getParams();
-        if (!params || !params.length) {
+        const params = this.command.getParams();
+        if (!params?.length) {
             return;
         }
 
@@ -95,7 +93,7 @@ export default class Warn extends WarningsBase {
         const warningLimit = await this.getWarningLimit(chat);
         const replyToMessage = this.context.message.getReplyToMessage();
 
-        if (replyToMessage && command.command === "delwarn") {
+        if (replyToMessage && command.getCommand() === "delwarn") {
             replyToMessage.delete();
         }
 
@@ -134,12 +132,12 @@ export default class Warn extends WarningsBase {
     private async warn(contextUser: User, chat: Record<string, any>, warningLimit: number, reason: string): Promise<void> {
 
         if (contextUser.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
-            this.context.message.reply(Lang.get("selfWarnMessage"));
+            this.context!.message.reply(Lang.get("selfWarnMessage"));
             return;
         }
 
         if (await contextUser.isAdmin()) {
-            this.context.message.reply(Lang.get("adminWarnMessage"));
+            this.context!.message.reply(Lang.get("adminWarnMessage"));
             return;
         }
 
@@ -148,7 +146,7 @@ export default class Warn extends WarningsBase {
             return;
         }
 
-        this.context.message.delete();
+        this.context!.message.delete();
 
         const warn = new WarningsModel();
         warn

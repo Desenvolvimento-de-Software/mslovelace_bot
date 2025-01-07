@@ -66,7 +66,7 @@ export default abstract class Callback {
      */
     public isCalled(): boolean {
 
-        if (!this.context.callbackQuery?.callbackData || !this.context.callbackQuery?.callbackData.c) {
+        if (!this.context.callbackQuery?.callbackData?.c) {
             return false;
         }
 

@@ -15,7 +15,6 @@ import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import ChatConfigs from "../model/ChatConfigs.js";
-import ChatMessages from "../model/ChatMessages.js";
 import Lang from "../helper/Lang.js";
 
 export default class Captcha extends Command {
@@ -28,7 +27,7 @@ export default class Captcha extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "captcha", description: "Manages the group captcha with [on | off]." }
     ];
 
@@ -46,8 +45,8 @@ export default class Captcha extends Command {
      * @author Marcos Leandro
      * @since  2024-09-27
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
         this.setParams(["on", "off"]);
     }
 
@@ -58,9 +57,11 @@ export default class Captcha extends Command {
      * @since  2024-09-27
      *
      * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -70,12 +71,14 @@ export default class Captcha extends Command {
         const params = command.getParams();
 
         let action = "index";
-        if (params && params.length) {
+        if (params?.length) {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
-        const method = action as keyof typeof Captcha.prototype;
-        await this[method](true as never);
+        const method = action as keyof Captcha;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
     }
 
     /**
@@ -86,8 +89,8 @@ export default class Captcha extends Command {
      */
     private async on(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -98,7 +101,7 @@ export default class Captcha extends Command {
         const captchaMessage = Lang.get("captchaStatus").replace("{status}", captchaStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(captchaMessage);
+            this.context!.chat.sendMessage(captchaMessage);
         }
     }
 
@@ -110,8 +113,8 @@ export default class Captcha extends Command {
      */
     private async off(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -122,7 +125,7 @@ export default class Captcha extends Command {
         const captchaMessage = Lang.get("captchaStatus").replace("{status}", captchaStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(captchaMessage);
+            this.context!.chat.sendMessage(captchaMessage);
         }
     }
 

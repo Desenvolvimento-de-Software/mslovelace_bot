@@ -32,7 +32,7 @@ export default class Message {
      *
      * @var {MessageType}
      */
-    private context: MessageType;
+    private readonly context: MessageType;
 
     /**
      * Message sender.
@@ -42,7 +42,7 @@ export default class Message {
      *
      * @var {User}
      */
-    private user: User;
+    private readonly user: User;
 
     /**
      * Message entities.
@@ -72,7 +72,7 @@ export default class Message {
      *
      * @var {string[]}
      */
-    private commands: Command[] = [];
+    private readonly commands: Command[] = [];
 
     /**
      * Reply to message context.
@@ -88,7 +88,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-02
      */
-    private messageThreadId?: number;
+    private readonly messageThreadId?: number;
 
     /**
      * The constructor.
@@ -217,7 +217,7 @@ export default class Message {
      */
     public getText(): string {
 
-        let text = this.context.text || "";
+        let text = this.context.text ?? "";
         let entities = this.getEntities();
 
         if (!entities.length) {
@@ -415,7 +415,7 @@ export default class Message {
      * @return {Record<string, any>|undefined}
      */
     public getCaption(): string|undefined {
-        return this.context.caption || undefined;
+        return this.context.caption ?? undefined;
     }
 
     /**
@@ -588,7 +588,7 @@ export default class Message {
         const end = start + (entity.length - 1);
         const command = this.context.text?.substring(start, end);
 
-        if (!command || !command.length) {
+        if (!command?.length) {
             return;
         }
 
