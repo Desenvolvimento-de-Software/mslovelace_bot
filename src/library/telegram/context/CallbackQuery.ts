@@ -32,15 +32,15 @@ export default class CallbackQuery {
      */
     public constructor(payload: Record<string, any>) {
         this.payload = payload;
-        this.chat = new Chat(this.payload.callbackQuery);
-        this.message = new Message(this.payload.callbackQuery);
-        this.user = new User(this.payload.callbackQuery.from!, this.chat);
+        this.chat = new Chat(this.payload.callback_query);
+        this.message = new Message(this.payload.callback_query);
+        this.user = new User(this.payload.callback_query.from!, this.chat);
 
         try {
-            this.callbackData = JSON.parse(this.payload.callbackQuery.data);
+            this.callbackData = JSON.parse(this.payload.callback_query.data);
 
         } catch (err) {
-            this.callbackData = this.payload.callbackQuery.data;
+            this.callbackData = this.payload.callback_query.data;
         }
     }
 
@@ -68,7 +68,7 @@ export default class CallbackQuery {
 
         const answer = new AnswerCallbackQuery();
         answer
-            .setCallbackQueryId(this.payload.callbackQuery.id)
+            .setCallbackQueryId(this.payload.callback_query.id)
             .setText(content);
 
         return answer

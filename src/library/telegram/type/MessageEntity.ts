@@ -18,5 +18,5 @@ export type MessageEntity = {
     url?: string;
     user?: User;
     language?: string;
-    customEmojiId?: string;
+    custom_emoji_id?: string;
 };

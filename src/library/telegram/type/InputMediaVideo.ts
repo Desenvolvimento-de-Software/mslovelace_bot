@@ -17,11 +17,11 @@ export type InputMediaVideo = {
     media: string;
     thumbnail?: InputFile|string;
     caption?: string;
-    parseMode?: string;
-    captionEntities?: MessageEntity[];
+    parse_mode?: string;
+    caption_entities?: MessageEntity[];
     width?: number;
     height?: number;
     duration?: number;
-    supportsStreaming?: boolean;
-    hasSpoiler?: boolean;
+    supports_streaming?: boolean;
+    has_spoiler?: boolean;
 };

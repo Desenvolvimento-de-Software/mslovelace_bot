@@ -15,6 +15,6 @@ import { User } from "../User.js";
 export type ShippingQuery = {
     id: string;
     from: User;
-    invoicePayload: string;
-    shippingAddress: ShippingAddress;
+    invoice_payload: string;
+    shipping_address: ShippingAddress;
 };

@@ -12,7 +12,7 @@
 export type PassportElementErrorDataField = {
     source: string;
     type: string;
-    fieldName: string;
-    dataHash: string;
+    field_name: string;
+    data_hash: string;
     message: string;
 };

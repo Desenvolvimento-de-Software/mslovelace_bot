@@ -10,7 +10,7 @@
  */
 
 export type ForceReply = {
-    forceReply: boolean;
-    inputFieldPlaceholder?: string;
+    force_reply: boolean;
+    input_field_placeholder?: string;
     selective?: boolean;
 };

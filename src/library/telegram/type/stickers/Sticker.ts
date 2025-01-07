@@ -13,18 +13,18 @@ import { MaskPosition } from "./MaskPosition.js";
 import { PhotoSize } from "../PhotoSize.js";
 
 export type Sticker = {
-    fileId: string;
-    fileUniqueId: string;
+    file_id: string;
+    file_unique_id: string;
     type: string;
     width: number;
     height: number;
-    isAnimated: boolean;
-    isVideo: boolean;
+    is_animated: boolean;
+    is_video: boolean;
     thumbnail?: PhotoSize;
     emoji?: string;
-    setName?: string;
-    maskPosition?: MaskPosition;
-    customEmojiId?: string;
-    needsRepainting?: boolean;
-    fileSize?: number;
+    set_name?: string;
+    mask_position?: MaskPosition;
+    custom_emoji_id?: string;
+    needs_repainting?: boolean;
+    file_size?: number;
 };

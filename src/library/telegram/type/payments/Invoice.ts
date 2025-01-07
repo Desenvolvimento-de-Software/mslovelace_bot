@@ -12,7 +12,7 @@
 export type Invoice = {
     title: string;
     description: string;
-    startParameter: string;
+    start_parameter: string;
     currency: string;
-    totalAmount: number;
+    total_amount: number;
 };

@@ -12,13 +12,13 @@
 import { PhotoSize } from "./PhotoSize.js";
 
 export type Video = {
-    fileId: string;
-    fileUniqueId: string;
+    file_id: string;
+    file_unique_id: string;
     width: number;
     height: number;
     duration: number;
     thumbnail?: PhotoSize;
-    fileName?: string;
-    mimeType?: string;
-    fileSize?: number;
+    file_name?: string;
+    mime_type?: string;
+    file_size?: number;
 };

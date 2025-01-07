@@ -18,6 +18,6 @@ export type Game = {
     description: string;
     photo: PhotoSize[];
     text?: string;
-    textEntities?: MessageEntity[];
+    text_entities?: MessageEntity[];
     animation?: Animation;
 };

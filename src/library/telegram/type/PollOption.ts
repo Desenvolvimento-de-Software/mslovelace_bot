@@ -11,5 +11,5 @@
 
 export type PollOption = {
     text: string;
-    voterCount: number;
+    voter_count: number;
 };

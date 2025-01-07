@@ -15,7 +15,7 @@ export type InputMediaPhoto = {
     type: string;
     media: string;
     caption?: string;
-    parseMode?: string;
-    captionEntities?: MessageEntity[];
-    hasSpoiler?: boolean;
+    parse_mode?: string;
+    caption_entities?: MessageEntity[];
+    has_spoiler?: boolean;
 };

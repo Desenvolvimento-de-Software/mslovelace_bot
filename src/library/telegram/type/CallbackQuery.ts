@@ -16,8 +16,8 @@ export type CallbackQuery = {
     id: string;
     from: User;
     message?: Message;
-    inlineMessageId?: string;
-    chatInstance: string;
+    inline_message_id?: string;
+    chat_instance: string;
     data?: string;
-    gameShortName?: string;
+    game_short_name?: string;
 };

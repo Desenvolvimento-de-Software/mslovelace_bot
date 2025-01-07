@@ -12,11 +12,11 @@
 import { ChatAdministratorRights } from "./ChatAdministratorRights.js";
 
 export type KeyboardButtonRequestChat = {
-    requestId: number;
-    chatIsChannel: boolean;
-    chatIsForum?: boolean;
-    chatHasUsername?: boolean;
-    userAdministratorRights?: ChatAdministratorRights;
-    botAdministratorRights?: ChatAdministratorRights;
-    botIsMember?: boolean;
+    request_id: number;
+    chat_is_channel: boolean;
+    chat_is_forum?: boolean;
+    chat_has_username?: boolean;
+    user_administrator_rights?: ChatAdministratorRights;
+    bot_administrator_rights?: ChatAdministratorRights;
+    bot_is_member?: boolean;
 };

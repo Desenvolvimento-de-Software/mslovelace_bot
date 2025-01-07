@@ -11,5 +11,5 @@
 
 export type ForumTopicEdited = {
     name?: string;
-    iconCustomEmojiId?: string;
+    icon_custom_emoji_id?: string;
 };

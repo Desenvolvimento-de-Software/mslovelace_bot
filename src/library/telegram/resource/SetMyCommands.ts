@@ -10,8 +10,8 @@
  */
 
 import TelegramBotApi from "../TelegramBotApi.js";
-import BotCommands from "../type/BotCommands.js";
-import BotCommandScope from "../type/BotCommandScope.js";
+import {BotCommand} from "../type/BotCommand.js";
+import {BotCommandScope} from "../type/BotCommandScope.js";
 
 export default class SetMyCommands extends TelegramBotApi {
 
@@ -43,7 +43,7 @@ export default class SetMyCommands extends TelegramBotApi {
      *
      * @return {SetMyCommands}
      */
-    public setCommands(commands: BotCommands[]): SetMyCommands {
+    public setCommands(commands: BotCommand[]): this {
         this.payload.commands = commands;
         return this;
     }
@@ -58,7 +58,7 @@ export default class SetMyCommands extends TelegramBotApi {
      *
      * @return {SetMyCommands}
      */
-    public setScope(scope: BotCommandScope): SetMyCommands {
+    public setScope(scope: BotCommandScope): this {
         this.payload.scope = scope;
         return this;
     }
@@ -73,7 +73,7 @@ export default class SetMyCommands extends TelegramBotApi {
      *
      * @return {SetMyCommands}
      */
-    public setLanguageCode(languageCode: string): SetMyCommands {
+    public setLanguageCode(languageCode: string): this {
         this.payload.languageCode = languageCode;
         return this;
     }

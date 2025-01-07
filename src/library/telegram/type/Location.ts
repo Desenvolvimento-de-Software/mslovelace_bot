@@ -12,8 +12,8 @@
 export type Location = {
     longitude: number;
     latitude: number;
-    horizontalAccuracy?: number;
-    livePeriod?: number;
+    horizontal_accuracy?: number;
+    live_period?: number;
     heading?: number;
-    proximityAlertRadius?: number;
+    proximity_alert_radius?: number;
 };

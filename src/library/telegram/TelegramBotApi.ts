@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Json from "./helper/Json.js";
 export default class TelegramBotApi {
 
     /**
@@ -127,7 +128,7 @@ export default class TelegramBotApi {
     private async request(method: string, payload: object): Promise<any> {
 
         if (payload) {
-            payload = this.camelCaseToSnakeCase(payload);
+            payload = Json.toSnakeCase(payload);
             payload = { method: this.method, ...payload };
         }
 
@@ -150,35 +151,4 @@ export default class TelegramBotApi {
 
         return fetch(url, params);
     }
-
-    /**
-     * Converts the payload from snake_case to camelCase.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     *
-     * @param payload
-     *
-     * @returns
-     */
-    private camelCaseToSnakeCase = (payload: Record<string, any>): Record<string, any> => {
-
-        if (Array.isArray(payload)) {
-            return payload.map(this.camelCaseToSnakeCase);
-        }
-
-        if (typeof payload !== "object" || payload === null) {
-            return payload;
-        }
-
-        const keys = Object.keys(payload);
-        const result = <Record<string, any>> {};
-
-        for (const key of keys) {
-            const snakeKey = key.replace(/([A-Z])/g, (_, letter) => "_" + letter.toLowerCase()).toLowerCase();
-            result[snakeKey] = this.camelCaseToSnakeCase(payload[key]);
-        }
-
-        return result;
-    };
 }

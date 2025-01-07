@@ -12,6 +12,6 @@
 export type PassportElementErrorUnspecified = {
     source: string;
     type: string;
-    elementHash: string;
+    element_hash: string;
     message: string;
 };

@@ -16,8 +16,8 @@ import { User } from "./User.js";
 export type ChatJoinRequest = {
     chat: Chat;
     from: User;
-    userChatId: number;
+    user_chat_id: number;
     date: number;
     bio?: string;
-    inviteLink?: ChatInviteLink;
+    invite_link?: ChatInviteLink;
 };

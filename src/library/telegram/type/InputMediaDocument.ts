@@ -17,7 +17,7 @@ export type InputMediaDocument = {
     media: string;
     thumbnail?: InputFile|string;
     caption?: string;
-    parseMode?: string;
-    captionEntities?: MessageEntity[];
-    disableContentTypeDetection?: boolean;
+    parse_mode?: string;
+    caption_entities?: MessageEntity[];
+    disable_content_type_detection?: boolean;
 };

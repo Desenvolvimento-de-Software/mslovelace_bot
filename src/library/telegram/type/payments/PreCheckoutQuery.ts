@@ -16,8 +16,8 @@ export type PreCheckoutQuery = {
     id: string;
     from: User;
     currency: string;
-    totalAmount: number;
-    invoicePayload: string;
-    shippingOptionId?: string;
-    orderInfo?: OrderInfo;
+    total_amount: number;
+    invoice_payload: string;
+    shipping_option_id?: string;
+    order_info?: OrderInfo;
 };

@@ -11,5 +11,5 @@
 
 export type WebAppData = {
     data: string;
-    buttonText: string;
+    button_text: string;
 };

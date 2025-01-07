@@ -12,10 +12,10 @@
 import { PhotoSize } from "./PhotoSize.js";
 
 export type VideoNote = {
-    fileId: string;
-    fileUniqueId: string;
+    file_id: string;
+    file_unique_id: string;
     length: number;
     duration: number;
     thumbnail?: PhotoSize;
-    fileSize?: number;
+    file_size?: number;
 };

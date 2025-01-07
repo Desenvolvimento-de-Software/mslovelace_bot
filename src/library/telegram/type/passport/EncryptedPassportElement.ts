@@ -14,11 +14,11 @@ import { PassportFile } from "./PassportFile.js";
 export type EncryptedPassportElement = {
     type: string;
     data?: string;
-    phoneNumber?: string;
+    phone_number?: string;
     email?: string;
     files?: PassportFile[];
-    frontSide?: PassportFile;
-    reverseSide?: PassportFile;
+    front_side?: PassportFile;
+    reverse_side?: PassportFile;
     selfie?: PassportFile;
     translation?: PassportFile[];
     hash: string;

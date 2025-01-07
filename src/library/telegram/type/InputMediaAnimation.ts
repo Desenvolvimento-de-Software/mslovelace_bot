@@ -16,9 +16,9 @@ export type InputMediaAnimation = {
     media: string;
     thumbnail?: InputFile|string;
     caption?: string;
-    parseMode?: string;
+    parse_mode?: string;
     width?: number;
     height?: number;
     duration?: number;
-    hasSpoiler?: boolean;
+    has_spoiler?: boolean;
 };

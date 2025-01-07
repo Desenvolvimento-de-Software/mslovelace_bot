@@ -27,7 +27,7 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-05
      */
-    private context: MessageType;
+    private readonly context: Record<string, any>;
 
     /**
      * The constructor.
@@ -37,7 +37,7 @@ export default class Chat {
      *
      * @param context
      */
-    public constructor(context: MessageType) {
+    public constructor(context: Record<string, any>) {
         this.context = context;
     }
 
@@ -98,7 +98,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getFirstName(): string|undefined {
-        return this.context.chat.firstName;
+        return this.context.chat.first_name;
     }
 
     /**
@@ -110,7 +110,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getLastName(): string|undefined {
-        return this.context.chat.lastName;
+        return this.context.chat.last_name;
     }
 
     /**
@@ -122,7 +122,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getIsForum(): boolean|undefined {
-        return this.context.chat.isForum;
+        return this.context.chat.is_forum;
     }
 
     /**
@@ -146,7 +146,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getActiveUsernames(): string[]|undefined {
-        return this.context.chat.activeUsernames;
+        return this.context.chat.active_usernames;
     }
 
     /**
@@ -158,7 +158,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getEmojiStatusCustomEmojiId(): string|undefined {
-        return this.context.chat.emojiStatusCustomEmojiId;
+        return this.context.chat.emoji_status_custom_emoji_id;
     }
 
     /**
@@ -182,7 +182,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getHasPrivateForwards(): boolean|undefined {
-        return this.context.chat.hasPrivateForwards;
+        return this.context.chat.has_private_forwards;
     }
 
     /**
@@ -194,7 +194,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getHasRestrictedVoiceAndVideoMessages(): boolean|undefined {
-        return this.context.chat.hasRestrictedVoiceAndVideoMessages;
+        return this.context.chat.has_restricted_voice_and_video_messages;
     }
 
     /**
@@ -206,7 +206,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getJoinToSendMessages(): boolean|undefined {
-        return this.context.chat.joinToSendMessages;
+        return this.context.chat.join_to_send_messages;
     }
 
     /**
@@ -218,7 +218,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getJoinByRequest(): boolean|undefined {
-        return this.context.chat.joinByRequest;
+        return this.context.chat.join_by_request;
     }
 
     /**
@@ -242,7 +242,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getInviteLink(): string|undefined {
-        return this.context.chat.inviteLink;
+        return this.context.chat.invite_link;
     }
 
     /**
@@ -254,7 +254,7 @@ export default class Chat {
      * @return {MessageType|undefined}
      */
     public getPinnedMessage(): MessageType|undefined {
-        return this.context.chat.pinnedMessage;
+        return this.context.chat.pinned_message;
     }
 
     /**
@@ -278,7 +278,7 @@ export default class Chat {
      * @return {number|undefined}
      */
     public getSlowModeDelay(): number|undefined {
-        return this.context.chat.slowModeDelay;
+        return this.context.chat.slow_mode_delay;
     }
 
     /**
@@ -290,7 +290,7 @@ export default class Chat {
      * @return {number|undefined}
      */
     public getMessageAutoDeleteTime(): number|undefined {
-        return this.context.chat.messageAutoDeleteTime;
+        return this.context.chat.message_auto_delete_time;
     }
 
     /**
@@ -302,7 +302,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getHasAggressiveAntiSpamEnabled(): boolean|undefined {
-        return this.context.chat.hasAggressiveAntiSpamEnabled;
+        return this.context.chat.has_aggressive_anti_spam_enabled;
     }
 
     /**
@@ -314,7 +314,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getHasHiddenMembers(): boolean|undefined {
-        return this.context.chat.hasHiddenMembers;
+        return this.context.chat.has_hidden_members;
     }
 
     /**
@@ -326,7 +326,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getHasProtectedContent(): boolean|undefined {
-        return this.context.chat.hasProtectedContent;
+        return this.context.chat.has_protected_content;
     }
 
     /**
@@ -338,7 +338,7 @@ export default class Chat {
      * @return {string|undefined}
      */
     public getStickerSetName(): string|undefined {
-        return this.context.chat.stickerSetName;
+        return this.context.chat.sticker_set_name;
     }
 
     /**
@@ -350,7 +350,7 @@ export default class Chat {
      * @return {boolean|undefined}
      */
     public getCanSetStickerSet(): boolean|undefined {
-        return this.context.chat.canSetStickerSet;
+        return this.context.chat.can_set_sticker_set;
     }
 
     /**
@@ -362,7 +362,7 @@ export default class Chat {
      * @return {number|undefined}
      */
     public getLinkedChatId(): number|undefined {
-        return this.context.chat.linkedChatId;
+        return this.context.chat.linked_chat_id;
     }
 
     /**
@@ -423,8 +423,8 @@ export default class Chat {
             .setChatId(this.context.chat.id)
             .setText(text);
 
-        if (this.context.messageThreadId && this.context.messageThreadId !== this.context.replyToMessage.messageId) {
-            sendMessage.setThreadId(this.context.messageThreadId);
+        if (this.context.message_thread_id && this.context.message_thread_id !== this.context.reply_to_message?.message_id) {
+            sendMessage.setThreadId(this.context.message_thread_id);
         }
 
         if (options) {
@@ -460,8 +460,8 @@ export default class Chat {
             .setChatId(this.context.chat.id)
             .setAction(action);
 
-        if (typeof this.context.messageThreadId !== "undefined") {
-            sendChatAction.setMessageThreadId(this.context.messageThreadId);
+        if (typeof this.context.message_thread_id !== "undefined") {
+            sendChatAction.setMessageThreadId(this.context.message_thread_id);
         }
 
         try {

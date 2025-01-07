@@ -10,8 +10,8 @@
  */
 
 export type File = {
-    fileId: string;
-    fileUniqueId: string;
-    fileSize?: number;
-    filePath?: string;
+    file_id: string;
+    file_unique_id: string;
+    file_size?: number;
+    file_path?: string;
 };

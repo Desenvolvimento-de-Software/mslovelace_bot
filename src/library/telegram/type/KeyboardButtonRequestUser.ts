@@ -10,7 +10,7 @@
  */
 
 export type KeyboardButtonRequestUser = {
-    requestId: number;
-    userIsBot?: boolean;
-    userIsPremium?: boolean;
+    request_id: number;
+    user_is_bot?: boolean;
+    user_is_premium?: boolean;
 };

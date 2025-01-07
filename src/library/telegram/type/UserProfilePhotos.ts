@@ -12,6 +12,6 @@
 import { PhotoSize } from "./PhotoSize.js";
 
 export type UserProfilePhotos = {
-    totalCount: number;
+    total_count: number;
     photos: Array<PhotoSize[]>;
 };

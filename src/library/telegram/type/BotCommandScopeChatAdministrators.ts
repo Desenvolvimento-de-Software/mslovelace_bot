@@ -11,5 +11,5 @@
 
 export type BotCommandScopeChatAdministrators = {
     type: "chat_administrators";
-    chatId: number;
+    chat_id: number;
 };

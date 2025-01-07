@@ -11,7 +11,7 @@
 
 export type LoginUrl = {
     url: string;
-    forwardText?: string;
-    botUsername?: string;
-    requestWriteAccess?: boolean;
+    forward_text?: string;
+    bot_username?: string;
+    request_write_access?: boolean;
 };

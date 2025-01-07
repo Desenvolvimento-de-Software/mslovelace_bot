@@ -16,10 +16,10 @@ import { WebAppInfo } from "./WebAppInfo.js";
 
 export type KeyboardButton = {
     text: string;
-    requestUser?: KeyboardButtonRequestUser;
-    requestChat?: KeyboardButtonRequestChat;
-    requestContact?: boolean;
-    requestLocation?: boolean;
-    requestPoll?: KeyboardButtonPollType;
-    webApp?: WebAppInfo;
+    request_user?: KeyboardButtonRequestUser;
+    request_chat?: KeyboardButtonRequestChat;
+    request_contact?: boolean;
+    request_location?: boolean;
+    request_poll?: KeyboardButtonPollType;
+    web_app?: WebAppInfo;
 };

@@ -13,8 +13,8 @@ import Chat from "./Chat.js";
 import Message from "./Message.js";
 import User from "./User.js";
 import CallbackQuery from "./CallbackQuery.js";
+import Json from "../helper/Json.js";
 import { Message as MessageType } from "../type/Message.js";
-
 export default class Context {
 
     /**
@@ -132,7 +132,7 @@ export default class Context {
      */
     public constructor(payload: Record<string, any>) {
 
-        this.payload = this.snakeToCamelCase(payload);
+        this.payload = Json.toCamelCase(payload);
         this.type = this.parseType();
 
         if (typeof this.type === "undefined") {
@@ -152,12 +152,12 @@ export default class Context {
         this.message = new Message(context);
         this.user = new User(this.payload[this.type].from!, this.chat);
 
-        if (context.newChatMember) {
-            this.newChatMember = new User(context.newChatMember, this.chat);
+        if (context.new_chat_member) {
+            this.newChatMember = new User(context.new_chat_member, this.chat);
         }
 
-        if (context.leftChatMember) {
-            this.leftChatMember = new User(context.leftChatMember, this.chat);
+        if (context.left_chat_member) {
+            this.leftChatMember = new User(context.left_chat_member, this.chat);
         }
     }
 
@@ -205,35 +205,4 @@ export default class Context {
 
         return this.payload[this.type!] || undefined;
     }
-
-    /**
-     * Converts the payload from snake_case to camelCase.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-02
-     *
-     * @param payload
-     *
-     * @returns
-     */
-    private snakeToCamelCase = (payload: Record<string, any>): Record<string, any> => {
-
-        if (Array.isArray(payload)) {
-            return payload.map(this.snakeToCamelCase);
-        }
-
-        if (typeof payload !== "object" || payload === null) {
-            return payload;
-        }
-
-        const keys = Object.keys(payload);
-        const result = <Record<string, any>> {};
-
-        for (const key of keys) {
-            const camelKey = key.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-            result[camelKey] = this.snakeToCamelCase(payload[key]);
-        }
-
-        return result;
-    };
 }
