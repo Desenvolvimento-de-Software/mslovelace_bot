@@ -61,7 +61,7 @@ export default class Controller {
      */
     public constructor(app: App, path?: string) {
         this.app = app;
-        this.path = path || "/";
+        this.path = path ?? "/";
         this.initializeRoutes();
     }
 
