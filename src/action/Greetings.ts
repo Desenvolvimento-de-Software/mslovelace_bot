@@ -221,7 +221,7 @@ export default class Greetings extends Action {
      *
      * @param messageID
      */
-    private deleteMessage = (message: Message) => {
+    private readonly deleteMessage = (message: Message) => {
 
         message.delete();
         if (parseInt(this.chat!.captcha) === 1) {
@@ -264,6 +264,11 @@ export default class Greetings extends Action {
             this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
         );
 
-        this.context.chat.sendMessage(text, { parseMode : "HTML" });
+        const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });
+        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
+
+        setTimeout(() => {
+            message.delete();
+        }, timeout);
     }
 }
