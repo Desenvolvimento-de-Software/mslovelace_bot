@@ -118,7 +118,8 @@ export default class Context {
         "poll_answer",
         "my_chat_member",
         "chat_member",
-        "chat_join_request"
+        "chat_join_request",
+        "message_reaction"
     ];
 
     /**
