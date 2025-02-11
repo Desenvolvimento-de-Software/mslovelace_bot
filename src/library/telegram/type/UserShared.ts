@@ -10,6 +10,6 @@
  */
 
 export type UserShared = {
-    requestId: number;
-    userId: number;
+    request_id: number;
+    user_id: number;
 };

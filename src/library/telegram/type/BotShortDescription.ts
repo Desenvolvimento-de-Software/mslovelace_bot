@@ -10,5 +10,5 @@
  */
 
 export type BotShortDescription = {
-    shortDescription: string;
+    short_description: string;
 };

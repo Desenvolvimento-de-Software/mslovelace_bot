@@ -10,5 +10,5 @@
  */
 
 export type WriteAccessAllowed = {
-    webAppName?: string;
+    web_app_name?: string;
 };

@@ -13,8 +13,8 @@ export type Venue = {
     location: Location;
     title: string;
     address: string;
-    foursquareId?: string;
-    foursquareType?: string;
-    googlePlaceId?: string;
-    googlePlaceType?: string;
+    foursquare_id?: string;
+    foursquare_type?: string;
+    google_place_id?: string;
+    google_place_type?: string;
 };

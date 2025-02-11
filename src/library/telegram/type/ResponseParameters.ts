@@ -10,6 +10,6 @@
  */
 
 export type ResponseParameters = {
-    migrateToChatId?: number;
-    retryAfter?: number;
+    migrate_to_chat_id?: number;
+    retry_after?: number;
 };

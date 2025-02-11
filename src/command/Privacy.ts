@@ -11,9 +11,9 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import Lang from "../helper/Lang.js";
-import Text from "../helper/Text.js";
 import UserHelper from "../helper/User.js";
 
 export default class Privacy extends Command {
@@ -26,7 +26,7 @@ export default class Privacy extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "privacy", description: "Shows the privacy policy." }
     ];
 
@@ -35,11 +35,9 @@ export default class Privacy extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -48,18 +46,18 @@ export default class Privacy extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
-     *
-     * @returns
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (this.context.chat.getType() !== "private") {
             return Promise.resolve();
         }
 
         const user = await UserHelper.getByTelegramId(this.context.user.getId());
-        if (!user || !user.id) {
+        if (!user?.id) {
             return;
         }
 

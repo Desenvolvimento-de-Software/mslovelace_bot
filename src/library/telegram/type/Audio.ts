@@ -12,13 +12,13 @@
 import { PhotoSize } from "./PhotoSize.js";
 
 export type Audio = {
-    fileId: string;
-    fileUniqueId: string;
+    file_id: string;
+    file_unique_id: string;
     duration: number;
     performer?: string;
     title?: string;
-    fileName?: string;
-    mimeType?: string;
-    fileSize?: number;
+    file_name?: string;
+    mime_type?: string;
+    file_size?: number;
     thumbnail?: PhotoSize;
 };

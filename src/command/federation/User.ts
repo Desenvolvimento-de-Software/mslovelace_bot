@@ -23,7 +23,7 @@ export default class User extends Federation {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "fpromote", description: "Promotes a user in the active federation." },
         { command: "fdemote", description: "Demotes a user in the active federation." }
     ];
@@ -33,11 +33,9 @@ export default class User extends Federation {
      *
      * @author Marcos Leandro
      * @since  2023-07-04
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     private async promote(): Promise<void> {

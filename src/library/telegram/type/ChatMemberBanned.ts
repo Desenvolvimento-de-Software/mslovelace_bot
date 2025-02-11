@@ -14,5 +14,5 @@ import { User } from "./User.js";
 export type ChatMemberBanned = {
     status: "kicked";
     user: User;
-    untilDate: number;
+    until_date: number;
 };

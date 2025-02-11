@@ -23,7 +23,7 @@ export default abstract class Command {
      *
      * @var {Context}
      */
-    protected context: Context;
+    protected context: Context|undefined;
 
     /**
      * Commands list.
@@ -33,7 +33,7 @@ export default abstract class Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [];
+    public readonly commands: BotCommand[] = [];
 
     /**
      * Params list.
@@ -50,11 +50,9 @@ export default abstract class Command {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
-     *
-     * @param {Context} context
      */
-    public constructor(context: Context) {
-        this.context = context;
+    public constructor() {
+        this.params = [];
     }
 
     /**
@@ -62,21 +60,12 @@ export default abstract class Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
+     *
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
         throw new Error("Method not implemented.");
-    }
-
-    /**
-     * Returns the commands list.
-     *
-     * @author Marcos Leandro
-     * @since  2024-05-03
-     *
-     * @return {Record<string, string>}
-     */
-    public getCommands(): Record<string, string> {
-        return this.commands;
     }
 
     /**
@@ -100,14 +89,17 @@ export default abstract class Command {
      * @param commandClass
      * @param context
      */
-    public static isCalled(commandClass: Command, context: Context): CommandContext|undefined {
+    public isCalled(context: Context): CommandContext|undefined {
 
-        if (typeof commandClass.commands === "undefined") {
-            return;
+        if (typeof this.commands === "undefined") {
+            return;TELEGRAM_USERNAME
         }
 
-        const commandList: string[] = [];
-        commandClass.commands.map((command) => commandList.push(command.command));
+        let commandList = [];
+        this.commands.forEach(command => {
+            commandList.push(command.command);
+            commandList.push(`${command.command}@${process.env.TELEGRAM_USERNAME}`);
+        });
 
         for (const command of context.message.getCommands()) {
             if (commandList.includes(command.getCommand())) {

@@ -14,5 +14,5 @@ import { WebAppInfo } from "./WebAppInfo.js";
 export type MenuButtonWebApp = {
     type: string;
     text: string;
-    webApp: WebAppInfo;
+    web_app: WebAppInfo;
 };

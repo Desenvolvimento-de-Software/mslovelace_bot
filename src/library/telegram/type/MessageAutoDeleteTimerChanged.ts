@@ -10,5 +10,5 @@
  */
 
 export type MessageAutoDeleteTimerChanged = {
-    messageAutoDeleteTime: number;
+    message_auto_delete_time: number;
 };

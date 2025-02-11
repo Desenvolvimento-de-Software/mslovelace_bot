@@ -10,8 +10,8 @@
  */
 
 export type PassportFile = {
-    fileId: string;
-    fileUniqueId: string;
-    fileSize: number;
-    fileDate: number;
+    file_id: string;
+    file_unique_id: string;
+    file_size: number;
+    file_date: number;
 };

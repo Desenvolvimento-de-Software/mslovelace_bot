@@ -13,7 +13,7 @@ import { ShippingAddress } from "./ShippingAddress.js";
 
 export type OrderInfo = {
     name?: string;
-    phoneNumber?: string;
+    phone_number?: string;
     email?: string;
-    shippingAddress?: ShippingAddress;
+    shipping_address?: ShippingAddress;
 };

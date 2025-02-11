@@ -12,9 +12,10 @@
 import express from "express";
 import TelegramBotApi from "./library/telegram/TelegramBotApi.js";
 import SetMyCommands from "./library/telegram/resource/SetMyCommands.js";
+import Command from "./command/Command.js";
 import Log from "./helper/Log.js";
 import { controllers } from "./config/controllers.js";
-import { commands } from "./config/commands.js";
+import { commands as commandsConfig } from "./config/commands.js";
 
 export default class App {
 
@@ -26,7 +27,7 @@ export default class App {
      *
      * @var {express.Application}
      */
-    private expressApp: express.Application;
+    private readonly expressApp: express.Application;
 
     /**
      * Application port.
@@ -39,6 +40,16 @@ export default class App {
     private readonly port: number;
 
     /**
+     * Registered commands.
+     *
+     * @author Marcos Leandro
+     * @since  2025-01-06
+     *
+     * @var {Command[]}
+     */
+    private readonly commands: Command[] = [];
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
@@ -47,10 +58,9 @@ export default class App {
     constructor() {
 
         this.expressApp = express();
-        this.port = (process.env.PORT || 3000) as number;
+        this.port = (process.env.PORT ?? 3000) as number;
 
-        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN || "");
-        this.init();
+        TelegramBotApi.setToken(process.env.TELEGRAM_BOT_TOKEN ?? "");
     }
 
     /**
@@ -63,6 +73,18 @@ export default class App {
         await this.registerCommands();
         this.initializeMiddlewares();
         this.initializeControllers();
+    }
+
+    /**
+     * Returns the controller's commands.
+     *
+     * @author Marcos Leandro
+     * @since  2025-01-06
+     *
+     * @return {Command[]}
+     */
+    public getCommands(): Command[] {
+        return this.commands;
     }
 
     /**
@@ -113,8 +135,10 @@ export default class App {
     private async registerCommands(): Promise<void> {
 
         const availableCommands = [];
-        for (const commandClass of commands) {
-            availableCommands.push(...commandClass.commands);
+        for (const commandClass of commandsConfig) {
+            const commandInstance = new commandClass();
+            this.commands.push(commandInstance);
+            availableCommands.push(...commandInstance.commands);
         }
 
         if (!availableCommands.length) {

@@ -11,6 +11,7 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
@@ -25,7 +26,7 @@ export default class Start extends Command {
      * @author Marcos Leandro
      * @since  2024-05-03
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "start", description: "Starts the bot." }
     ];
 
@@ -35,8 +36,8 @@ export default class Start extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -45,12 +46,14 @@ export default class Start extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      *
-     * @param payload
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(payload: Record<string, any>): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        if (!chat?.id) {
             return;
         }
 
@@ -60,7 +63,7 @@ export default class Start extends Command {
 
             const message = Lang.get("groupStartMessage")
                 .replace("{userid}", this.context.user.getId())
-                .replace("{username}", this.context.user.getFirstName() || this.context.user.getUsername());
+                .replace("{username}", this.context.user.getFirstName() ?? this.context.user.getUsername());
 
             this.context.message.reply(message, { parseMode: "HTML" });
             return;
@@ -68,17 +71,17 @@ export default class Start extends Command {
 
         const helpButton: InlineKeyboardButton = {
             text: Lang.get("helpButton"),
-            callbackData: "help"
+            callback_data: "help"
         };
 
         const username = process.env.TELEGRAM_USERNAME;
         const groupAddButton: InlineKeyboardButton = {
             text : Lang.get("startButton"),
-            url  : `http://t.me/${username}?startgroup=botstart`
+            url : `http://t.me/${username}?startgroup=botstart`
         };
 
         const markup: InlineKeyboardMarkup = {
-            inlineKeyboard : [[helpButton, groupAddButton]]
+            inline_keyboard : [[helpButton, groupAddButton]]
         };
 
         const options = { parseMode: "HTML", replyMarkup: markup };

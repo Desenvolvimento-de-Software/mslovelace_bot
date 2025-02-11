@@ -264,7 +264,7 @@ export default class DB {
      */
     protected connection(): mysql.Connection {
 
-        if (!DB.connection || DB.connection.state !== "authenticated") {
+        if (!DB.connection) {
             this.disconnect();
             DB.connection = this.connect();
         }

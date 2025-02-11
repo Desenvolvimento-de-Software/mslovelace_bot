@@ -10,7 +10,6 @@
  */
 
 import Command from "../Command.js";
-import Context from "../../library/telegram/context/Context.js";
 import User from "../../library/telegram/context/User.js";
 import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
 import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
@@ -26,11 +25,9 @@ export default class Base extends Command {
      *
      * @author Marcos Leandro
      * @since  2024-04-22
-     *
-     * @param context
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -100,7 +97,7 @@ export default class Base extends Command {
      */
     protected async getWarningMessage(contextUser: User, warnings: Record<string, any>[], warningsLimit: number): Promise<string> {
 
-        const username = contextUser.getFirstName() || contextUser.getUsername();
+        const username = contextUser.getFirstName() ?? contextUser.getUsername();
 
         let langIndex = warnings.length === 1 ? "warningSigleMessage" : "warningPluralMessage";
         langIndex = warnings.length >= warningsLimit ? "warningBanMessage" : langIndex;
@@ -149,7 +146,7 @@ export default class Base extends Command {
         const message = messages.join("\n-----\n");
         const options = this.getMessageOptions(users, warnings);
 
-        await this.context.chat.sendMessage(message, options);
+        await this.context!.chat.sendMessage(message, options);
     }
 
     /**
@@ -180,22 +177,22 @@ export default class Base extends Command {
         const lastWarning: Record<string, any> = warnings.at(-1)!;
         const lastWarningRemowalButton: InlineKeyboardButton = {
             text: Lang.get("lastWarningRemovalButton"),
-            callbackData: JSON.stringify({
+            callback_data: JSON.stringify({
                 c: "warning",
-                d: `${users[0].getId()},${this.context.chat.getId()},${lastWarning.id}`
+                d: `${users[0].getId()},${this.context!.chat.getId()},${lastWarning.id}`
             })
         };
 
         const allWarningsRemowalButton: InlineKeyboardButton = {
             text: Lang.get("warningsRemovalButton"),
-            callbackData: JSON.stringify({
+            callback_data: JSON.stringify({
                 c: "warning",
-                d: `${users[0].getId()},${this.context.chat.getId()}`
+                d: `${users[0].getId()},${this.context!.chat.getId()}`
             })
         };
 
         const markup: InlineKeyboardMarkup = {
-            inlineKeyboard: [[lastWarningRemowalButton], [allWarningsRemowalButton]]
+            inline_keyboard: [[lastWarningRemowalButton], [allWarningsRemowalButton]]
         };
 
         options.replyMarkup = markup;

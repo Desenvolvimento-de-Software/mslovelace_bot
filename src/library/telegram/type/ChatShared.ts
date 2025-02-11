@@ -10,6 +10,6 @@
  */
 
 export type ChatShared = {
-    requestId: number;
-    chatId: number;
+    request_id: number;
+    chat_id: number;
 };

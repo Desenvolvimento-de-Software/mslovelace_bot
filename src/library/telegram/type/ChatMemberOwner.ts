@@ -14,6 +14,6 @@ import { User } from "./User.js";
 export type ChatMemberOwner = {
     status: "creator";
     user: User;
-    isAnonymous?: boolean;
-    customTitle?: string;
+    is_anonymous?: boolean;
+    custom_title?: string;
 };

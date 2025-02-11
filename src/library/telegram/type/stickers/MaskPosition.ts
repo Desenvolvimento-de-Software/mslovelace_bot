@@ -11,7 +11,7 @@
 
 export type MaskPosition = {
     point: string;
-    xShift: number;
-    yShift: number;
+    x_shift: number;
+    y_shift: number;
     scale: number;
 };

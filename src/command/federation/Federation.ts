@@ -59,11 +59,9 @@ export default class Federation extends Command {
      *
      * @author Marcos Leandro
      * @since  2023-07-04
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -73,9 +71,11 @@ export default class Federation extends Command {
      * @since  2023-07-04
      *
      * @param command
+     * @param context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         this.user = await UserHelper.getByTelegramId(this.context.user.getId());
         this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
@@ -83,15 +83,19 @@ export default class Federation extends Command {
             return;
         }
 
-        Lang.set(this.chat!.language || "us");
+        Lang.set(this.chat.language || "us");
 
         if (this.chat.federation_id) {
             this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
         }
 
         this.command = command;
-        const action = this.command!.getCommand().substring(1);
-        this[action as keyof typeof Federation.prototype](true as never);
+        const method = this.command.getCommand().substring(1) as keyof Federation;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -109,9 +113,9 @@ export default class Federation extends Command {
 
         const userType: UserType = {
             id: user.user_id,
-            isBot: user.is_bot,
-            firstName: user.first_name,
-            lastName: user.last_name,
+            is_bot: user.is_bot,
+            first_name: user.first_name,
+            last_name: user.last_name,
             username: user.username
         };
 
@@ -120,12 +124,12 @@ export default class Federation extends Command {
             type: chat.type,
             title: chat.title,
             username: chat.username,
-            firstName: chat.first_name,
-            lastName: chat.last_name
+            first_name: chat.first_name,
+            last_name: chat.last_name
         };
 
         const messageType: MessageType = {
-            messageId: 0,
+            message_id: 0,
             from: userType,
             chat: chatType,
             date: Math.floor(Date.now() / 1000)

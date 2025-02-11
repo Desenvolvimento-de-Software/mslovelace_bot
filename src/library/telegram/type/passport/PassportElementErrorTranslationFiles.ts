@@ -12,6 +12,6 @@
 export type PassportElementErrorTranslationFiles = {
     source: string;
     type: string;
-    fileHashes: string[];
+    file_hashes: string[];
     message: string;
 };

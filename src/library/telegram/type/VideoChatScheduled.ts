@@ -10,5 +10,5 @@
  */
 
 export type VideoChatScheduled = {
-    startDate: number;
+    start_date: number;
 };

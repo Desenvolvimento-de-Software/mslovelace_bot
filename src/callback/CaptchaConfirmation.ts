@@ -85,20 +85,20 @@ export default class CaptchaConfirmation extends Callback {
         this.context.message.delete();
 
         const permissions: ChatPermissions = {
-            canSendMessages: true,
-            canSendAudios: true,
-            canSendDocuments: true,
-            canSendPhotos: true,
-            canSendVideos: true,
-            canSendVideoNotes: true,
-            canSendVoiceNotes: true,
-            canSendPolls: true,
-            canSendOtherMessages: true,
-            canAddWebPagePreviews: true,
-            canChangeInfo: true,
-            canInviteUsers: true,
-            canPinMessages: true,
-            canManageTopics: true
+            can_send_messages: true,
+            can_send_audios: true,
+            can_send_documents: true,
+            can_send_photos: true,
+            can_send_videos: true,
+            can_send_video_notes: true,
+            can_send_voice_notes: true,
+            can_send_polls: true,
+            can_send_other_messages: true,
+            can_add_web_page_previews: true,
+            can_change_info: true,
+            can_invite_users: true,
+            can_pin_messages: true,
+            can_manage_topics: true
         };
 
         this.context.callbackQuery.answer(Lang.get("captchaConfirmed"));
@@ -120,17 +120,17 @@ export default class CaptchaConfirmation extends Callback {
     private async restrictUser(): Promise<void> {
 
         const permissions: ChatPermissions = {
-            canSendMessages: true,
-            canSendAudios: false,
-            canSendDocuments: false,
-            canSendPhotos: false,
-            canSendVideos: false,
-            canSendVideoNotes: false,
-            canSendVoiceNotes: false,
-            canSendPolls: false,
-            canSendOtherMessages: false,
-            canAddWebPagePreviews: false,
-            canInviteUsers: false
+            can_send_messages: true,
+            can_send_audios: false,
+            can_send_documents: false,
+            can_send_photos: false,
+            can_send_videos: false,
+            can_send_video_notes: false,
+            can_send_voice_notes: false,
+            can_send_polls: false,
+            can_send_other_messages: false,
+            can_add_web_page_previews: false,
+            can_invite_users: false
         };
 
         await this.context.user.setPermissions(permissions, 60 * 60 * 24);
@@ -161,7 +161,7 @@ export default class CaptchaConfirmation extends Callback {
         text = text.replace("{userid}", this.context.user.getId());
         text = text.replace(
             "{username}",
-            this.context.user.getFirstName() || this.context.user.getUsername()
+            this.context.user.getFirstName() ?? this.context.user.getUsername()
         );
 
         const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });

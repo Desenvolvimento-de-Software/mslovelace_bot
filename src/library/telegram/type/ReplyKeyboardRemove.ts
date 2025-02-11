@@ -10,6 +10,6 @@
  */
 
 export type ReplyKeyboardRemove = {
-    removeKeyboard: boolean;
+    remove_keyboard: boolean;
     selective?: boolean;
 };

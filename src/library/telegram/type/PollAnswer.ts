@@ -12,7 +12,7 @@
 import { User } from "./User.js";
 
 export type PollAnswer = {
-    pollId: string;
+    poll_id: string;
     user: User;
-    optionIds: number[];
+    option_ids: number[];
 };

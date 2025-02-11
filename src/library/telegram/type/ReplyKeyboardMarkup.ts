@@ -13,9 +13,9 @@ import { KeyboardButton } from "./KeyboardButton.js";
 
 export type ReplyKeyboardMarkup = {
     keyboard: Array<KeyboardButton[]>;
-    isPersistent?: boolean;
-    resizeKeyboard?: boolean;
-    oneTimeKeyboard?: boolean;
-    inputFieldPlaceholder?: string;
+    is_persistent?: boolean;
+    resize_keyboard?: boolean;
+    one_time_keyboard?: boolean;
+    input_field_placeholder?: string;
     selective?: boolean;
 };

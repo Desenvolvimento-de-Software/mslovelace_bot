@@ -14,7 +14,6 @@ import Context from "../library/telegram/context/Context.js";
 import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
-import Chats from "../model/Chats.js";
 import Macros from "../model/Macros.js";
 import Lang from "../helper/Lang.js";
 
@@ -28,7 +27,7 @@ export default class Macro extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command : "macro", description : "Shows a macro with [macro name]." },
         { command : "madd", description : "Adds a macro with [madd name content]." },
         { command : "mlist", description : "Lists the macros." },
@@ -48,11 +47,9 @@ export default class Macro extends Command {
      *
      * @author Marcos Leandro
      * @since  2023-11-18
-     *
-     * @param context
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -61,10 +58,12 @@ export default class Macro extends Command {
      * @author Marcos Leandro
      * @since  2023-11-18
      *
-     * @param command
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         this.context.message.delete();
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
@@ -81,8 +80,12 @@ export default class Macro extends Command {
             action = command.getCommand();
         }
 
-        const method = action as keyof typeof Macro.prototype;
-        await this[method](command as never);
+        const method = action as keyof Macro;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -101,7 +104,7 @@ export default class Macro extends Command {
         }
 
         const macro = params.shift()?.trim();
-        if (!macro || !macro.length) {
+        if (!macro?.length) {
             return;
         }
 
@@ -118,14 +121,14 @@ export default class Macro extends Command {
             }
 
             const content = result[0].content;
-            const replyToMessage = this.context.message.getReplyToMessage();
+            const replyToMessage = this.context!.message.getReplyToMessage();
 
             if (replyToMessage) {
                 replyToMessage.reply(content, { parseMode : "HTML" });
                 return;
             }
 
-            this.context.chat.sendMessage(content, { parseMode : "HTML" });
+            this.context!.chat.sendMessage(content, { parseMode : "HTML" });
         });
     }
 
@@ -139,21 +142,21 @@ export default class Macro extends Command {
      */
     private async madd(command: CommandContext): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
+        if (!await this.context!.user.isAdmin()) {
             return;
         }
 
         let params = command.getParams();
         if (!Array.isArray(params) || params.length < 2) {
-            this.context.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
+            this.context!.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
             return;
         }
 
         const macro = params.shift()?.trim();
         const content = params.join(" ").trim();
 
-        if (!macro || !macro.length || !content.length) {
-            this.context.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
+        if (!macro?.length || !content.length) {
+            this.context!.chat.sendMessage(Lang.get("macroMalformedCommandError"), { parseMode : "HTML" });
             return;
         }
 
@@ -167,7 +170,7 @@ export default class Macro extends Command {
 
         if (result.length) {
             const alreadyExistLang = Lang.get("macroAlreadyExists").replace("{macro}", macro);
-            this.context.chat.sendMessage(alreadyExistLang, { parseMode : "HTML" });
+            this.context!.chat.sendMessage(alreadyExistLang, { parseMode : "HTML" });
             return;
         }
 
@@ -182,7 +185,7 @@ export default class Macro extends Command {
             return;
         }
 
-        this.context.chat.sendMessage(Lang.get("macroAddError"), { parseMode : "HTML" });
+        this.context!.chat.sendMessage(Lang.get("macroAddError"), { parseMode : "HTML" });
     }
 
     /**
@@ -203,7 +206,7 @@ export default class Macro extends Command {
 
         const result = await macros.execute();
         if (!result.length) {
-            this.context.chat.sendMessage(Lang.get("macroNoMacroFound"), { parseMode : "HTML" });
+            this.context!.chat.sendMessage(Lang.get("macroNoMacroFound"), { parseMode : "HTML" });
             return;
         }
 
@@ -212,7 +215,7 @@ export default class Macro extends Command {
             message += ` • <code>${row.macro}</code>\n`;
         }
 
-        this.context.chat.sendMessage(message, { parseMode : "HTML" });
+        this.context!.chat.sendMessage(message, { parseMode : "HTML" });
     }
 
     /**
@@ -225,7 +228,7 @@ export default class Macro extends Command {
      */
     private async mremove(command: CommandContext): Promise<void> {
 
-        if (!await this.context.user.isAdmin()) {
+        if (!await this.context!.user.isAdmin()) {
             return;
         }
 
@@ -235,7 +238,7 @@ export default class Macro extends Command {
         }
 
         const macro = params.shift()?.trim();
-        if (!macro || !macro.length) {
+        if (!macro?.length) {
             return;
         }
 

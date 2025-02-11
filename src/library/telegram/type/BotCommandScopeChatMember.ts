@@ -11,6 +11,6 @@
 
 export type BotCommandScopeChatMember = {
     type: "chat_member";
-    chatId: number;
-    userId: number;
+    chat_id: number;
+    user_id: number;
 };

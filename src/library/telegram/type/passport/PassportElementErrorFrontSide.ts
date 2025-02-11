@@ -12,6 +12,6 @@
 export type PassportElementError = {
     source: string;
     type: string;
-    fileHash: string;
+    file_hash: string;
     message: string;
 };

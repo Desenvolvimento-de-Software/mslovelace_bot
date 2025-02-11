@@ -11,7 +11,9 @@
 
 import Action from "../action/Action.js";
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import ReportCommand from "../command/Report.js";
+import { Options as OptionsType } from "../type/Options.js";
 
 export default class Report extends Action {
 
@@ -54,7 +56,12 @@ export default class Report extends Action {
             return;
         }
 
-        const reportCommand = new ReportCommand(this.context);
-        await reportCommand.run();
+        const options: OptionsType = {
+            start: 0,
+            end: 0,
+        };
+
+        const reportCommand = new ReportCommand();
+        await reportCommand.run(new CommandContext("", options), this.context);
     }
 }

@@ -11,6 +11,6 @@
 
 export type ForumTopicCreated = {
     name: string;
-    iconColor: number;
-    iconCustomEmojiId?: string;
+    icon_color: number;
+    icon_custom_emoji_id?: string;
 };

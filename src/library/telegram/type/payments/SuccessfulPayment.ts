@@ -13,10 +13,10 @@ import { OrderInfo } from "./OrderInfo.js";
 
 export type SuccessfulPayment = {
     currency: string;
-    totalAmount: number;
-    invoicePayload: string;
-    shippingOptionId?: string;
-    orderInfo?: OrderInfo;
-    telegramPaymentChargeId: string;
-    providerPaymentChargeId: string;
+    total_amount: number;
+    invoice_payload: string;
+    shipping_option_id?: string;
+    order_info?: OrderInfo;
+    telegram_payment_charge_id: string;
+    provider_payment_charge_id: string;
 };

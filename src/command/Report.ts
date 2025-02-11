@@ -11,6 +11,7 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import Lang from "../helper/Lang.js";
@@ -26,7 +27,7 @@ export default class Report extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "adm", description: "Reports a message to the group administrators." },
         { command: "admin", description: "Reports a message to the group administrators." },
         { command: "report", description: "Reports a message to the group administrators." }
@@ -37,11 +38,9 @@ export default class Report extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -50,14 +49,14 @@ export default class Report extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
-     *
-     * @returns
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        if (!chat?.id) {
             return;
         }
 
@@ -98,19 +97,19 @@ export default class Report extends Command {
      */
     private async reportByReply(reportMessage: string, options: Record<string, any>): Promise<void> {
 
-        const contextMessage = this.context.message.getReplyToMessage();
+        const contextMessage = this.context!.message.getReplyToMessage();
         if (!contextMessage) {
             return;
         }
 
         const contextUser = contextMessage.getUser();
         if (contextUser.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
-            this.context.message.reply(Lang.get("selfReportMessage"));
+            this.context!.message.reply(Lang.get("selfReportMessage"));
             return;
         }
 
         if (await contextUser.isAdmin()) {
-            this.context.message.reply(Lang.get("adminReportMessage"));
+            this.context!.message.reply(Lang.get("adminReportMessage"));
             return;
         }
 

@@ -28,7 +28,7 @@ export default class User {
      * @author Marcos Leandro
      * @since  2023-06-05
      */
-    private user: UserType;
+    private readonly user: UserType;
 
     /**
      * Chat object.
@@ -36,7 +36,7 @@ export default class User {
      * @author Marcos Leandro
      * @since  2023-06-05
      */
-    private chat: Chat;
+    private readonly chat: Chat;
 
     /**
      * The constructor.
@@ -60,7 +60,7 @@ export default class User {
      * @returns
      */
     public getId(): number {
-        return this.user.id!;
+        return this.user.id;
     }
 
     /**
@@ -72,7 +72,7 @@ export default class User {
      * @returns
      */
     public getFirstName(): string|undefined {
-        return this.user.firstName || undefined;
+        return this.user.first_name ?? undefined;
     }
 
     /**
@@ -84,7 +84,7 @@ export default class User {
      * @returns
      */
     public getLastName(): string|undefined {
-        return this.user.lastName || undefined;
+        return this.user.last_name ?? undefined;
     }
 
     /**
@@ -96,7 +96,7 @@ export default class User {
      * @returns
      */
     public getUsername(): string|undefined {
-        return this.user.username || undefined;
+        return this.user.username ?? undefined;
     }
 
     /**
@@ -108,7 +108,7 @@ export default class User {
      * @returns {string|undefined}
      */
     public getLanguageCode(): string|undefined {
-        return this.user.languageCode || undefined;
+        return this.user.language_code ?? undefined;
     }
 
     /**
@@ -120,7 +120,7 @@ export default class User {
      * @returns {boolean}
      */
     public getIsBot(): boolean {
-        return this.user.isBot;
+        return this.user.is_bot;
     }
 
     /**
@@ -132,7 +132,7 @@ export default class User {
      * @returns {boolean|undefined}
      */
     public getIsPremium(): boolean|undefined {
-        return this.user.isPremium || undefined;
+        return this.user.is_premium || undefined;
     }
 
     /**
@@ -144,7 +144,7 @@ export default class User {
      * @returns {boolean|undefined}
      */
     public getAddedToAttachmentMenu(): boolean|undefined {
-        return this.user.addedToAttachmentMenu || undefined;
+        return this.user.added_to_attachment_menu || undefined;
     }
 
     /**
@@ -156,7 +156,7 @@ export default class User {
      * @returns {boolean|undefined}
      */
     public getCanJoinGroups(): boolean|undefined {
-        return this.user.canJoinGroups || undefined;
+        return this.user.can_join_groups || undefined;
     }
 
     /**
@@ -168,7 +168,7 @@ export default class User {
      * @returns {boolean|undefined}
      */
     public getCanReadAllGroupMessages(): boolean|undefined {
-        return this.user.canReadAllGroupMessages || undefined;
+        return this.user.can_read_all_group_messages || undefined;
     }
 
     /**
@@ -180,7 +180,7 @@ export default class User {
      * @returns {boolean|undefined}
      */
     public getSupportsInlineQueries(): boolean|undefined {
-        return this.user.supportsInlineQueries || undefined;
+        return this.user.supports_inline_queries || undefined;
     }
 
     /**
@@ -229,7 +229,6 @@ export default class User {
 
             const response = await sendMessage.post();
             const json = await response.json();
-            console.log(json);
             return new Message(json.result);
 
         } catch (error: any) {

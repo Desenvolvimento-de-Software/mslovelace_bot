@@ -26,7 +26,7 @@ export default class Ping extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "ping", description: "Just pings Ada. It's the same as mention her." }
     ];
 
@@ -43,11 +43,9 @@ export default class Ping extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-12
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -56,9 +54,14 @@ export default class Ping extends Command {
      * @author Marcos Leandro
      * @since  2023-06-07
      *
-     * @param command
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
+
+        this.command = command;
+        this.context = context;
+
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         Lang.set(chat?.language || "us");
         this.context.message.reply(Lang.get("pongMessage"));

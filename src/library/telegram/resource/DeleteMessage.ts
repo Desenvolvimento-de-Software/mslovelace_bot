@@ -37,11 +37,11 @@ export default class DeleteMessage extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param  {number} chat_id
+     * @param  {number} chatId
      *
      * @return {DeleteMessage}
      */
-    public setChatId(chatId: number): DeleteMessage {
+    public setChatId(chatId: number): this {
         this.payload.chat_id = chatId;
         return this;
     }
@@ -56,7 +56,7 @@ export default class DeleteMessage extends TelegramBotApi {
      *
      * @return {DeleteMessage}
      */
-     public setMessageId(messageId: number): DeleteMessage {
+     public setMessageId(messageId: number): this {
         this.payload.message_id = messageId;
         return this;
     }

@@ -11,7 +11,7 @@
 
 import Context from "../../library/telegram/context/Context.js";
 import CommandContext from "../../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import { BotCommand } from "../../library/telegram/type/BotCommand.js";
 import WarningsBase from "./Base.js";
 import ChatHelper from "../../helper/Chat.js";
 
@@ -25,7 +25,7 @@ export default class Warnings extends WarningsBase {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "warnings", description: "Lists the user's warnings." },
         { command: "warns", description: "Lists the user's warnings (alternative)." }
     ];
@@ -38,18 +38,16 @@ export default class Warnings extends WarningsBase {
      *
      * @var {CommandContext}
      */
-    private command?: CommandContext;
+    private readonly command?: CommandContext;
 
     /**
      * The constructor.
      *
      * @author Marcos Leandro
      * @since  2024-04-22
-     *
-     * @param app App instance.
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -62,8 +60,9 @@ export default class Warnings extends WarningsBase {
      *
      * @returns
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }

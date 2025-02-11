@@ -11,6 +11,7 @@
 
 import Command from "./Command.js";
 import Context from "../library/telegram/context/Context.js";
+import CommandContext from "../library/telegram/context/Command.js";
 import { BotCommand } from "../library/telegram/type/BotCommand.js";
 import ChatHelper from "../helper/Chat.js";
 import NpmPackage from "../helper/NpmPackage.js";
@@ -28,7 +29,7 @@ export default class Npm extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "npm", description: "Shows a package details from npm with [npm package]." }
     ];
 
@@ -37,11 +38,9 @@ export default class Npm extends Command {
      *
      * @author Marcos Leandro
      * @since  2022-09-21
-     *
-     * @param {Context} context
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
     }
 
     /**
@@ -49,9 +48,13 @@ export default class Npm extends Command {
      *
      * @author Marcos Leandro
      * @since 2023-06-13
+     *
+     * @param {CommandContext} command
+     * @param {Context}        context
      */
-     public async run(): Promise<void> {
+     public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         const text = this.context.message.getText().split(/\s+/);
         if (!text.length || text.length < 2) {
             return;
@@ -63,7 +66,7 @@ export default class Npm extends Command {
         }
 
         const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        if (!chat?.id) {
             return;
         }
 
@@ -115,10 +118,10 @@ export default class Npm extends Command {
             parseMode: "HTML"
         };
 
-        if (this.context.message.getReplyToMessage()) {
-            options.replyToMessageId = this.context.message.getReplyToMessage()?.getId();
+        if (this.context!.message.getReplyToMessage()) {
+            options.replyToMessageId = this.context!.message.getReplyToMessage()?.getId();
         }
 
-        this.context.chat.sendMessage(npmPackage.getMessage(), options);
+        this.context!.chat.sendMessage(npmPackage.getMessage(), options);
     }
 }

@@ -28,7 +28,7 @@ export default class GreetingsCommand extends Command {
      *
      * @var {BotCommand[]}
      */
-    public static readonly commands: BotCommand[] = [
+    public readonly commands: BotCommand[] = [
         { command: "greetings", description: "Manages the greetings message with [on | off | set]." }
     ];
 
@@ -46,8 +46,8 @@ export default class GreetingsCommand extends Command {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(context: Context) {
-        super(context);
+    public constructor() {
+        super();
         this.setParams(["on", "off", "set"]);
     }
 
@@ -58,9 +58,11 @@ export default class GreetingsCommand extends Command {
      * @since  2023-06-13
      *
      * @param {CommandContext} command
+     * @param {Context}        context
      */
-    public async run(command: CommandContext): Promise<void> {
+    public async run(command: CommandContext, context: Context): Promise<void> {
 
+        this.context = context;
         if (!await this.context.user.isAdmin()) {
             return;
         }
@@ -70,12 +72,16 @@ export default class GreetingsCommand extends Command {
         const params = command.getParams();
 
         let action = "index";
-        if (params && params.length) {
+        if (params?.length) {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
-        const method = action as keyof typeof GreetingsCommand.prototype;
-        await this[method](true as never);
+        const method = action as keyof GreetingsCommand;
+        if (typeof this[method] === "function") {
+            await (this[method] as Function).call(this);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -86,8 +92,8 @@ export default class GreetingsCommand extends Command {
      */
     private async index(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -101,18 +107,18 @@ export default class GreetingsCommand extends Command {
         const result = await chatMessages.execute();
 
         if (!result.length) {
-            this.context.chat.sendMessage(Lang.get("greetingsMessageNotSet"), { parseMode: "HTML" });
+            this.context!.chat.sendMessage(Lang.get("greetingsMessageNotSet"), { parseMode: "HTML" });
             return;
         }
 
         const greetingsDemo = Lang.get("greetingsMessageDemo")
             .replace("{greetings}", result[0].greetings)
-            .replace("{userid}", this.context.user.getId())
+            .replace("{userid}", this.context!.user.getId())
             .replace(
-                "{username}", this.context.user.getFirstName() || this.context.user.getUsername()
+                "{username}", this.context!.user.getFirstName() ?? this.context!.user.getUsername()
             );
 
-        this.context.chat.sendMessage(greetingsDemo, { parseMode: "HTML" });
+        this.context!.chat.sendMessage(greetingsDemo, { parseMode: "HTML" });
     }
 
     /**
@@ -123,8 +129,8 @@ export default class GreetingsCommand extends Command {
      */
     private async on(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -135,7 +141,7 @@ export default class GreetingsCommand extends Command {
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(greetingsMessage);
+            this.context!.chat.sendMessage(greetingsMessage);
         }
     }
 
@@ -147,8 +153,8 @@ export default class GreetingsCommand extends Command {
      */
     private async off(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 
@@ -159,7 +165,7 @@ export default class GreetingsCommand extends Command {
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
         if (result.affectedRows > 0) {
-            this.context.chat.sendMessage(greetingsMessage);
+            this.context!.chat.sendMessage(greetingsMessage);
         }
     }
 
@@ -176,14 +182,14 @@ export default class GreetingsCommand extends Command {
         }
 
         const params = this.command.getParams();
-        if (!params || !params.length) {
+        if (!params?.length) {
             return;
         }
 
         params.shift();
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!chat || !chat.id) {
+        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        if (!chat?.id) {
             return;
         }
 

@@ -10,9 +10,9 @@
  */
 
 export type Contact = {
-    phoneNumber: string;
-    firstName: string;
-    lastName?: string;
-    userId?: number;
+    phone_number: string;
+    first_name: string;
+    last_name?: string;
+    user_id?: number;
     vcard?: string;
 };

@@ -12,13 +12,13 @@
 import { User } from "./User.js";
 
 export type ChatInviteLink = {
-    inviteLink: string;
+    invite_link: string;
     creator: User;
-    createsJoinRequest: boolean;
-    isPrimary: boolean;
-    isRevoked: boolean;
+    creates_join_request: boolean;
+    is_primary: boolean;
+    is_revoked: boolean;
     name?: string;
-    expireDate?: number;
-    memberLimit?: number;
-    pendingJoinRequestCount?: number;
+    expire_date?: number;
+    member_limit?: number;
+    pending_join_request_count?: number;
 };

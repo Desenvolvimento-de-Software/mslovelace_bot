@@ -32,7 +32,7 @@ export default class Message {
      *
      * @var {MessageType}
      */
-    private context: MessageType;
+    private readonly context: MessageType;
 
     /**
      * Message sender.
@@ -42,7 +42,7 @@ export default class Message {
      *
      * @var {User}
      */
-    private user: User;
+    private readonly user: User;
 
     /**
      * Message entities.
@@ -72,7 +72,7 @@ export default class Message {
      *
      * @var {string[]}
      */
-    private commands: Command[] = [];
+    private readonly commands: Command[] = [];
 
     /**
      * Reply to message context.
@@ -88,7 +88,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-02
      */
-    private messageThreadId?: number;
+    private readonly messageThreadId?: number;
 
     /**
      * The constructor.
@@ -121,7 +121,7 @@ export default class Message {
 
         const sendMessage = new SendMessage();
         sendMessage
-            .setReplyToMessageId(this.context.messageId)
+            .setReplyToMessageId(this.context.message_id)
             .setChatId(this.context.chat.id)
             .setText(content);
 
@@ -153,7 +153,7 @@ export default class Message {
         const editMessage = new EditMessageText();
         editMessage
             .setChatId(this.context.chat.id)
-            .setMessageId(this.context.messageId)
+            .setMessageId(this.context.message_id)
             .setText(content);
 
         if (options) {
@@ -177,7 +177,7 @@ export default class Message {
     public async delete(): Promise<Record<string, any>> {
         const deleteMessage = new DeleteMessage();
         deleteMessage
-            .setMessageId(this.context.messageId)
+            .setMessageId(this.context.message_id)
             .setChatId(this.context.chat.id);
 
         return deleteMessage.post().then((response) => response.json());
@@ -192,7 +192,7 @@ export default class Message {
      * @return {number}
      */
     public getId(): number {
-        return this.context.messageId;
+        return this.context.message_id;
     }
 
     /**
@@ -217,7 +217,7 @@ export default class Message {
      */
     public getText(): string {
 
-        let text = this.context.text || "";
+        let text = this.context.text ?? "";
         let entities = this.getEntities();
 
         if (!entities.length) {
@@ -391,7 +391,7 @@ export default class Message {
      * @return {Record<string, any>|undefined}
      */
     public getVideoNote(): Record<string, any>|undefined {
-        return this.context.videoNote || undefined;
+        return this.context.video_note || undefined;
     }
 
     /**
@@ -415,7 +415,7 @@ export default class Message {
      * @return {Record<string, any>|undefined}
      */
     public getCaption(): string|undefined {
-        return this.context.caption || undefined;
+        return this.context.caption ?? undefined;
     }
 
     /**
@@ -427,7 +427,7 @@ export default class Message {
      * @return {Record<string, any>|undefined}
      */
     public getCaptionEntities(): Record<string, any>[]|undefined {
-        return this.context.captionEntities || undefined;
+        return this.context.caption_entities || undefined;
     }
 
     /**
@@ -452,15 +452,11 @@ export default class Message {
      */
     private parseReplyToMessage(): void {
 
-        if (!this.context.replyToMessage) {
+        if (!this.context.reply_to_message) {
             return;
         }
 
-        if (this.context.replyToMessage.messageId === this.context.messageThreadId) {
-            return;
-        }
-
-        this.replyToMessage = new Message(this.context.replyToMessage);
+        this.replyToMessage = new Message(this.context.reply_to_message);
     }
 
     /**
@@ -554,7 +550,7 @@ export default class Message {
             ++entity.offset, entity.offset + entity.length
         );
 
-        if (!username || !username.length) {
+        if (!username?.length) {
             return;
         }
 
@@ -565,12 +561,12 @@ export default class Message {
 
         const mention: UserType = {
             id: user.user_id,
-            isBot: user.is_bot,
-            firstName: user.first_name,
-            lastName: user.last_name,
+            is_bot: user.is_bot,
+            first_name: user.first_name,
+            last_name: user.last_name,
             username: user.username,
-            languageCode: user.language_code,
-            isPremium: user.is_premium
+            language_code: user.language_code,
+            is_premium: user.is_premium
         };
 
         this.mentions!.push(
@@ -592,7 +588,7 @@ export default class Message {
         const end = start + (entity.length - 1);
         const command = this.context.text?.substring(start, end);
 
-        if (!command || !command.length) {
+        if (!command?.length) {
             return;
         }
 

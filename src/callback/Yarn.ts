@@ -41,7 +41,7 @@ export default class Yarn extends Callback {
             return;
         }
 
-        const yarnCommand = new YarnCommand(this.context);
+        const yarnCommand = new YarnCommand();
         await yarnCommand.getPackage(this.context.callbackQuery?.callbackData.d.package);
         this.context.callbackQuery.answer(this.context.callbackQuery?.callbackData.d.package.toUpperCase());
     }

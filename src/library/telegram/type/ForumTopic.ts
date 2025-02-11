@@ -10,8 +10,8 @@
  */
 
 export type ForumTopic = {
-    messageThreadId: number;
+    message_thread_id: number;
     name: string;
-    iconColor: number;
-    iconCustomEmojiId?: string;
+    icon_color: number;
+    icon_custom_emoji_id?: string;
 };

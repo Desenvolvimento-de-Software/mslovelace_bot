@@ -10,10 +10,10 @@
  */
 
 export type ShippingAddress = {
-    countryCode: string;
+    country_code: string;
     state: string;
     city: string;
-    streetLine1: string;
-    streetLine2: string;
-    postCode: string;
+    street_line1: string;
+    street_line2: string;
+    post_code: string;
 };
