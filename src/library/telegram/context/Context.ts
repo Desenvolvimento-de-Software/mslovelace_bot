@@ -106,19 +106,19 @@ export default class Context {
      */
     private types: string[] = [
         "message",
-        "editedMessage",
-        "channelPost",
-        "editedChannelPost",
-        "inlineQuery",
-        "chosenInlineResult",
-        "callbackQuery",
-        "shippingQuery",
-        "preCheckoutQuery",
+        "edited_message",
+        "channel_post",
+        "edited_channel_post",
+        "inline_query",
+        "chosen_inline_result",
+        "callback_query",
+        "shipping_query",
+        "pre_checkout_query",
         "poll",
-        "pollAnswer",
-        "myChatMember",
-        "ChatMember",
-        "ChatJoinRequest"
+        "poll_answer",
+        "my_chat_member",
+        "chat_member",
+        "chat_join_request"
     ];
 
     /**
@@ -135,7 +135,7 @@ export default class Context {
         this.type = this.parseType();
 
         if (typeof this.type === "undefined") {
-            throw new Error("Invalid context.");
+            throw new Error(JSON.stringify(payload) + "\nInvalid context.");
         }
 
         if (this.type === "callbackQuery") {
@@ -144,7 +144,7 @@ export default class Context {
 
         const context = this.parseMessage();
         if (!context) {
-            throw new Error("Invalid context.");
+            throw new Error(JSON.stringify(payload) + "\nInvalid context.");
         }
 
         this.chat = new Chat(context);

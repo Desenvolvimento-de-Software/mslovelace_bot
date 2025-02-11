@@ -92,10 +92,15 @@ export default abstract class Command {
     public isCalled(context: Context): CommandContext|undefined {
 
         if (typeof this.commands === "undefined") {
-            return;
+            return;TELEGRAM_USERNAME
         }
 
-        const commandList = this.commands.map((command) => command.command);
+        let commandList = [];
+        this.commands.forEach(command => {
+            commandList.push(command.command);
+            commandList.push(`${command.command}@${process.env.TELEGRAM_USERNAME}`);
+        });
+
         for (const command of context.message.getCommands()) {
             if (commandList.includes(command.getCommand())) {
                 return command;
