@@ -138,7 +138,7 @@ export default class Context {
             throw new Error(JSON.stringify(payload) + "\nInvalid context.");
         }
 
-        if (this.type === "callbackQuery") {
+        if (this.type === "callback_query") {
             this.callbackQuery = new CallbackQuery(this.payload);
         }
 
@@ -152,11 +152,11 @@ export default class Context {
         this.user = new User(this.payload[this.type].from!, this.chat);
 
         if (context.new_chat_member) {
-            this.newChatMember = new User(context.new_chat_member, this.chat);
+            this.newChatMember = new User(context.new_chat_member.user, this.chat);
         }
 
         if (context.left_chat_member) {
-            this.leftChatMember = new User(context.left_chat_member, this.chat);
+            this.leftChatMember = new User(context.left_chat_member.user, this.chat);
         }
     }
 
@@ -198,7 +198,7 @@ export default class Context {
      */
     private parseMessage(): MessageType|undefined {
 
-        if (this.type === "callbackQuery") {
+        if (this.type === "callback_query") {
             return this.payload.callbackQuery.message;
         }
 
