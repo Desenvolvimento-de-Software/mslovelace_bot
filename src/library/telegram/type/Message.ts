@@ -87,9 +87,9 @@ export type Message = {
     poll?: Poll;
     venue?: Venue;
     location?: Location;
-    new_chat_member?: User;
-    new_chat_members?: User[];
-    left_chat_member?: User;
+    new_chat_member?: Record<string, User>;
+    new_chat_members?: Record<string, User[]>;
+    left_chat_member?: Record<string, User>;
     new_chat_title?: string;
     new_chat_photo?: PhotoSize[];
     delete_chat_photo?: boolean;
