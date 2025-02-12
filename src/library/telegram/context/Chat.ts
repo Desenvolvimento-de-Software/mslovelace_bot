@@ -17,7 +17,7 @@ import Message from "./Message.js";
 import { ChatLocation } from "../type/ChatLocation.js";
 import { ChatPermissions } from "../type/ChatPermissions.js";
 import { ChatPhoto } from "../type/ChatPhoto.js";
-import { Message as MessageType } from "../type/Message.js";
+import { Context as ContextType } from "../type/Context.js";
 import Log from "../../../helper/Log.js";
 
 export default class Chat {
@@ -252,9 +252,9 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @return {MessageType|undefined}
+     * @return {ContextType|undefined}
      */
-    public getPinnedMessage(): MessageType|undefined {
+    public getPinnedMessage(): ContextType|undefined {
         return this.context.chat.pinned_message;
     }
 

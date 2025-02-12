@@ -13,7 +13,7 @@ import Chat from "./Chat.js";
 import Message from "./Message.js";
 import User from "./User.js";
 import CallbackQuery from "./CallbackQuery.js";
-import { Message as MessageType } from "../type/Message.js";
+import { Context as ContextType } from "../type/Context.js";
 export default class Context {
 
     /**
@@ -117,6 +117,7 @@ export default class Context {
         "poll",
         "poll_answer",
         "chat_join_request",
+        "chat_member",
         "message_reaction"
     ];
 
@@ -150,15 +151,27 @@ export default class Context {
         this.message = new Message(context);
         this.user = new User(this.payload[this.type].from, this.chat);
 
-        if (context.new_chat_member) {
-            const newChatMember = context.new_chat_member.user || context.new_chat_member;
+        if (this.type === "chat_member" && context.new_chat_member?.status === "member" && !context.old_chat_member?.is_member) {
+            const newChatMember = context.new_chat_member.user;
             this.newChatMember = new User(newChatMember, this.chat);
         }
 
-        if (context.left_chat_member) {
-            const leftChatMember = context.left_chat_member.user || context.left_chat_member;
+        if (this.type === "chat_member" && (context.new_chat_member?.status === "left" || context.new_chat_member?.is_member === false)) {
+            const leftChatMember = context.new_chat_member.user;
             this.leftChatMember = new User(leftChatMember, this.chat);
         }
+    }
+
+    /**
+     * Returns the context type.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-12
+     *
+     * @return {string|undefined}
+     */
+    public getType(): string|undefined {
+        return this.type;
     }
 
     /**
@@ -195,9 +208,9 @@ export default class Context {
      * @author Marcos Leandro
      * @since  2023-06-02
      *
-     * @return Message
+     * @return {ContextType}
      */
-    private parseMessage(): MessageType|undefined {
+    private parseMessage(): ContextType|undefined {
 
         if (this.type === "callback_query") {
             return this.payload.callbackQuery.message;

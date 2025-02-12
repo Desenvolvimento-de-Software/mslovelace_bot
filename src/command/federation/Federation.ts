@@ -16,7 +16,7 @@ import CommandContext from "../../library/telegram/context/Command.js";
 import Lang from "../../helper/Lang.js";
 import UserHelper from "../../helper/User.js";
 import FederationHelper from "../../helper/Federation.js";
-import { Message as MessageType } from "../../library/telegram/type/Message.js";
+import { Context as ContextType } from "../../library/telegram/type/Context.js";
 import { Chat as ChatType } from "../../library/telegram/type/Chat.js";
 import { User as UserType } from "../../library/telegram/type/User.js";
 
@@ -128,13 +128,13 @@ export default class Federation extends Command {
             last_name: chat.last_name
         };
 
-        const messageType: MessageType = {
+        const ContextType: ContextType = {
             message_id: 0,
             from: userType,
             chat: chatType,
             date: Math.floor(Date.now() / 1000)
         };
 
-        return new Context({ message: messageType });
+        return new Context({ message: ContextType });
     }
 }

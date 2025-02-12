@@ -18,7 +18,7 @@ import Chat from "./Chat.js";
 import Log from "../../../helper/Log.js";
 import UserHelper from "../../../helper/User.js";
 import { MessageEntity } from "../type/MessageEntity.js";
-import { Message as MessageType } from "../type/Message.js";
+import { Context as ContextType } from "../type/Context.js";
 import { User as UserType } from "../type/User.js";
 import { Options as OptionsType } from "../../../type/Options.js";
 
@@ -30,9 +30,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-02
      *
-     * @var {MessageType}
+     * @var {ContextType}
      */
-    private readonly context: MessageType;
+    private readonly context: ContextType;
 
     /**
      * Message sender.
@@ -98,7 +98,7 @@ export default class Message {
      *
      * @param {string} context
      */
-    public constructor(context: MessageType) {
+    public constructor(context: ContextType) {
         this.context = context;
         this.user = this.parseSender();
         this.parseEntities();

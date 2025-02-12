@@ -12,7 +12,7 @@
 import { ChatLocation } from "./ChatLocation.js";
 import { ChatPermissions } from "./ChatPermissions.js";
 import { ChatPhoto } from "./ChatPhoto.js";
-import { Message } from "./Message.js";
+import { Message } from "./Context.js";
 
 export type Chat = {
     id: number;

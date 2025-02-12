@@ -38,7 +38,7 @@ export default class SaveMessage extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.message) {
+        if (!this.context.message?.getId()) {
             return;
         }
 

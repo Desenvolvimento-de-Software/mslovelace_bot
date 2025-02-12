@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Message } from "./Message.js";
+import { Message } from "./Context.js";
 import { User } from "./User.js";
 
 export type CallbackQuery = {
