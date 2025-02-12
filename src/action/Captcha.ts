@@ -9,6 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Lang from "../helper/Lang.js";
 import Action from "../action/Action.js";
 import Context from "../library/telegram/context/Context.js";
 import UserHelper from "../helper/User.js";
@@ -16,7 +17,6 @@ import ChatHelper from "../helper/Chat.js";
 import RelUsersChats from "../model/RelUsersChats.js";
 import RestrictChatMember from "../library/telegram/resource/RestrictChatMember.js";
 import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
-import Lang from "src/helper/Lang.js";
 
 export default class Captcha extends Action {
 

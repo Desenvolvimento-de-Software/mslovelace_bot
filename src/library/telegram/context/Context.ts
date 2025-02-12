@@ -116,8 +116,6 @@ export default class Context {
         "pre_checkout_query",
         "poll",
         "poll_answer",
-        "my_chat_member",
-        "chat_member",
         "chat_join_request",
         "message_reaction"
     ];
@@ -136,7 +134,7 @@ export default class Context {
         this.type = this.parseType();
 
         if (typeof this.type === "undefined") {
-            throw new Error(JSON.stringify(payload) + "\nInvalid context.");
+            throw new Error(JSON.stringify(payload) + "\nIgnored context.");
         }
 
         if (this.type === "callback_query") {

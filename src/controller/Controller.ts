@@ -123,7 +123,7 @@ export default class Controller {
             this.handleCallbacks(context);
 
         } catch (error: any) {
-            Log.save(error.message, error.stack, true, "error");
+            Log.save(error.message, error.stack, false, "error");
         }
     }
 

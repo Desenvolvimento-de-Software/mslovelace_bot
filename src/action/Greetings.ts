@@ -172,8 +172,8 @@ export default class Greetings extends Action {
         const language = this.chat.language || "us";
         const username = process.env.TELEGRAM_USERNAME;
         const captchaButton: InlineKeyboardButton = {
-            text: Lang.get("captchaButton"),
-            url: `https://t.me/${username}?start=captcha_${this.chat.chat_id}_${language}`
+            text : Lang.get("captchaButton"),
+            url : `https://t.me/${username}?start=captcha_${this.chat.chat_id}_${language}`
         };
 
         const markup: InlineKeyboardMarkup = {
@@ -218,9 +218,10 @@ export default class Greetings extends Action {
      *
      * @param messageID
      */
-    private readonly deleteMessage = (message: Message) => {
+    private readonly deleteMessage = async (message: Message) => {
 
         message.delete();
+
         if (parseInt(this.chat!.captcha) === 1) {
             this.checkUserForKick();
         }
