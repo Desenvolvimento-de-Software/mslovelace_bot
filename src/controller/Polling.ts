@@ -24,10 +24,13 @@ export default class Polling extends Controller {
      * @since  2023-06-06
      */
     public constructor(app: App) {
+
         super(app, "/incoming");
-        if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "false") {
-            this.initializeLongPolling();
-        }
+
+        const webhookActive = process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "true";
+        const debug = process.env.DEBUG?.toLowerCase() === "true";
+
+        (debug || !webhookActive) && this.initializeLongPolling();
     }
 
     /**
@@ -45,7 +48,7 @@ export default class Polling extends Controller {
         const request = new GetUpdates();
         request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT || 60) as number);
 
-        if (typeof offset !== "undefined" && offset.toString().length) {
+        if (offset?.toString().length) {
             request.setOffset(offset);
         }
 

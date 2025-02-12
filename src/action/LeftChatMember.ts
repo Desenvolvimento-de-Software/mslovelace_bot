@@ -60,8 +60,8 @@ export default class LeftChatMember extends Action {
             .update()
             .set("joined", 0)
             .set("checked", 0)
-            .where("user_id").equal(user.user_id)
-            .and("chat_id").equal(chat.chat_id);
+            .where("user_id").equal(user.id)
+            .and("chat_id").equal(chat.id);
 
         relUserChat.execute();
 

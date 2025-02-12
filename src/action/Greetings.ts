@@ -82,7 +82,7 @@ export default class Greetings extends Action {
         }
 
         this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        if (!this.chat || !this.chat?.id) {
+        if (!this.chat?.id) {
             return;
         }
 
@@ -90,7 +90,7 @@ export default class Greetings extends Action {
             return;
         }
 
-        if (parseInt(this.chat!.grouped_greetings) === 1) {
+        if (parseInt(this.chat.grouped_greetings) === 1) {
             return;
         }
 
@@ -104,7 +104,7 @@ export default class Greetings extends Action {
         const chatConfigs = new ChatConfigs();
         chatConfigs
             .select()
-            .where("chat_id").equal(this.chat!.id)
+            .where("chat_id").equal(this.chat.id)
             .offset(0)
             .limit(1);
 
@@ -113,7 +113,7 @@ export default class Greetings extends Action {
         const chatMessages = new ChatMessages();
         chatMessages
             .select()
-            .where("chat_id").equal(this.chat!.id)
+            .where("chat_id").equal(this.chat.id)
             .offset(0)
             .limit(1);
 
@@ -139,7 +139,7 @@ export default class Greetings extends Action {
         text = text.replace("{userid}", this.context.newChatMember!.getId());
         text = text.replace(
             "{username}",
-            this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
+            this.context.newChatMember?.getFirstName() ?? this.context.newChatMember?.getUsername()
         );
 
         let options: Record<string, any> = { parseMode : "HTML" };
@@ -169,18 +169,15 @@ export default class Greetings extends Action {
             return options;
         }
 
+        const language = this.chat.language || "us";
+        const username = process.env.TELEGRAM_USERNAME;
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaButton"),
-            callback_data: JSON.stringify({
-                c: "captchaconfirmation",
-                d: {
-                    userId: this.context.newChatMember!.getId()
-                }
-            })
+            url: `https://t.me/${username}?start=captcha_${this.chat.chat_id}_${language}`
         };
 
         const markup: InlineKeyboardMarkup = {
-            inline_keyboard: [[captchaButton]]
+            inline_keyboard : [[captchaButton]]
         };
 
         options.replyMarkup = markup;
@@ -261,7 +258,7 @@ export default class Greetings extends Action {
         text = text.replace("{userid}", this.context.newChatMember!.getId());
         text = text.replace(
             "{username}",
-            this.context.newChatMember?.getFirstName() || this.context.newChatMember?.getUsername()
+            this.context.newChatMember?.getFirstName() ?? this.context.newChatMember?.getUsername()
         );
 
         const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });

@@ -150,14 +150,16 @@ export default class Context {
 
         this.chat = new Chat(context);
         this.message = new Message(context);
-        this.user = new User(this.payload[this.type].from!, this.chat);
+        this.user = new User(this.payload[this.type].from, this.chat);
 
         if (context.new_chat_member) {
-            this.newChatMember = new User(context.new_chat_member.user, this.chat);
+            const newChatMember = context.new_chat_member.user || context.new_chat_member;
+            this.newChatMember = new User(newChatMember, this.chat);
         }
 
         if (context.left_chat_member) {
-            this.leftChatMember = new User(context.left_chat_member.user, this.chat);
+            const leftChatMember = context.left_chat_member.user || context.left_chat_member;
+            this.leftChatMember = new User(leftChatMember, this.chat);
         }
     }
 
