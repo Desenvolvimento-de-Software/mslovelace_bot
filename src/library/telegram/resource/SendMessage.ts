@@ -40,9 +40,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param options
      *
-     * @returns {SendMessage}
+     * @returns {this}
      */
-    public setOptions(options: Record<string, any>): SendMessage {
+    public setOptions(options: Record<string, any>): this {
 
         for (const key in options) {
             this.payload[key] = options[key];
@@ -59,9 +59,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {number} chatId
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setChatId(chatId: number): SendMessage {
+    public setChatId(chatId: number): this {
         this.payload.chatId = chatId;
         return this;
     }
@@ -76,7 +76,7 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @return
      */
-    public setThreadId(threadId: number): SendMessage {
+    public setThreadId(threadId: number): this {
         this.payload.messageThreadId = threadId;
         return this;
     }
@@ -89,9 +89,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {String} text
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setText(text: string): SendMessage {
+    public setText(text: string): this {
         this.payload.text = text;
         return this;
     }
@@ -104,9 +104,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {String} parseMode
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setParseMode(parseMode: string): SendMessage {
+    public setParseMode(parseMode: string): this {
         this.payload.parseMode = parseMode;
         return this;
     }
@@ -119,9 +119,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {Array} entities
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setEntities(entities: Array<Object>): SendMessage {
+    public setEntities(entities: Array<Object>): this {
         this.payload.entities = entities;
         return this;
     }
@@ -134,9 +134,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {Boolean} disableWebPagePreview
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setDisableWebPagePreview(disableWebPagePreview: boolean): SendMessage {
+    public setDisableWebPagePreview(disableWebPagePreview: boolean): this {
         this.payload.disableWebPagePreview = disableWebPagePreview;
         return this;
     }
@@ -149,9 +149,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {Boolean} disableNotification
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setDisableNotification(disableNotification: boolean): SendMessage {
+    public setDisableNotification(disableNotification: boolean): this {
         this.payload.disableNotification = disableNotification;
         return this;
     }
@@ -164,9 +164,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {number} replyToMessageId
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setReplyToMessageId(replyToMessageId: number): SendMessage {
+    public setReplyToMessageId(replyToMessageId: number): this {
         this.payload.replyToMessageId = replyToMessageId;
         return this;
     }
@@ -179,9 +179,9 @@ export default class SendMessage extends TelegramBotApi {
      *
      * @param  {InlineKeyboardMarkup} replyMarkup
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setReplyMarkup(replyMarkup: InlineKeyboardMarkup): SendMessage {
+    public setReplyMarkup(replyMarkup: InlineKeyboardMarkup): this {
         this.payload.replyMarkup = replyMarkup;
         return this;
     }

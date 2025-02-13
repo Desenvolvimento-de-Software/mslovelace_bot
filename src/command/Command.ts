@@ -92,7 +92,7 @@ export default abstract class Command {
     public isCalled(context: Context): CommandContext|undefined {
 
         if (typeof this.commands === "undefined") {
-            return;TELEGRAM_USERNAME
+            return;
         }
 
         let commandList = [];

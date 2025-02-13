@@ -21,10 +21,13 @@ export default class IncomingController extends Controller {
      * @since  1.0.0
      */
     constructor(app: App) {
+
         super(app, "/incoming");
-        if (process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "true") {
-            app.listen();
-        }
+
+        const webhookActive = process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "true";
+        const debug = process.env.DEBUG?.toLowerCase() === "true";
+
+        (debug || webhookActive) && app.listen();
     }
 
     /**

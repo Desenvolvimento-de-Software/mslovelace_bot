@@ -40,9 +40,9 @@ export default class RestrictChatMember extends TelegramBotApi {
      *
      * @param  {number} User Telegram ID
      *
-     * @return {RestrictChatMember}
+     * @return {this}
      */
-     public setUserId(userId: number): RestrictChatMember {
+     public setUserId(userId: number): this {
         this.payload.user_id = userId;
         return this;
     }
@@ -55,9 +55,9 @@ export default class RestrictChatMember extends TelegramBotApi {
      *
      * @param  {number} chatId
      *
-     * @return {RestrictChatMember}
+     * @return {this}
      */
-    public setChatId(chatId: number): RestrictChatMember {
+    public setChatId(chatId: number): this {
         this.payload.chat_id = chatId;
         return this;
     }
@@ -70,9 +70,9 @@ export default class RestrictChatMember extends TelegramBotApi {
      *
      * @param  {ChatPermissions} chatPermissions
      *
-     * @return {RestrictChatMember}
+     * @return {this}
      */
-    public setChatPermissions(chatPermissions: ChatPermissions): RestrictChatMember {
+    public setChatPermissions(chatPermissions: ChatPermissions): this {
         this.payload.permissions = chatPermissions;
         return this;
     }
@@ -85,9 +85,9 @@ export default class RestrictChatMember extends TelegramBotApi {
      *
      * @param  {number} untilDate
      *
-     * @return {RestrictChatMember}
+     * @return {this}
      */
-    public setUntilDate(untilDate: number): RestrictChatMember {
+    public setUntilDate(untilDate: number): this {
         this.payload.until_date = untilDate;
         return this;
     }

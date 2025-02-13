@@ -9,15 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Message } from "./Context.js";
-import { User } from "./User.js";
+import { MessageEntity } from "./MessageEntity"
 
-export type CallbackQuery = {
-    id: string;
-    from: User;
-    message?: Message;
-    inline_message_id?: string;
-    chat_instance: string;
-    data?: string;
-    game_short_name?: string;
+export type ReplyParameters = {
+    messageId: number,
+    chatId?: number,
+    allowSendingWithoutReply?: boolean,
+    quote?: string,
+    quoteParseMode?: string,
+    quoteEntities?: Array<MessageEntity>,
+    quotePosition?: number
 };

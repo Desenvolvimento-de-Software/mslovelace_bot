@@ -17,7 +17,6 @@ import Callback from "../callback/Callback.js";
 import Context from "../library/telegram/context/Context.js";
 import Log from "../helper/Log.js";
 import { actions } from "../config/actions.js";
-import { commands } from "../config/commands.js";
 import { callbacks } from "../config/callbacks.js";
 
 export default class Controller {
@@ -123,7 +122,7 @@ export default class Controller {
             this.handleCallbacks(context);
 
         } catch (error: any) {
-            Log.save(error.message, error.stack, true, "error");
+            error.message.length && (Log.save(error.message, error.stack, false, "error"));
         }
     }
 

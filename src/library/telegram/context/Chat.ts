@@ -10,13 +10,14 @@
  */
 
 import SendMessage from "../resource/SendMessage.js";
+import SendPhoto from "../resource/SendPhoto.js";
 import SendChatAction from "../resource/SendChatAction.js";
 import GetChatAdministrators from "../resource/GetChatAdministrators.js";
 import Message from "./Message.js";
 import { ChatLocation } from "../type/ChatLocation.js";
 import { ChatPermissions } from "../type/ChatPermissions.js";
 import { ChatPhoto } from "../type/ChatPhoto.js";
-import { Message as MessageType } from "../type/Message.js";
+import { Context as ContextType } from "../type/Context.js";
 import Log from "../../../helper/Log.js";
 
 export default class Chat {
@@ -251,9 +252,9 @@ export default class Chat {
      * @author Marcos Leandro
      * @since  2023-06-06
      *
-     * @return {MessageType|undefined}
+     * @return {ContextType|undefined}
      */
-    public getPinnedMessage(): MessageType|undefined {
+    public getPinnedMessage(): ContextType|undefined {
         return this.context.chat.pinned_message;
     }
 
@@ -434,6 +435,44 @@ export default class Chat {
         try {
 
             const response = await sendMessage.post();
+            const json = await response.json();
+            return new Message(json.result);
+
+        } catch (error: any) {
+            Log.save(error.message, error.stack);
+            return Promise.resolve();
+        }
+    }
+
+    /**
+     * Sends a photo to the chat.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-05
+     *
+     * @param photo
+     * @param options
+     *
+     * @return {Promise<any>}
+     */
+    public async sendPhoto(photo: Blob, options?: Record<string, any>): Promise<any> {
+
+        const sendPhoto = new SendPhoto();
+        sendPhoto
+            .setChatId(this.context.chat.id)
+            .setPhoto(photo);
+
+        if (this.context.message_thread_id && this.context.message_thread_id !== this.context.reply_to_message?.message_id) {
+            sendPhoto.setThreadId(this.context.message_thread_id);
+        }
+
+        if (options) {
+            sendPhoto.setOptions(options);
+        }
+
+        try {
+
+            const response = await sendPhoto.post();
             const json = await response.json();
             return new Message(json.result);
 
