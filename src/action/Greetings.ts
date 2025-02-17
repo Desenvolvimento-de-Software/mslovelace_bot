@@ -146,11 +146,15 @@ export default class Greetings extends Action {
         options = this.addCaptchaOptions(options);
 
         const message = await this.context.chat.sendMessage(text, options);
-        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
+        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 60) * 1000);
 
-        setTimeout(() => {
+        setTimeout((message, chat) => {
             this.deleteMessage(message);
-        }, timeout);
+            if (parseInt(chat?.captcha) === 1) {
+                this.checkUserForKick();
+            }
+
+        }, timeout, message, this.chat);
     }
 
     /**
@@ -219,12 +223,7 @@ export default class Greetings extends Action {
      * @param messageID
      */
     private readonly deleteMessage = async (message: Message) => {
-
         message.delete();
-
-        if (parseInt(this.chat!.captcha) === 1) {
-            this.checkUserForKick();
-        }
     }
 
     /**

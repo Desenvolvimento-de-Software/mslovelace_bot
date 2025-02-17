@@ -39,16 +39,22 @@ export default class SaveUserAndChat extends Action {
     public async run(): Promise<void> {
 
         const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
-        const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const userId = user?.id ?? await UserHelper.createUser(contextUser);
+        const contextUserId = contextUser.getId();
+        if (!contextUserId) {
+            Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
+            return Promise.resolve();
+        }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
+        const user = await UserHelper.getByTelegramId(contextUserId);
+        const userId = user?.id ?? await UserHelper.createUser(contextUser);
 
         if (!userId) {
             Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
+
+        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
 
         if (!chatId) {
             Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
