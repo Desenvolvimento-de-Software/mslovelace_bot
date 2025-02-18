@@ -148,13 +148,13 @@ export default class Greetings extends Action {
         const message = await this.context.chat.sendMessage(text, options);
         const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 60) * 1000);
 
-        setTimeout((message, chat) => {
+        setTimeout((message, user, chat, context) => {
             this.deleteMessage(message);
             if (parseInt(chat?.captcha) === 1) {
-                this.checkUserForKick();
+                this.checkUserForKick(user!, chat!, context);
             }
 
-        }, timeout, message, this.chat);
+        }, timeout, message, this.user, this.chat, this.context);
     }
 
     /**
@@ -235,13 +235,13 @@ export default class Greetings extends Action {
      * @param user User object.
      * @param chat Chat object.
      */
-    private async checkUserForKick() {
+    private async checkUserForKick(user: Record<string, any>, chat: Record<string, any>, context: Record<string, any>) {
 
         const relUsersChats = new RelUsersChats();
         relUsersChats
             .select(['checked'])
-            .where("user_id").equal(this.user!.id)
-            .and("chat_id").equal(this.chat!.id);
+            .where("user_id").equal(user.id)
+            .and("chat_id").equal(chat.id);
 
         const rel = await relUsersChats.execute();
         if (!rel.length) {
@@ -252,17 +252,27 @@ export default class Greetings extends Action {
             return;
         }
 
-        this.context.user.kick();
+        context.user.kick();
+
+        Lang.set(chat?.language || "us");
 
         let text = Lang.get("captchaNotConfirmed");
-        text = text.replace("{userid}", this.context.newChatMember!.getId());
+        text = text.replace("{userid}", context.newChatMember!.getId());
         text = text.replace(
             "{username}",
-            this.context.newChatMember?.getFirstName() ?? this.context.newChatMember?.getUsername()
+            context.newChatMember?.getFirstName() ?? context.newChatMember?.getUsername()
         );
 
-        const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });
-        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
+        const chatConfigs = new ChatConfigs();
+        chatConfigs
+            .select()
+            .where("chat_id").equal(chat.id)
+            .offset(0)
+            .limit(1);
+
+        const chatConfig = await chatConfigs.execute();
+        const message = await context.chat.sendMessage(text, { parseMode : "HTML" });
+        const timeout = ((chatConfig[0]?.captcha_ban_seconds || 300) * 1000);
 
         setTimeout(() => {
             message.delete();

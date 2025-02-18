@@ -87,7 +87,7 @@ export type Context = {
     poll?: Poll;
     venue?: Venue;
     location?: Location;
-    new_chat_member?: Record<string, any>;
+    new_chat_member?: any;
     new_chat_members?: Record<string, any>;
     left_chat_member?: Record<string, any>;
     old_chat_member?: Record<string, any>;
