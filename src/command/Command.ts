@@ -95,7 +95,7 @@ export default abstract class Command {
             return;
         }
 
-        let commandList = [];
+        let commandList: string[] = [];
         this.commands.forEach(command => {
             commandList.push(command.command);
             commandList.push(`${command.command}@${process.env.TELEGRAM_USERNAME}`);

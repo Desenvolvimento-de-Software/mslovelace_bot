@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import fetch from "node-fetch";
 import {RequestType} from "./type/RequestType.js";
 
 export default class CasApi {

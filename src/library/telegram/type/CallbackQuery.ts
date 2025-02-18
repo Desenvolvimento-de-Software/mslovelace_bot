@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Message } from "./Context.js";
+import { Context } from "./Context.js";
 import { User } from "./User.js";
 
 export type CallbackQuery = {
     id: string;
     from: User;
-    message?: Message;
+    message?: Context;
     inline_message_id?: string;
     chat_instance: string;
     data?: string;

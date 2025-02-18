@@ -12,7 +12,7 @@
 import { ChatLocation } from "./ChatLocation.js";
 import { ChatPermissions } from "./ChatPermissions.js";
 import { ChatPhoto } from "./ChatPhoto.js";
-import { Message } from "./Context.js";
+import { Context } from "./Context.js";
 
 export type Chat = {
     id: number;
@@ -32,7 +32,7 @@ export type Chat = {
     join_by_request?: boolean;
     description?: string;
     invite_link?: string;
-    pinned_message?: Message;
+    pinned_message?: Context;
     permissions?: ChatPermissions;
     slow_mode_delay?: number;
     message_auto_delete_time?: number;

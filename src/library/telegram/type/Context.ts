@@ -62,7 +62,7 @@ export type Context = {
     forward_date?: number;
     is_topic_message?: boolean;
     is_automatic_forward?: boolean;
-    reply_to_message?: Message;
+    reply_to_message?: Context;
     via_bot?: User;
     edit_date?: number;
     has_protected_content?: boolean;
@@ -100,7 +100,7 @@ export type Context = {
     message_auto_delete_timer_changed?: MessageAutoDeleteTimerChanged;
     migrate_to_chat_id?: number;
     migrate_from_chat_id?: number;
-    pinned_message?: Message;
+    pinned_message?: Context;
     invoice?: Invoice;
     successful_payment?: SuccessfulPayment;
     user_shared?: UserShared;
