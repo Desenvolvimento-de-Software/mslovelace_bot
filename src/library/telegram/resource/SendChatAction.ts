@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class SendChatAction extends TelegramBotApi {
 
@@ -39,10 +39,10 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @param  {number} chatId
      *
-     * @return {SendChatAction}
+     * @return {this}
      */
-    public setChatId(chatId: number): SendChatAction {
-        this.payload.chatId = chatId;
+    public setChatId(chatId: number): this {
+        this.payload.chat_id = chatId;
         return this;
     }
 
@@ -54,10 +54,10 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @param messageThreadId
      *
-     * @return {SendChatAction}
+     * @return {this}
      */
-    public setMessageThreadId(messageThreadId: number): SendChatAction {
-        this.payload.messageThreadId = messageThreadId;
+    public setMessageThreadId(messageThreadId: number): this {
+        this.payload.message_thread_id = messageThreadId;
         return this;
     }
 
@@ -69,10 +69,10 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @param businessConnectionId
      *
-     * @return {SendChatAction}
+     * @return {this}
      */
-    public setBusinessConnectionId(businessConnectionId: String): SendChatAction {
-        this.payload.businessConnectionId = businessConnectionId;
+    public setBusinessConnectionId(businessConnectionId: string): this {
+        this.payload.business_connection_id = businessConnectionId;
         return this;
     }
 
@@ -82,11 +82,11 @@ export default class SendChatAction extends TelegramBotApi {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param  {String} text
+     * @param  text
      *
-     * @return {SendChatAction}
+     * @return {this}
      */
-    public setAction(action: string): SendChatAction {
+    public setAction(action: string): this {
         this.payload.action = action;
         return this;
     }
@@ -99,9 +99,9 @@ export default class SendChatAction extends TelegramBotApi {
      *
      * @param options
      *
-     * @returns {SendChatAction}
+     * @returns {this}
      */
-    public setOptions(options: Record<string, any>): SendChatAction {
+    public setOptions(options: Record<string, any>): this {
 
         for (const key in options) {
             this.payload[key] = options[key];

@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "../model/Chats.js";
-import ChatConfigs from "../model/ChatConfigs.js";
-import Log from "./Log.js";
+import Chats from "../model/Chats";
+import ChatConfigs from "../model/ChatConfigs";
+import Log from "./Log";
 
 export default class ChatHelper {
 

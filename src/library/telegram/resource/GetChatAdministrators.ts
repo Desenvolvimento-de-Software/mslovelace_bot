@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class GetChatAdministrators extends TelegramBotApi {
 
@@ -39,9 +39,9 @@ export default class GetChatAdministrators extends TelegramBotApi {
      *
      * @param  {number} chatId
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setChatId(chatId: number): GetChatAdministrators {
+    public setChatId(chatId: number): this {
         this.payload.chat_id = chatId;
         return this;
     }

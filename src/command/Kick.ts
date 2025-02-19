@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import Message from "../library/telegram/context/Message.js";
-import User from "../library/telegram/context/User.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import Command from "./Command";
+import Context from "context/Context";
+import Message from "context/Message";
+import User from "context/User";
+import CommandContext from "context/Command";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Kick extends Command {
 
@@ -52,21 +52,21 @@ export default class Kick extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context?.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        this.context?.getMessage()?.delete();
 
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
         if (replyToMessage) {
             this.kickByReply(replyToMessage);
-            return;
+            return Promise.resolve();
         }
 
-        const mentions = await this.context.message.getMentions();
-        if (!mentions.length) {
-            return;
+        const mentions = await this.context?.getMessage()?.getMentions();
+        if (!mentions?.length) {
+            return Promise.resolve();
         }
 
         for (const mention of mentions) {
@@ -82,8 +82,8 @@ export default class Kick extends Command {
      *
      * @returns void
      */
-    private async kickByReply(replyToMessage: Message): Promise<boolean> {
-        return replyToMessage.getUser().kick();
+    private async kickByReply(replyToMessage: Message): Promise<boolean|undefined> {
+        return replyToMessage.getUser()?.kick();
     }
 
     /**

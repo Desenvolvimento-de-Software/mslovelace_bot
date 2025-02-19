@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import ChatConfigs from "../model/ChatConfigs.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import ChatConfigs from "model/ChatConfigs";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class AdaShield extends Command {
 
@@ -54,8 +54,8 @@ export default class AdaShield extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            Promise.resolve();
         }
 
         const params = command.getParams();
@@ -65,7 +65,7 @@ export default class AdaShield extends Command {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
 
         const method = action as keyof AdaShield;
         if (typeof this[method] === "function") {
@@ -85,16 +85,21 @@ export default class AdaShield extends Command {
      */
     public async index(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
-        if (!chat?.id) {
-            return;
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        if (!chat?.id) {
+            return Promise.resolve();
+        }
+
+        Lang.set(chat.language || "en");
         const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
         const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
-        this.context!.chat.sendMessage(adaShieldMessage);
+        this.context?.getChat()?.sendMessage(adaShieldMessage);
     }
 
     /**
@@ -129,9 +134,14 @@ export default class AdaShield extends Command {
      */
     public async change(status: number) {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         const update = new ChatConfigs();

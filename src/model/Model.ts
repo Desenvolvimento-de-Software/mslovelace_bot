@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DB from "./mysql/DB.js";
+import DB from "./mysql/DB";
 
 export default abstract class DefaultModel extends DB {
   /**

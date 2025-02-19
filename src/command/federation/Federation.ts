@@ -9,16 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "../../helper/Chat.js";
-import Command from "../Command.js";
-import Context from "../../library/telegram/context/Context.js";
-import CommandContext from "../../library/telegram/context/Command.js";
-import Lang from "../../helper/Lang.js";
-import UserHelper from "../../helper/User.js";
-import FederationHelper from "../../helper/Federation.js";
-import { Context as ContextType } from "../../library/telegram/type/Context.js";
-import { Chat as ChatType } from "../../library/telegram/type/Chat.js";
-import { User as UserType } from "../../library/telegram/type/User.js";
+import ChatHelper from "helper/Chat";
+import Command from "../Command";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import FederationHelper from "helper/Federation";
+import Lang from "helper/Lang";
+import UserHelper from "helper/User";
+import { Chat as ChatType } from "library/telegram/type/Chat";
+import { Message as MessageType } from "library/telegram/type/Message";
+import { User as UserType } from "library/telegram/type/User";
+import { Update as UpdateType } from "library/telegram/type/Update";
 
 export default class Federation extends Command {
 
@@ -76,14 +77,22 @@ export default class Federation extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        this.user = await UserHelper.getByTelegramId(this.context.user.getId());
-        this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
 
-        if (!this.user?.id || !this.chat?.id) {
-            return;
+        const userId = this.context?.getUser()?.getId();
+        const chatId = this.context?.getChat()?.getId();
+
+        if (!userId || !chatId) {
+            return Promise.resolve();
         }
 
-        Lang.set(this.chat.language || "us");
+        this.user = await UserHelper.getByTelegramId(userId);
+        this.chat = await ChatHelper.getByTelegramId(chatId);
+
+        if (!this.user?.id || !this.chat?.id) {
+            return Promise.resolve();
+        }
+
+        Lang.set(this.chat.language || "en");
 
         if (this.chat.federation_id) {
             this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
@@ -107,7 +116,7 @@ export default class Federation extends Command {
      * @param user
      * @param chat
      *
-     * @return {Message}
+     * @return {Context}
      */
     protected getContext(user: Record<string, any>, chat: Record<string, any>): Context {
 
@@ -128,13 +137,18 @@ export default class Federation extends Command {
             last_name: chat.last_name
         };
 
-        const ContextType: ContextType = {
+        const message: MessageType = {
             message_id: 0,
             from: userType,
             chat: chatType,
             date: Math.floor(Date.now() / 1000)
         };
 
-        return new Context({ message: ContextType });
+        const update: UpdateType = {
+            update_id: 0,
+            message: message
+        };
+
+        return new Context("message", update);
     }
 }

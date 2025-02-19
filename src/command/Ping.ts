@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import Command from "./Command";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import { BotCommand } from "library/telegram/type/BotCommand";
+import ChatHelper from "helper/Chat";
+import Lang from "helper/Lang";
 
 export default class Ping extends Command {
 
@@ -62,8 +62,14 @@ export default class Ping extends Command {
         this.command = command;
         this.context = context;
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        Lang.set(chat?.language || "us");
-        this.context.message.reply(Lang.get("pongMessage"));
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
+
+        Lang.set(chat?.language || "en");
+        this.context.getMessage()?.reply(Lang.get("pongMessage"));
     }
 }

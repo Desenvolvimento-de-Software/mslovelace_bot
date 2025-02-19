@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import Message from "../library/telegram/context/Message.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import User from "../library/telegram/context/User.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
-import Log from "../helper/Log.js";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import Message from "context/Message";
+import User from "context/User";
+import UserHelper from "helper/User";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Unban extends Command {
 
@@ -57,21 +57,21 @@ export default class Unban extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context?.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        this.context?.getMessage()?.delete();
 
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
         if (replyToMessage) {
             this.unbanByReply(replyToMessage);
-            return;
+            return Promise.resolve();
         }
 
-        const mentions = await this.context.message.getMentions();
-        if (!mentions.length) {
-            return;
+        const mentions = await this.context?.getMessage()?.getMentions();
+        if (!mentions?.length) {
+            return Promise.resolve();
         }
 
         for (const mention of mentions) {
@@ -86,8 +86,9 @@ export default class Unban extends Command {
      * @since  2023-06-07
      */
     private async unbanByReply(replyToMessage: Message):  Promise<void> {
-        if (await replyToMessage.getUser().unban()) {
-            this.saveUnban(replyToMessage.getUser());
+        if (await replyToMessage?.getUser()?.unban()) {
+            const user = replyToMessage.getUser();
+            user && (this.saveUnban(user));
         }
 
         return Promise.resolve();
@@ -119,13 +120,17 @@ export default class Unban extends Command {
     private async saveUnban(contextUser: User): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
-
-        if (!user || !chat) {
-            return;
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        if (!user || !chat) {
+            return Promise.resolve();
+        }
+
+        Lang.set(chat.language || "en");
 
         try {
 
@@ -133,7 +138,7 @@ export default class Unban extends Command {
                 .replace("{userid}", contextUser.getId())
                 .replace("{username}", contextUser.getFirstName() || contextUser.getUsername());
 
-            this.context!.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
 
         } catch (err: any) {
             Log.error(err.toString());

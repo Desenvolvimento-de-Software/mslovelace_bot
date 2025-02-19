@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JsPackage from "./JsPackage.js";
-import Lang from "./Lang.js";
+import JsPackage from "./JsPackage";
+import Lang from "./Lang";
 
 export default class NpmPackage extends JsPackage {
 
@@ -58,7 +58,7 @@ export default class NpmPackage extends JsPackage {
         const countBefore = this.message.length;
         for (let detail of ["name", "version", "date"]) {
             const langIndex = "package" + detail[0].toUpperCase() + detail.substring(1);
-            !this.package.hasOwnProperty(detail) || this.message.push(Lang.get(langIndex).replace(`\{${detail}\}`, this.package[detail]));
+            !this.package.hasOwnProperty(detail) || this.message.push(Lang.get(langIndex).replace(`{${detail}}`, this.package[detail]));
         }
 
         this.message.length === countBefore || this.message.push("");

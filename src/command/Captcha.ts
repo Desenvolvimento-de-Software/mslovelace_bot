@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import ChatConfigs from "../model/ChatConfigs.js";
-import Lang from "../helper/Lang.js";
+import ChatConfigs from "model/ChatConfigs";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Captcha extends Command {
 
@@ -62,11 +62,11 @@ export default class Captcha extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
         this.command = command;
         const params = command.getParams();
 
@@ -89,9 +89,14 @@ export default class Captcha extends Command {
      */
     private async on(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         Lang.set(chat.language);
@@ -101,7 +106,7 @@ export default class Captcha extends Command {
         const captchaMessage = Lang.get("captchaStatus").replace("{status}", captchaStatus);
 
         if (result.affectedRows > 0) {
-            this.context!.chat.sendMessage(captchaMessage);
+            this.context?.getChat()?.sendMessage(captchaMessage);
         }
     }
 
@@ -113,9 +118,14 @@ export default class Captcha extends Command {
      */
     private async off(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         Lang.set(chat.language);
@@ -125,7 +135,7 @@ export default class Captcha extends Command {
         const captchaMessage = Lang.get("captchaStatus").replace("{status}", captchaStatus);
 
         if (result.affectedRows > 0) {
-            this.context!.chat.sendMessage(captchaMessage);
+            this.context?.getChat()?.sendMessage(captchaMessage);
         }
     }
 

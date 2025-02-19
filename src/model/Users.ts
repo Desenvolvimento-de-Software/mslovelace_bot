@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import DefaultModel from "./Model.js";
+import DefaultModel from "./Model";
 
 export default class Users extends DefaultModel {
 

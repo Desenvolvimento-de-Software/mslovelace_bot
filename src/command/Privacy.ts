@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import Lang from "../helper/Lang.js";
-import UserHelper from "../helper/User.js";
+import Command from "./Command";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import { BotCommand } from "library/telegram/type/BotCommand";
+import Lang from "helper/Lang";
+import UserHelper from "helper/User";
 
 export default class Privacy extends Command {
 
@@ -52,18 +52,23 @@ export default class Privacy extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (this.context.chat.getType() !== "private") {
+        if (this.context.getChat()?.getType() !== "private") {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(this.context.user.getId());
-        if (!user?.id) {
-            return;
+        const userId = this.context.getUser()?.getId();
+        if (!userId) {
+            return Promise.resolve();
         }
 
-        Lang.set(user.language_code || "us");
+        const user = await UserHelper.getByTelegramId(userId);
+        if (!user?.id) {
+            return Promise.resolve();
+        }
 
-        this.context.chat.sendMessage(Lang.get("privacyPolicy"), { parseMode: "HTML" });
+        Lang.set(user.language_code || "en");
+
+        this.context.getChat()?.sendMessage(Lang.get("privacyPolicy"), { parse_mode : "HTML" });
         return Promise.resolve();
     }
 }

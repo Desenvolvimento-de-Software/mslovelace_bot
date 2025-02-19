@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import br from "../lang/br.js";
-import us from "../lang/us.js";
+import br from "../lang/br";
+import en from "../lang/en";
 
 export default class Lang {
 
@@ -22,7 +22,7 @@ export default class Lang {
      *
      * @var {string}
      */
-    private static country = "us";
+    private static country = "en";
 
     /**
      * Langs object.
@@ -30,9 +30,9 @@ export default class Lang {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    private static langs: Record<string, any> = {
+    private static readonly langs: Record<string, any> = {
         br: br,
-        us: us
+        en: en
     };
 
     /**

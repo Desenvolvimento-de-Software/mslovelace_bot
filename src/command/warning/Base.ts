@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "../Command.js";
-import User from "../../library/telegram/context/User.js";
-import { InlineKeyboardButton } from "../../library/telegram/type/InlineKeyboardButton.js";
-import { InlineKeyboardMarkup } from "../../library/telegram/type/InlineKeyboardMarkup.js";
-import ChatConfigs from "../../model/ChatConfigs.js";
-import WarningsModel from "../../model/Warnings.js";
-import UserHelper from "../../helper/User.js";
-import Lang from "../../helper/Lang.js";
+import Command from "../Command";
+import User from "context/User";
+import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
+import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
+import ChatConfigs from "model/ChatConfigs";
+import WarningsModel from "model/Warnings";
+import UserHelper from "helper/User";
+import Lang from "helper/Lang";
 
 export default class Base extends Command {
 
@@ -128,7 +128,7 @@ export default class Base extends Command {
      */
     protected async sendWarningMessages(users: User[], chat: Record<string, any>): Promise<void> {
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
 
         const warnings = await this.getWarnings(users[0], chat);
         const warningLimit = await this.getWarningLimit(chat);
@@ -146,7 +146,7 @@ export default class Base extends Command {
         const message = messages.join("\n-----\n");
         const options = this.getMessageOptions(users, warnings);
 
-        await this.context!.chat.sendMessage(message, options);
+        await this.context?.getChat()?.sendMessage(message, options);
     }
 
     /**
@@ -163,7 +163,7 @@ export default class Base extends Command {
     private getMessageOptions(users: User[], warnings: Record<string, any>[]): Record<string, any> {
 
         const options: Record<string, any> = {
-            parseMode: "HTML"
+            parse_mode: "HTML"
         };
 
         if (users.length !== 1) {
@@ -179,7 +179,7 @@ export default class Base extends Command {
             text: Lang.get("lastWarningRemovalButton"),
             callback_data: JSON.stringify({
                 c: "warning",
-                d: `${users[0].getId()},${this.context!.chat.getId()},${lastWarning.id}`
+                d: `${users[0].getId()},${this.context?.getChat()?.getId()},${lastWarning.id}`
             })
         };
 
@@ -187,7 +187,7 @@ export default class Base extends Command {
             text: Lang.get("warningsRemovalButton"),
             callback_data: JSON.stringify({
                 c: "warning",
-                d: `${users[0].getId()},${this.context!.chat.getId()}`
+                d: `${users[0].getId()},${this.context?.getChat()?.getId()}`
             })
         };
 

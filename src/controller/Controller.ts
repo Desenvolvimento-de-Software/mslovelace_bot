@@ -10,14 +10,16 @@
  */
 
 import express from "express";
-import App from "../App.js";
-import Action from "../action/Action.js";
-import Command from "../command/Command.js";
-import Callback from "../callback/Callback.js";
-import Context from "../library/telegram/context/Context.js";
-import Log from "../helper/Log.js";
-import { actions } from "../config/actions.js";
-import { callbacks } from "../config/callbacks.js";
+import App from "App";
+import Action from "action/Action";
+import Command from "command/Command";
+import Callback from "callback/Callback";
+import Context from "context/Context";
+import ContextFactory from "context/ContextFactory";
+import Log from "helper/Log";
+import { actions } from "config/actions";
+import { callbacks } from "config/callbacks";
+import { Update as UpdateType } from "library/telegram/type/Update";
 
 export default class Controller {
 
@@ -105,9 +107,9 @@ export default class Controller {
      * @author Marcos Leandro
      * @since  1.0.0
      *
-     * @param {Record<string, any>} payload
+     * @param {UpdateType} payload
      */
-    protected async handle(payload: Record<string, any>): Promise<void> {
+    protected async handle(payload: UpdateType): Promise<void> {
 
         if (!payload.update_id) {
             Log.save("Invalid payload.\n" + JSON.stringify(payload), "", false, "error");
@@ -116,13 +118,19 @@ export default class Controller {
 
         try {
 
-            const context = new Context(payload);
+            const context = ContextFactory.create(payload);
+            if (!context) {
+                return Promise.resolve();
+            }
+
             this.handleActions(context);
             this.handleCommands(context);
             this.handleCallbacks(context);
 
-        } catch (error: any) {
-            error.message.length && (Log.save(error.message, error.stack, false, "error"));
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                error.message.length && (Log.save(error.message, error.stack, false, "error"));
+            }
         }
     }
 

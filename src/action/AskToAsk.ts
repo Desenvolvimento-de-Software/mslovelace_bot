@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import ChatHelper from "../helper/Chat.js";
-import Context from "../library/telegram/context/Context.js";
-import Lang from "../helper/Lang.js";
+import Action from "./Action";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Lang from "helper/Lang";
 
 export default class AskToAsk extends Action {
 
@@ -38,37 +38,43 @@ export default class AskToAsk extends Action {
      */
      public async run(): Promise<void> {
 
-        if (await this.context.user.isAdmin()) {
-            return;
+        if (await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(
-            this.context.chat.getId()
-        );
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
 
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.warn_ask_to_ask) {
-            return;
-        }
-        if (this.context.message.getReplyToMessage()) {
-            return;
+            return Promise.resolve();
         }
 
-        if (this.context.message.getText().length > 50) {
-            return;
+        if (this.context.getMessage()?.getReplyToMessage()) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
-        if (!this.context.message.getText().match(Lang.get("askToAskRegex"))) {
-            return;
+        const text = this.context.getMessage()?.getText();
+        if (!text || text.length > 50) {
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        Lang.set(chat.language || "en");
+        if (!text.match(Lang.get("askToAskRegex"))) {
+            return Promise.resolve();
+        }
 
-        const userId = this.context.user.getId();
-        const username = this.context.user.getFirstName() || this.context.user.getUsername();
+        this.context.getMessage()?.delete();
+
+        const userId = this.context.getUser()?.getId();
+        const username = this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername();
         const link = Lang.get("askToAskLink");
         const content = `<a href="tg://user?id=${userId}">${username}</a>,\n\n${link}`;
 
-        this.context.chat.sendMessage(content, { parseMode : "HTML" });
+        this.context.getChat()?.sendMessage(content, { parse_mode : "HTML" });
+
+        return Promise.resolve();
     }
 }

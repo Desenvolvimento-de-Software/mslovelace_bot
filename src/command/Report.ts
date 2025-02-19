@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
-import Text from "../helper/Text.js";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import Text from "helper/Text";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Report extends Command {
 
@@ -55,17 +55,23 @@ export default class Report extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
-        const admins = await this.context.chat.getChatAdministrators();
-        if (!admins.length) {
-            return;
+        const admins = await this.context.getChat()?.getChatAdministrators();
+        if (!admins?.length) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
         let reportMessage = Text.markdownEscape(Lang.get("reportMessage"));
 
         for (const admin of admins) {
@@ -73,17 +79,17 @@ export default class Report extends Command {
         }
 
         const options = {
-            parseMode: "MarkdownV2",
-            disableNotification: false
+            parse_mode: "MarkdownV2",
+            disable_notification: false
         };
 
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const replyToMessage = this.context.getMessage()?.getReplyToMessage();
         if (typeof replyToMessage !== "undefined") {
             this.reportByReply(reportMessage, options);
-            return;
+            return Promise.resolve();
         }
 
-        this.context.message.reply(reportMessage, options);
+        this.context.getMessage()?.reply(reportMessage, options);
     }
 
     /**
@@ -97,20 +103,20 @@ export default class Report extends Command {
      */
     private async reportByReply(reportMessage: string, options: Record<string, any>): Promise<void> {
 
-        const contextMessage = this.context!.message.getReplyToMessage();
+        const contextMessage = this.context?.getMessage()?.getReplyToMessage();
         if (!contextMessage) {
-            return;
+            return Promise.resolve();
         }
 
         const contextUser = contextMessage.getUser();
-        if (contextUser.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
-            this.context!.message.reply(Lang.get("selfReportMessage"));
-            return;
+        if (contextUser?.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
+            this.context?.getMessage()?.reply(Lang.get("selfReportMessage"));
+            return Promise.resolve();
         }
 
-        if (await contextUser.isAdmin()) {
-            this.context!.message.reply(Lang.get("adminReportMessage"));
-            return;
+        if (await contextUser?.isAdmin()) {
+            this.context?.getMessage()?.reply(Lang.get("adminReportMessage"));
+            return Promise.resolve();
         }
 
         contextMessage.reply(reportMessage, options);

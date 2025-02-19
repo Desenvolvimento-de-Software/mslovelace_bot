@@ -9,11 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../../library/telegram/context/Context.js";
-import CommandContext from "../../library/telegram/context/Command.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
-import WarningsBase from "./Base.js";
-import ChatHelper from "../../helper/Chat.js";
+import ChatHelper from "helper/Chat";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import User from "context/User";
+import WarningsBase from "./Base";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Warnings extends WarningsBase {
 
@@ -63,30 +64,42 @@ export default class Warnings extends WarningsBase {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!this.context) {
+            return Promise.resolve();
         }
 
-        if (this.context.chat.getType() === "private") {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        if (this.context.getChat()?.getType() === "private") {
+            return Promise.resolve();
+        }
+
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat) {
-            return;
+            return Promise.resolve();
         }
 
-        const users = [];
-        const replyToMessage = this.context.message.getReplyToMessage();
-        if (replyToMessage) {
-            users.push(replyToMessage.getUser());
+        const users: User[] = [];
+        const replyToMessage = this.context.getMessage()?.getReplyToMessage();
+        if (replyToMessage?.getUser()) {
+            const user = replyToMessage.getUser();
+            user && (users.push(user));
         }
 
-        const mentions = await this.context.message.getMentions() || [];
+        const mentions = await this.context.getMessage()?.getMentions() || [];
         for (const mention of mentions) {
             users.push(mention);
         }
 
-        this.sendWarningMessages(users, chat);
+        if (users.length) {
+            this.sendWarningMessages(users, chat);
+        }
     }
 }

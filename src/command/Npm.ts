@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import NpmPackage from "../helper/NpmPackage.js";
-import Lang from "../helper/Lang.js";
-import Log from "../helper/Log.js";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import NpmPackage from "helper/NpmPackage";
+import { BotCommand } from "library/telegram/type/BotCommand";
 import { exec } from "child_process";
 
 export default class Npm extends Command {
@@ -55,22 +55,27 @@ export default class Npm extends Command {
      public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        const text = this.context.message.getText().split(/\s+/);
+        const text = this.context.getMessage()?.getText().split(/\s+/) ?? "";
         if (!text.length || text.length < 2) {
-            return;
+            return Promise.resolve();
         }
 
-        const library = text[1].replace(/[^\w\d_-]/g, '').toLowerCase();
+        const library = text[1].replace(/[^\w-]/g, '').toLowerCase();
         if (!library.length) {
-            return;
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
 
         try {
 
@@ -97,31 +102,31 @@ export default class Npm extends Command {
 
         if (error) {
             Log.save(error.message, error.skack || undefined);
-            return;
+            return Promise.resolve();
         }
 
         if (stderr) {
             Log.save(stderr);
-            return;
+            return Promise.resolve();
         }
 
         const json = await JSON.parse(stdout);
         if (!json.length) {
-            return;
+            return Promise.resolve();
         }
 
         const library = json[0];
         const npmPackage = new NpmPackage(library);
 
         const options: Record<string, any> = {
-            disableWebPagePreview: true,
-            parseMode: "HTML"
+            disable_web_page_preview: true,
+            parse_mode: "HTML"
         };
 
-        if (this.context!.message.getReplyToMessage()) {
-            options.replyToMessageId = this.context!.message.getReplyToMessage()?.getId();
+        if (this.context?.getMessage()?.getReplyToMessage()) {
+            options.replyToMessageId = this.context?.getMessage()?.getReplyToMessage()?.getId();
         }
 
-        this.context!.chat.sendMessage(npmPackage.getMessage(), options);
+        this.context?.getChat()?.sendMessage(npmPackage.getMessage(), options);
     }
 }

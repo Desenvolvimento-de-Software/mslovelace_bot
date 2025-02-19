@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Json from "./helper/Json.js";
 export default class TelegramBotApi {
 
     /**
@@ -128,7 +127,6 @@ export default class TelegramBotApi {
     private async request(method: string, payload: object): Promise<any> {
 
         if (payload) {
-            payload = Json.toSnakeCase(payload);
             payload = { method: this.method, ...payload };
         }
 

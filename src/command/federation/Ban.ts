@@ -9,17 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Federation from "./Federation.js";
-import Context from "../../library/telegram/context/Context.js";
-import Message from "../../library/telegram/context/Message.js";
-import User from "../../library/telegram/context/User.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
-import UserHelper from "../../helper/User.js";
-import ChatHelper from "../../helper/Chat.js";
-import FederationHelper from "../../helper/Federation.js";
-import Lang from "../../helper/Lang.js";
-import Log from "../../helper/Log.js";
-import Bans from "../../model/Bans.js";
+import Bans from "model/Bans";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Federation from "./Federation";
+import FederationHelper from "helper/Federation";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import Message from "context/Message";
+import User from "context/User";
+import UserHelper from "helper/User";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Ban extends Federation {
 
@@ -54,26 +54,26 @@ export default class Ban extends Federation {
     private async ban(): Promise<void> {
 
         if (!this.federation) {
-            return;
+            return Promise.resolve();
         }
 
         const isUserAdmin = await FederationHelper.isUserAdmin(Number(this.user!.id), this.federation);
         if (!isUserAdmin) {
-            this.context!.message.reply(Lang.get("fedBanOnlyAdminError"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("fedBanOnlyAdminError"));
+            return Promise.resolve();
         }
 
-        this.context!.message.delete();
+        this.context?.getMessage()?.delete();
         let params = this.command!.getParams() || [];
 
-        const replyToMessage = this.context!.message.getReplyToMessage();
+        const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
         if (replyToMessage) {
             this.banByReply(replyToMessage, params.join(" ").trim());
-            return;
+            return Promise.resolve();
         }
 
-        const mentions = await this.context!.message.getMentions();
-        if (mentions.length) {
+        const mentions = await this.context?.getMessage()?.getMentions();
+        if (mentions?.length) {
             params = params.filter((param) => !param.startsWith("@"));
             mentions.forEach((mention) => {
                 this.banByMention(mention, params.join(" ").trim());
@@ -97,13 +97,18 @@ export default class Ban extends Federation {
      */
     private async banByReply(replyToMessage: Message, reason: string): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(replyToMessage.getUser().getId());
+        const replyToMessageUser = replyToMessage.getUser();
+        if (!replyToMessageUser) {
+            return Promise.resolve();
+        }
+
+        const user = await UserHelper.getByTelegramId(replyToMessageUser.getId());
         const federationChats = await FederationHelper.getChats(this.federation!);
 
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
-            context.user.ban();
+            context?.getUser()?.ban();
         }
 
         const message = Lang.get("fedBannedMessage")
@@ -111,7 +116,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -130,7 +135,7 @@ export default class Ban extends Federation {
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
-            context.user.ban();
+            context.getUser()?.ban();
         }
 
         const message = Lang.get("fedBannedMessage")
@@ -138,7 +143,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -160,7 +165,7 @@ export default class Ban extends Federation {
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
-            context.user.ban();
+            context.getUser()?.ban();
         }
 
         const message = Lang.get("fedBannedMessage")
@@ -168,7 +173,7 @@ export default class Ban extends Federation {
             .replace("{username}", user.first_name || user.username || user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
-        this.context!.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -184,14 +189,21 @@ export default class Ban extends Federation {
      */
     private async saveBan(context: Context, reason: string): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(context.user.getId());
-        const chat = await ChatHelper.getByTelegramId(context.chat.getId());
+        const userId = context.getUser()?.getId();
+        const chatId = context.getChat()?.getId();
 
-        if (!user || !chat) {
-            return;
+        if (!userId || !chatId) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        const user = await UserHelper.getByTelegramId(userId);
+        const chat = await ChatHelper.getByTelegramId(chatId);
+
+        if (!user || !chat) {
+            return Promise.resolve();
+        }
+
+        Lang.set(chat.language || "en");
 
         const ban = new Bans();
         const insert = ban.insert();

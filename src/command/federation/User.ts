@@ -9,9 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Federation from "./Federation.js";
-import Context from "../../library/telegram/context/Context.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
+import Federation from "./Federation";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class User extends Federation {
 
@@ -38,9 +37,23 @@ export default class User extends Federation {
         super();
     }
 
-    private async promote(): Promise<void> {
+    /**
+     * Promotes an user in the active federation.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     */
+    private async fpromote(): Promise<void> {
+        return Promise.resolve();
     }
 
-    private async demote(): Promise<void> {
+    /**
+     * Demotes an user in the active federation.
+     *
+     * @author Marcos Leandro
+     * @since  2023-07-04
+     */
+    private async fdemote(): Promise<void> {
+        return Promise.resolve();
     }
 }

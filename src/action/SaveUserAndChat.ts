@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "../library/telegram/context/Context.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import Log from "../helper/Log.js";
+import Action from "./Action";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Log from "helper/Log";
+import RelUsersChats from "model/RelUsersChats";
+import UserHelper from "helper/User";
 
 export default class SaveUserAndChat extends Action {
 
@@ -38,10 +38,19 @@ export default class SaveUserAndChat extends Action {
      */
     public async run(): Promise<void> {
 
-        const contextUser = this.context.newChatMember || this.context.leftChatMember || this.context.user;
+        const contextUser = this.context.getNewChatMember() || this.context.getLeftChatMember() || this.context.getUser();
+        if (!contextUser) {
+            return Promise.resolve();
+        }
+
         const contextUserId = contextUser.getId();
         if (!contextUserId) {
             Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
+            return Promise.resolve();
+        }
+
+        const contextChat = this.context.getChat();
+        if (!contextChat) {
             return Promise.resolve();
         }
 
@@ -53,23 +62,29 @@ export default class SaveUserAndChat extends Action {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        const chatId = chat?.id ?? await ChatHelper.createChat(this.context.chat);
-
+        const chatId = this.context.getChat()?.getId();
         if (!chatId) {
             Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
 
-        UserHelper.updateUser(contextUser);
-        ChatHelper.updateChat(this.context.chat);
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        const newChatId = chat?.id ?? await ChatHelper.createChat(contextChat);
 
-        if (!await this.hasRelationship(userId, chatId)) {
-            const query = await this.saveRelationship(userId, chatId);
+        if (!newChatId) {
+            Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
+            return Promise.resolve();
+        }
+
+        UserHelper.updateUser(contextUser);
+        ChatHelper.updateChat(contextChat);
+
+        if (!await this.hasRelationship(userId, newChatId)) {
+            const query = await this.saveRelationship(userId, newChatId);
             return query;
         }
 
-        return await this.updateRelationship(userId, chatId);
+        return await this.updateRelationship(userId, newChatId);
     }
 
     /**
