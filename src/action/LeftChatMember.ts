@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "../library/telegram/context/Context.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
+import Action from "./Action";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import RelUsersChats from "model/RelUsersChats";
+import UserHelper from "helper/User";
 
 export default class LeftChatMember extends Action {
 
@@ -39,20 +39,20 @@ export default class LeftChatMember extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.leftChatMember) {
-            return;
+        if (!this.context.getLeftChatMember()) {
+            return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(
-            this.context.user.getId()
-        );
+        const userId = this.context.getLeftChatMember()?.getId();
+        const chatId = this.context.getChat()?.getId();
+        if (!userId || !chatId) {
+            return Promise.resolve();
+        }
 
-        const chat = await ChatHelper.getByTelegramId(
-            this.context.chat.getId()
-        );
-
+        const user = await UserHelper.getByTelegramId(userId);
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!user || !chat) {
-            return;
+            return Promise.resolve();
         }
 
         const relUserChat = new RelUsersChats();
@@ -66,9 +66,9 @@ export default class LeftChatMember extends Action {
         relUserChat.execute();
 
         if (parseInt(chat.remove_event_messages) === 0) {
-            return;
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
     }
  }

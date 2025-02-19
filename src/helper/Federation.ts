@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "../model/Chats.js";
-import Federations from "../model/Federations.js";
-import RelUsersFederations from "../model/RelUsersFederations.js";
+import Chats from "../model/Chats";
+import Federations from "../model/Federations";
+import RelUsersFederations from "../model/RelUsersFederations";
 
 export default class FederationHelper {
 

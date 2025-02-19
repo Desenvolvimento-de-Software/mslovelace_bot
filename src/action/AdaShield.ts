@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "../library/telegram/context/Context.js";
-import Lang from "../helper/Lang.js";
-import Shield from "../model/Shield.js";
-import Check from "../library/combot/resource/Check.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
+import Action from "./Action";
+import ChatHelper from "helper/Chat";
+import Check from "library/combot/resource/Check";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import RelUsersChats from "model/RelUsersChats";
+import Shield from "model/Shield";
+import UserHelper from "helper/User";
 
 export default class AdaShield extends Action {
 
@@ -51,29 +51,27 @@ export default class AdaShield extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.newChatMember) {
-            return;
+        const newChatMember = this.context.getNewChatMember();
+        if (!newChatMember) {
+            return Promise.resolve();
         }
 
-        const userId = this.context.newChatMember!.getId();
-
+        const userId = newChatMember.getId();
         if (!await this.adaShield(userId) && !await this.cas(userId)) {
-            return;
+            return Promise.resolve();
         }
 
-        this.context.newChatMember!.ban();
+        newChatMember.ban();
 
-        const username = (
-            this.context.newChatMember!.getFirstName() ||
-            this.context.newChatMember!.getUsername()
-        );
-
+        const username = (newChatMember.getFirstName() || newChatMember.getUsername());
         const lang = Lang.get(this.banMessage)
             .replace("{userid}", userId)
             .replace("{username}", username);
 
-        this.context.chat.sendMessage(lang, { parseMode: "HTML" });
+        this.context.getChat()?.sendMessage(lang, { parse_mode : "HTML" });
         await this.updateRelationship();
+
+        return Promise.resolve();
     }
 
     /**
@@ -142,15 +140,28 @@ export default class AdaShield extends Action {
      */
     private async updateRelationship(): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(this.context.newChatMember!.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const newChatMember = this.context.getNewChatMember();
+        if (!newChatMember) {
+            return Promise.resolve();
+        }
+
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const user = await UserHelper.getByTelegramId(newChatMember.getId());
+        const chat = await ChatHelper.getByTelegramId(chatId);
         const relUserChat = new RelUsersChats();
+
         relUserChat
             .update()
             .set("joined", 0)
             .where("user_id").equal(user.id)
             .and("chat_id").equal(chat!.id);
 
-        return relUserChat.execute();
+        await relUserChat.execute();
+
+        return Promise.resolve();
     }
 }

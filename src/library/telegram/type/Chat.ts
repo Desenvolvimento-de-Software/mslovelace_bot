@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { ChatLocation } from "./ChatLocation.js";
-import { ChatPermissions } from "./ChatPermissions.js";
-import { ChatPhoto } from "./ChatPhoto.js";
-import { Context } from "./Context.js";
+import { ChatLocation } from "./ChatLocation";
+import { ChatPermissions } from "./ChatPermissions";
+import { ChatPhoto } from "./ChatPhoto";
+import { Message } from "./Message";
 
 export type Chat = {
     id: number;
@@ -32,7 +32,7 @@ export type Chat = {
     join_by_request?: boolean;
     description?: string;
     invite_link?: string;
-    pinned_message?: Context;
+    pinned_message?: Message;
     permissions?: ChatPermissions;
     slow_mode_delay?: number;
     message_auto_delete_time?: number;

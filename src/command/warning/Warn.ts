@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../../library/telegram/context/Context.js";
-import CommandContext from "../../library/telegram/context/Command.js";
-import User from "../../library/telegram/context/User.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
-import WarningsModel from "../../model/Warnings.js";
-import WarningsBase from "./Base.js";
-import UserHelper from "../../helper/User.js";
-import ChatHelper from "../../helper/Chat.js";
-import Lang from "../../helper/Lang.js";
-import Log from "../../helper/Log.js";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import User from "context/User";
+import UserHelper from "helper/User";
+import WarningsModel from "model/Warnings";
+import WarningsBase from "./Base";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Warn extends WarningsBase {
 
@@ -67,55 +67,66 @@ export default class Warn extends WarningsBase {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!this.context) {
+            return Promise.resolve();
         }
 
-        if (this.context.chat.getType() === "private") {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
+        }
+
+        if (this.context.getChat()?.getType() === "private") {
+            return Promise.resolve();
         }
 
         this.command = command;
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat) {
-            return;
+            return Promise.resolve();
         }
 
         const params = this.command.getParams();
         if (!params?.length) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
 
-        const users = [];
+        const users: User[] = [];
         const warningLimit = await this.getWarningLimit(chat);
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const replyToMessage = this.context.getMessage()?.getReplyToMessage();
 
         if (replyToMessage && command.getCommand() === "delwarn") {
             replyToMessage.delete();
         }
 
         if (replyToMessage) {
-            users.push(replyToMessage.getUser());
+            const user = replyToMessage.getUser();
+            user && (users.push(user));
         }
 
-        const mentions = await this.context.message.getMentions() || [];
+        const mentions = await this.context.getMessage()?.getMentions() || [];
         for (const mention of mentions) {
             users.push(mention);
             params.shift();
         }
 
         if (!users.length) {
-            return;
+            return Promise.resolve();
         }
 
         for (let i = 0, length = users.length; i < length; i++) {
-            await this.warn(users[i], chat, warningLimit, params.join(" "));
+            const user = users[i];
+            user && (await this.warn(user, chat, warningLimit, params.join(" ")));
         }
 
-        this.sendWarningMessages(users, chat);
+        users?.length && (this.sendWarningMessages(users, chat));
     }
 
     /**
@@ -132,21 +143,21 @@ export default class Warn extends WarningsBase {
     private async warn(contextUser: User, chat: Record<string, any>, warningLimit: number, reason: string): Promise<void> {
 
         if (contextUser.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
-            this.context!.message.reply(Lang.get("selfWarnMessage"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("selfWarnMessage"));
+            return Promise.resolve();
         }
 
         if (await contextUser.isAdmin()) {
-            this.context!.message.reply(Lang.get("adminWarnMessage"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("adminWarnMessage"));
+            return Promise.resolve();
         }
 
         const user = await UserHelper.getByTelegramId(contextUser.getId());
         if (!user) {
-            return;
+            return Promise.resolve();
         }
 
-        this.context!.message.delete();
+        this.context?.getMessage()?.delete();
 
         const warn = new WarningsModel();
         warn

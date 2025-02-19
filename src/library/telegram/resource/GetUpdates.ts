@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class GetUpdates extends TelegramBotApi {
 
@@ -39,9 +39,9 @@ export default class GetUpdates extends TelegramBotApi {
      *
      * @param  {number} offset
      *
-     * @return {GetUpdates}
+     * @return {this}
      */
-    public setOffset(offset: number): GetUpdates {
+    public setOffset(offset: number): this {
         this.payload.offset = offset;
         return this;
     }
@@ -54,9 +54,9 @@ export default class GetUpdates extends TelegramBotApi {
      *
      * @param  {number} limit
      *
-     * @return {GetUpdates}
+     * @return {this}
      */
-    public setLimit(limit: number): GetUpdates {
+    public setLimit(limit: number): this {
         this.payload.limit = limit;
         return this;
     }
@@ -69,9 +69,9 @@ export default class GetUpdates extends TelegramBotApi {
      *
      * @param  {number} timeout
      *
-     * @return {GetUpdates}
+     * @return {this}
      */
-    public setTimeout(timeout: number): GetUpdates {
+    public setTimeout(timeout: number): this {
         this.payload.timeout = timeout;
         return this;
     }
@@ -84,9 +84,9 @@ export default class GetUpdates extends TelegramBotApi {
      *
      * @param  {Array<string>} allowedUpdates
      *
-     * @return {GetUpdates}
+     * @return {this}
      */
-    public setAllowedUpdates(allowedUpdates: Array<string>): GetUpdates {
+    public setAllowedUpdates(allowedUpdates: Array<string>): this {
         this.payload.allowed_updates = allowedUpdates;
         return this;
     }

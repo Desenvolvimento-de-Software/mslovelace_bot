@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class UnbanChatMember extends TelegramBotApi {
 
@@ -39,9 +39,9 @@ export default class UnbanChatMember extends TelegramBotApi {
      *
      * @param  {number} User Telegram ID
      *
-     * @return {UnbanChatMember}
+     * @return {this}
      */
-    public setUserId(userId: number): UnbanChatMember {
+    public setUserId(userId: number): this {
         this.payload.user_id = userId;
         return this;
     }
@@ -54,9 +54,9 @@ export default class UnbanChatMember extends TelegramBotApi {
      *
      * @param  {number} Chat Telegram ID
      *
-     * @return {UnbanChatMember}
+     * @return {this}
      */
-    public setChatId(chatId: number): UnbanChatMember {
+    public setChatId(chatId: number): this {
         this.payload.chat_id = chatId;
         return this;
     }
@@ -69,9 +69,9 @@ export default class UnbanChatMember extends TelegramBotApi {
      *
      * @param  {boolean}
      *
-     * @return {UnbanChatMember}
+     * @return {this}
      */
-    public setOnlyIfBanned(onlyIfBanned: boolean): UnbanChatMember {
+    public setOnlyIfBanned(onlyIfBanned: boolean): this {
         this.payload.only_if_banned = onlyIfBanned;
         return this;
     }

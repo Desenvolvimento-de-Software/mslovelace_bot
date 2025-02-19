@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
-import {BotCommand} from "../type/BotCommand.js";
-import {BotCommandScope} from "../type/BotCommandScope.js";
+import TelegramBotApi from "../TelegramBotApi";
+import {BotCommand} from "../type/BotCommand";
+import {BotCommandScope} from "../type/BotCommandScope";
 
 export default class SetMyCommands extends TelegramBotApi {
 
@@ -74,7 +74,7 @@ export default class SetMyCommands extends TelegramBotApi {
      * @return {SetMyCommands}
      */
     public setLanguageCode(languageCode: string): this {
-        this.payload.languageCode = languageCode;
+        this.payload.language_code = languageCode;
         return this;
     }
 }

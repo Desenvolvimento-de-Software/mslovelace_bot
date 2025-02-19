@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class AnswerCallbackQuery extends TelegramBotApi {
 
@@ -39,10 +39,10 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @param callbackQueryId
      *
-     * @return {AnswerCallbackQuery}
+     * @return {this}
      */
-    public setCallbackQueryId(callbackQueryId: number): AnswerCallbackQuery {
-        this.payload.callbackQueryId = callbackQueryId;
+    public setCallbackQueryId(callbackQueryId: number): this {
+        this.payload.callback_query_id = callbackQueryId;
         return this;
     }
 
@@ -54,9 +54,9 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @param text
      *
-     * @return {AnswerCallbackQuery}
+     * @return {this}
      */
-    public setText(text: string): AnswerCallbackQuery {
+    public setText(text: string): this {
         this.payload.text = text;
         return this;
     }
@@ -69,10 +69,10 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @param showAlert
      *
-     * @return {AnswerCallbackQuery}
+     * @return {this}
      */
-    public setShowAlert(showAlert: boolean): AnswerCallbackQuery {
-        this.payload.showAlert = showAlert;
+    public setShowAlert(showAlert: boolean): this {
+        this.payload.show_alert = showAlert;
         return this;
     }
 
@@ -84,9 +84,9 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @param showAlert
      *
-     * @return {AnswerCallbackQuery}
+     * @return {this}
      */
-    public setUrl(url: string): AnswerCallbackQuery {
+    public setUrl(url: string): this {
         this.payload.url = url;
         return this;
     }
@@ -99,10 +99,10 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @param showAlert
      *
-     * @return {AnswerCallbackQuery}
+     * @return {this}
      */
-    public setCacheTime(time: number): AnswerCallbackQuery {
-        this.payload.cacheTime = time;
+    public setCacheTime(time: number): this {
+        this.payload.cache_time = time;
         return this;
     }
 }

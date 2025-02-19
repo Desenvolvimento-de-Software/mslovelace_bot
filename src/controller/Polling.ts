@@ -9,12 +9,44 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import App from "../App.js";
-import Controller from "./Controller.js";
-import GetUpdates from "../library/telegram/resource/GetUpdates.js";
-import Log from "../helper/Log.js";
+import App from "../App";
+import Controller from "./Controller";
+import GetUpdates from "../library/telegram/resource/GetUpdates";
+import Log from "../helper/Log";
 
 export default class Polling extends Controller {
+
+    /**
+     * Allowed updates.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     */
+    private readonly allowedUpdates: string[] = [
+        "message",
+        "edited_message",
+        "channel_post",
+        "edited_channel_post",
+        "business_connection",
+        "business_message",
+        "edited_business_message",
+        "deleted_business_messages",
+        "message_reaction",
+        "message_reaction_count",
+        "inline_query",
+        "chosen_inline_result",
+        "callback_query",
+        "shipping_query",
+        "pre_checkout_query",
+        "purchased_paid_media",
+        "poll",
+        "poll_answer",
+        "my_chat_member",
+        "chat_member",
+        "chat_join_request",
+        "chat_boost",
+        "removed_chat_boost"
+    ];
 
     /**
      *
@@ -24,12 +56,19 @@ export default class Polling extends Controller {
      * @since  2023-06-06
      */
     public constructor(app: App) {
-
         super(app, "/incoming");
+        this.init();
+    }
 
+    /**
+     * Starts the polling.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     */
+    private init(): void {
         const webhookActive = process.env.TELEGRAM_WEBHOOK_ACTIVE?.toLowerCase() === "true";
         const debug = process.env.DEBUG?.toLowerCase() === "true";
-
         (debug || !webhookActive) && this.initializeLongPolling();
     }
 
@@ -46,7 +85,8 @@ export default class Polling extends Controller {
         Log.info("Requesting updates" + (typeof offset !== "undefined" ? ` from ${offset}` : "") + "...");
 
         const request = new GetUpdates();
-        request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT || 60) as number);
+        request.setTimeout((process.env.TELEGRAM_POLLING_TIMEOUT ?? 60) as number);
+        request.setAllowedUpdates(this.allowedUpdates);
 
         if (offset?.toString().length) {
             request.setOffset(offset);

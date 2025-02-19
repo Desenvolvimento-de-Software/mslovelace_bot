@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
-import Callback from "./Callback.js";
-import YarnCommand from "../command/Yarn.js";
+import Callback from "./Callback";
+import Context from "context/Context";
+import YarnCommand from "../command/Yarn";
 
 export default class Yarn extends Callback {
 
@@ -37,12 +37,13 @@ export default class Yarn extends Callback {
      */
      public async run(): Promise<void> {
 
-        if (!this.context.callbackQuery?.callbackData.d.package) {
+        const callbackQuery = this.context.getCallbackQuery();
+        if (!callbackQuery?.callbackData.d.package) {
             return;
         }
 
         const yarnCommand = new YarnCommand();
-        await yarnCommand.getPackage(this.context.callbackQuery?.callbackData.d.package);
-        this.context.callbackQuery.answer(this.context.callbackQuery?.callbackData.d.package.toUpperCase());
+        await yarnCommand.getPackage(callbackQuery?.callbackData.d.package);
+        callbackQuery.answer(this.context.getCallbackQuery()?.callbackData.d.package.toUpperCase());
     }
 }

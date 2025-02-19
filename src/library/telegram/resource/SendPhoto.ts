@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
-import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
-import { MessageEntity } from "../type/MessageEntity.js";
-import { ReplyParameters } from "../type/ReplyParameters.js";
+import TelegramBotApi from "../TelegramBotApi";
+import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup";
+import { MessageEntity } from "../type/MessageEntity";
+import { ReplyParameters } from "../type/ReplyParameters";
 
 export default class SendPhoto extends TelegramBotApi {
 

@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation.js";
-import Warning from "../callback/Warning.js";
-import YarnCallback from "../callback/Yarn.js";
+import CaptchaConfirmationCallback from "../callback/CaptchaConfirmation";
+import Warning from "../callback/Warning";
+import YarnCallback from "../callback/Yarn";
 
 export const callbacks = [
     CaptchaConfirmationCallback,

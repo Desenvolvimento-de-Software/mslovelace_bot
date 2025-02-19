@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Callback from "./Callback.js";
-import Context from "../library/telegram/context/Context.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import ChatMessages from "../model/ChatMessages.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import Lang from "../helper/Lang.js";
-import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
+import Callback from "./Callback";
+import ChatHelper from "helper/Chat";
+import ChatMessages from "model/ChatMessages";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import RelUsersChats from "model/RelUsersChats";
+import UserHelper from "helper/User";
+import { ChatPermissions } from "library/telegram/type/ChatPermissions";
 
 export default class CaptchaConfirmation extends Callback {
 
@@ -50,27 +50,28 @@ export default class CaptchaConfirmation extends Callback {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.callbackQuery?.callbackData) {
+        const callbackQuery = this.context.getCallbackQuery();
+        if (!callbackQuery?.callbackData) {
             return;
         }
 
-        const user = await UserHelper.getByTelegramId(
-            this.context.user.getId()
-        );
+        const userId = this.context.getUser()?.getId();
+        const chatId = this.context.getChat()?.getId();
+        if (!userId || !chatId) {
+            return;
+        }
 
-        const chat = await ChatHelper.getByTelegramId(
-            this.context.chat.getId()
-        );
-
+        const user = await UserHelper.getByTelegramId(userId);
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!user || !chat) {
             return;
         }
 
         this.chat = chat;
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
 
-        if (this.context.callbackQuery.callbackData.d.userId !== this.context.user.getId()) {
-            this.context.callbackQuery.answer(Lang.get("captchaNotSameUser"));
+        if (this.context.getCallbackQuery()?.callbackData.d.userId !== this.context.getUser()?.getId()) {
+            this.context.getCallbackQuery()?.answer(Lang.get("captchaNotSameUser"));
             return;
         }
 
@@ -82,7 +83,7 @@ export default class CaptchaConfirmation extends Callback {
             .and("chat_id").equal(chat.id);
 
         relUsersChats.execute();
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
 
         const permissions: ChatPermissions = {
             can_send_messages: true,
@@ -101,8 +102,8 @@ export default class CaptchaConfirmation extends Callback {
             can_manage_topics: true
         };
 
-        this.context.callbackQuery.answer(Lang.get("captchaConfirmed"));
-        await this.context.user.setPermissions(permissions);
+        this.context.getCallbackQuery()?.answer(Lang.get("captchaConfirmed"));
+        await this.context.getUser()?.setPermissions(permissions);
 
         if (chat.restrict_new_users) {
             this.restrictUser();
@@ -133,7 +134,7 @@ export default class CaptchaConfirmation extends Callback {
             can_invite_users: false
         };
 
-        await this.context.user.setPermissions(permissions, 60 * 60 * 24);
+        await this.context.getUser()?.setPermissions(permissions, 60 * 60 * 24);
     }
 
     /**
@@ -158,13 +159,13 @@ export default class CaptchaConfirmation extends Callback {
             text = chatMessages[0].greetings;
         }
 
-        text = text.replace("{userid}", this.context.user.getId());
+        text = text.replace("{userid}", this.context.getUser()?.getId());
         text = text.replace(
             "{username}",
-            this.context.user.getFirstName() ?? this.context.user.getUsername()
+            this.context.getUser()?.getFirstName() ?? this.context.getUser()?.getUsername()
         );
 
-        const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });
+        const message = await this.context.getChat()?.sendMessage(text, { parse_mode : "HTML" });
 
         setTimeout(() => {
             message.delete();

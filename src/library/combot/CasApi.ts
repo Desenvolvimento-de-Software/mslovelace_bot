@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import {RequestType} from "./type/RequestType.js";
+import {RequestType} from "./type/RequestType";
 
 export default class CasApi {
 
