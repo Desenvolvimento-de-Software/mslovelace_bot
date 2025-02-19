@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Builder from "./Builder.js";
+import Builder from "./Builder";
 
 export default class Delete extends Builder {
 
@@ -62,7 +62,7 @@ export default class Delete extends Builder {
     private parseOrder(): string {
 
         let order = [];
-        for (let [key, value] of Object.entries(this.order)) {
+        for (let [, value] of Object.entries(this.order)) {
             order.push(`${value.field} ${value.direction}`);
         }
 

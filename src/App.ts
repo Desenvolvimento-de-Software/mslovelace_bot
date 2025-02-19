@@ -10,12 +10,12 @@
  */
 
 import express from "express";
-import TelegramBotApi from "./library/telegram/TelegramBotApi.js";
-import SetMyCommands from "./library/telegram/resource/SetMyCommands.js";
-import Command from "./command/Command.js";
-import Log from "./helper/Log.js";
-import { controllers } from "./config/controllers.js";
-import { commands as commandsConfig } from "./config/commands.js";
+import TelegramBotApi from "./library/telegram/TelegramBotApi";
+import SetMyCommands from "./library/telegram/resource/SetMyCommands";
+import Command from "./command/Command";
+import Log from "./helper/Log";
+import { controllers } from "./config/controllers";
+import { commands as commandsConfig } from "./config/commands";
 
 export default class App {
 

@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
-import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup.js";
+import TelegramBotApi from "../TelegramBotApi";
+import { InlineKeyboardMarkup } from "../type/InlineKeyboardMarkup";
 
 export default class SendMessage extends TelegramBotApi {
 
@@ -62,7 +62,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setChatId(chatId: number): this {
-        this.payload.chatId = chatId;
+        this.payload.chat_id = chatId;
         return this;
     }
 
@@ -77,7 +77,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return
      */
     public setThreadId(threadId: number): this {
-        this.payload.messageThreadId = threadId;
+        this.payload.message_thread_id = threadId;
         return this;
     }
 
@@ -107,7 +107,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setParseMode(parseMode: string): this {
-        this.payload.parseMode = parseMode;
+        this.payload.parse_mode = parseMode;
         return this;
     }
 
@@ -137,7 +137,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setDisableWebPagePreview(disableWebPagePreview: boolean): this {
-        this.payload.disableWebPagePreview = disableWebPagePreview;
+        this.payload.disable_web_page_preview = disableWebPagePreview;
         return this;
     }
 
@@ -152,7 +152,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setDisableNotification(disableNotification: boolean): this {
-        this.payload.disableNotification = disableNotification;
+        this.payload.disable_notification = disableNotification;
         return this;
     }
 
@@ -167,7 +167,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setReplyToMessageId(replyToMessageId: number): this {
-        this.payload.replyToMessageId = replyToMessageId;
+        this.payload.reply_to_message_id = replyToMessageId;
         return this;
     }
 
@@ -182,7 +182,7 @@ export default class SendMessage extends TelegramBotApi {
      * @return {this}
      */
     public setReplyMarkup(replyMarkup: InlineKeyboardMarkup): this {
-        this.payload.replyMarkup = replyMarkup;
+        this.payload.reply_markup = replyMarkup;
         return this;
     }
 }

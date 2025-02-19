@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Federation from "./Federation.js";
-import Chats from "../../model/Chats.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
-import FederationsHelper from "../../helper/Federation.js";
-import Lang from "../../helper/Lang.js";
-import Log from "../../helper/Log.js";
+import Federation from "./Federation";
+import Chats from "../../model/Chats";
+import { BotCommand } from "../../library/telegram/type/BotCommand";
+import FederationsHelper from "../../helper/Federation";
+import Lang from "../../helper/Lang";
+import Log from "../../helper/Log";
 
 export default class Group extends Federation {
 
@@ -52,19 +52,19 @@ export default class Group extends Federation {
      */
     private async show(): Promise<void> {
 
-        if (this.context!.chat.getType() === "private") {
-            this.context!.message.reply(Lang.get("federationCommandOnlyGroupError"));
+        if (this.context?.getChat()?.getType() === "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCommandOnlyGroupError"));
             return;
         }
 
         if (!this.chat?.federation_id) {
-            this.context!.message.reply(Lang.get("federationLeaveNoFederationError"));
+            this.context?.getMessage()?.reply(Lang.get("federationLeaveNoFederationError"));
             return;
         }
 
         const federation = await FederationsHelper.getById(this.chat.federation_id);
         if (!federation) {
-            this.context!.message.reply(Lang.get("federationLeaveNoFederationError"));
+            this.context?.getMessage()?.reply(Lang.get("federationLeaveNoFederationError"));
             return;
         }
 
@@ -72,7 +72,7 @@ export default class Group extends Federation {
             .replace("{federation}", federation.description)
             .replace("{hash}", federation.hash);
 
-        this.context!.message.reply(message, { parseMode: "HTML" });
+        this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -83,19 +83,19 @@ export default class Group extends Federation {
      */
     private async join(): Promise<void> {
 
-        if (this.context!.chat.getType() === "private") {
-            this.context!.message.reply(Lang.get("federationCommandOnlyGroupError"));
+        if (this.context?.getChat()?.getType() === "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCommandOnlyGroupError"));
             return;
         }
 
-        if (!await this.context!.user.isAdmin()) {
-            this.context!.message.reply(Lang.get("federationJoinOnlyAdminError"));
+        if (!await this.context?.getUser()?.isAdmin()) {
+            this.context?.getMessage()?.reply(Lang.get("federationJoinOnlyAdminError"));
             return;
         }
 
         const params = this.command?.getParams() || [];
         if (!params.length) {
-            this.context!.message.reply(Lang.get("federationJoinNoHashError"));
+            this.context?.getMessage()?.reply(Lang.get("federationJoinNoHashError"));
             return;
         }
 
@@ -103,17 +103,17 @@ export default class Group extends Federation {
         const federation = await FederationsHelper.getByHash(hash);
 
         if (!federation) {
-            this.context!.message.reply(Lang.get("federationInvalidHashError"));
+            this.context?.getMessage()?.reply(Lang.get("federationInvalidHashError"));
             return;
         }
 
         if (this.chat?.federation_id?.length) {
-            this.context!.message.reply(Lang.get("federationJoinHasFederationError"));
+            this.context?.getMessage()?.reply(Lang.get("federationJoinHasFederationError"));
             return;
         }
 
         if (this.chat?.federation_id === federation.id) {
-            this.context!.message.reply(Lang.get("federationJoinAlreadyJoinedError"));
+            this.context?.getMessage()?.reply(Lang.get("federationJoinAlreadyJoinedError"));
             return;
         }
 
@@ -129,10 +129,10 @@ export default class Group extends Federation {
             const message = Lang.get("federationJoinSuccess")
                 .replace("{federation}", federation.description);
 
-            this.context!.message.reply(message);
+            this.context?.getMessage()?.reply(message);
 
         } catch (err: any) {
-            this.context!.message.reply(Lang.get("federationJoinError"));
+            this.context?.getMessage()?.reply(Lang.get("federationJoinError"));
             Log.error(err.toString());
             return;
         }
@@ -146,18 +146,18 @@ export default class Group extends Federation {
      */
     private async leave(): Promise<void> {
 
-        if (this.context!.chat.getType() === "private") {
-            this.context!.message.reply(Lang.get("federationCommandOnlyGroupError"));
+        if (this.context?.getChat()?.getType() === "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCommandOnlyGroupError"));
             return;
         }
 
-        if (!await this.context!.user.isAdmin()) {
-            this.context!.message.reply(Lang.get("federationJoinOnlyAdminError"));
+        if (!await this.context?.getUser()?.isAdmin()) {
+            this.context?.getMessage()?.reply(Lang.get("federationJoinOnlyAdminError"));
             return;
         }
 
         if (!this.chat?.federation_id) {
-            this.context!.message.reply(Lang.get("federationLeaveNoFederationError"));
+            this.context?.getMessage()?.reply(Lang.get("federationLeaveNoFederationError"));
             return;
         }
 
@@ -170,10 +170,10 @@ export default class Group extends Federation {
         try {
 
             chat.execute();
-            this.context!.message.reply(Lang.get("federationLeaveSuccess"));
+            this.context?.getMessage()?.reply(Lang.get("federationLeaveSuccess"));
 
         } catch (err: any) {
-            this.context!.message.reply(Lang.get("federationLeaveError"));
+            this.context?.getMessage()?.reply(Lang.get("federationLeaveError"));
             Log.error(err.toString());
             return;
         }

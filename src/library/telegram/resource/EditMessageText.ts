@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import TelegramBotApi from "../TelegramBotApi.js";
+import TelegramBotApi from "../TelegramBotApi";
 
 export default class EditMessageText extends TelegramBotApi {
 
@@ -39,9 +39,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {number} chatId
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setChatId(chatId: number): EditMessageText {
+    public setChatId(chatId: number): this {
         this.payload.chat_id = chatId;
         return this;
     }
@@ -54,9 +54,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {number} messageId
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setMessageId(messageId: number): EditMessageText {
+    public setMessageId(messageId: number): this {
         this.payload.message_id = messageId;
         return this;
     }
@@ -69,9 +69,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {number} inlineMessageId
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setInlineMessageId(inlineMessageId: number): EditMessageText {
+    public setInlineMessageId(inlineMessageId: number): this {
         this.payload.inline_message_id = inlineMessageId;
         return this;
     }
@@ -84,9 +84,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {String} text
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setText(text: string): EditMessageText {
+    public setText(text: string): this {
         this.payload.text = text;
         return this;
     }
@@ -99,9 +99,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {String} parseMode
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setParseMode(parseMode: string): EditMessageText {
+    public setParseMode(parseMode: string): this {
         this.payload.parse_mode = parseMode;
         return this;
     }
@@ -114,9 +114,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {Array} entities
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setEntities(entities: Array<Object>): EditMessageText {
+    public setEntities(entities: Array<Object>): this {
         this.payload.entities = entities;
         return this;
     }
@@ -129,9 +129,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {Boolean} disableWebPagePreview
      *
-     * @return {SendMessage}
+     * @return {this}
      */
-    public setDisableWebPagePreview(disableWebPagePreview: boolean): EditMessageText {
+    public setDisableWebPagePreview(disableWebPagePreview: boolean): this {
         this.payload.disable_web_page_preview = disableWebPagePreview;
         return this;
     }
@@ -144,9 +144,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param  {Object} replyMarkup
      *
-     * @return {EditMessageText}
+     * @return {this}
      */
-    public setReplyMarkup(replyMarkup: Object): EditMessageText {
+    public setReplyMarkup(replyMarkup: Object): this {
         this.payload.reply_markup = replyMarkup;
         return this;
     }
@@ -159,9 +159,9 @@ export default class EditMessageText extends TelegramBotApi {
      *
      * @param options
      *
-     * @returns {EditMessageText}
+     * @returns {this}
      */
-    public setOptions(options: Record<string, any>): EditMessageText {
+    public setOptions(options: Record<string, any>): this {
 
         for (const key in options) {
             this.payload[key] = options[key];

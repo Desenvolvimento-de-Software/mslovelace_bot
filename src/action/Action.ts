@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
+import Context from "context/Context";
 
 export default abstract class Action {
 
@@ -29,7 +29,7 @@ export default abstract class Action {
      *
      * @var string
      */
-    private type: string;
+    private readonly type: string;
 
     /**
      * The constructor.
@@ -42,7 +42,7 @@ export default abstract class Action {
      */
     public constructor(context: Context, type?: string) {
         this.context = context;
-        this.type = type || "sync";
+        this.type = type ?? "sync";
     }
 
     /**

@@ -9,17 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
-import Message from "../library/telegram/context/Message.js";
-import Action from "./Action.js";
-import Lang from "../helper/Lang.js";
-import ChatHelper from "../helper/Chat.js";
-import UserHelper from "../helper/User.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import ChatConfigs from "../model/ChatConfigs.js";
-import ChatMessages from "../model/ChatMessages.js";
-import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
-import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
+import Action from "./Action";
+import ChatConfigs from "model/ChatConfigs";
+import ChatHelper from "helper/Chat";
+import ChatMessages from "model/ChatMessages";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import Message from "context/Message";
+import RelUsersChats from "model/RelUsersChats";
+import UserHelper from "helper/User";
+import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
+import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
 
 export default class Greetings extends Action {
 
@@ -77,29 +77,43 @@ export default class Greetings extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.newChatMember) {
-            return;
+        if (this.context.getType() !== "chat_member") {
+            return Promise.resolve();
         }
 
-        this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        if (!this.context.getNewChatMember()) {
+            return Promise.resolve();
+        }
+
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        this.chat = await ChatHelper.getByTelegramId(chatId);
         if (!this.chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         if (parseInt(this.chat.greetings) !== 1) {
-            return;
+            return Promise.resolve();
         }
 
         if (parseInt(this.chat.grouped_greetings) === 1) {
-            return;
+            return Promise.resolve();
         }
 
-        this.user = await UserHelper.getByTelegramId(this.context.user.getId());
+        const userId = this.context.getNewChatMember()?.getId();
+        if (!userId) {
+            return Promise.resolve();
+        }
+
+        this.user = await UserHelper.getByTelegramId(userId);
         if (!await this.isUserJoined()) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(this.chat.language || "us");
+        Lang.set(this.chat.language || "en");
 
         const chatConfigs = new ChatConfigs();
         chatConfigs
@@ -118,7 +132,6 @@ export default class Greetings extends Action {
             .limit(1);
 
         this.chatMessages = await chatMessages.execute();
-
         this.greetings();
     }
 
@@ -127,30 +140,38 @@ export default class Greetings extends Action {
      *
      * @author Marcos Leandro
      * @since  2022-09-09
-     *
      */
-    private async greetings() {
+    private async greetings(): Promise<void> {
+
+        const newChatMember = this.context.getNewChatMember();
+        if (!newChatMember) {
+            return Promise.resolve();
+        }
 
         let text = Lang.get("defaultGreetings");
         if (this.chatMessages?.length) {
             text = this.chatMessages[0].greetings;
         }
 
-        text = text.replace("{userid}", this.context.newChatMember!.getId());
+        text = text.replace("{userid}", newChatMember.getId());
         text = text.replace(
             "{username}",
-            this.context.newChatMember?.getFirstName() ?? this.context.newChatMember?.getUsername()
+            newChatMember.getFirstName() ?? newChatMember.getUsername()
         );
 
-        let options: Record<string, any> = { parseMode : "HTML" };
+        let options: Record<string, any> = { parse_mode : "HTML" };
         options = this.addCaptchaOptions(options);
 
-        const message = await this.context.chat.sendMessage(text, options);
-        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
+        const message = await this.context.getChat()?.sendMessage(text, options);
+        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 60) * 1000);
 
-        setTimeout(() => {
+        setTimeout((message, user, chat, context) => {
             this.deleteMessage(message);
-        }, timeout);
+            if (parseInt(chat?.captcha) === 1) {
+                this.checkUserForKick(user!, chat!, context);
+            }
+
+        }, timeout, message, this.user, this.chat, this.context);
     }
 
     /**
@@ -169,7 +190,7 @@ export default class Greetings extends Action {
             return options;
         }
 
-        const language = this.chat.language || "us";
+        const language = this.chat.language || "en";
         const username = process.env.TELEGRAM_USERNAME;
         const captchaButton: InlineKeyboardButton = {
             text : Lang.get("captchaButton"),
@@ -219,12 +240,7 @@ export default class Greetings extends Action {
      * @param messageID
      */
     private readonly deleteMessage = async (message: Message) => {
-
         message.delete();
-
-        if (parseInt(this.chat!.captcha) === 1) {
-            this.checkUserForKick();
-        }
     }
 
     /**
@@ -236,13 +252,13 @@ export default class Greetings extends Action {
      * @param user User object.
      * @param chat Chat object.
      */
-    private async checkUserForKick() {
+    private async checkUserForKick(user: Record<string, any>, chat: Record<string, any>, context: Record<string, any>) {
 
         const relUsersChats = new RelUsersChats();
         relUsersChats
             .select(['checked'])
-            .where("user_id").equal(this.user!.id)
-            .and("chat_id").equal(this.chat!.id);
+            .where("user_id").equal(user.id)
+            .and("chat_id").equal(chat.id);
 
         const rel = await relUsersChats.execute();
         if (!rel.length) {
@@ -253,17 +269,27 @@ export default class Greetings extends Action {
             return;
         }
 
-        this.context.user.kick();
+        context.user.kick();
+
+        Lang.set(chat?.language || "en");
 
         let text = Lang.get("captchaNotConfirmed");
-        text = text.replace("{userid}", this.context.newChatMember!.getId());
+        text = text.replace("{userid}", context.newChatMember!.getId());
         text = text.replace(
             "{username}",
-            this.context.newChatMember?.getFirstName() ?? this.context.newChatMember?.getUsername()
+            context.newChatMember?.getFirstName() ?? context.newChatMember?.getUsername()
         );
 
-        const message = await this.context.chat.sendMessage(text, { parseMode : "HTML" });
-        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 300) * 1000);
+        const chatConfigs = new ChatConfigs();
+        chatConfigs
+            .select()
+            .where("chat_id").equal(chat.id)
+            .offset(0)
+            .limit(1);
+
+        const chatConfig = await chatConfigs.execute();
+        const message = await context.chat.sendMessage(text, { parse_mode : "HTML" });
+        const timeout = ((chatConfig[0]?.captcha_ban_seconds || 300) * 1000);
 
         setTimeout(() => {
             message.delete();

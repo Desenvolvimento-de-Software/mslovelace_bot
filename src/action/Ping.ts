@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "../library/telegram/context/Context.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import Action from "./Action";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Lang from "helper/Lang";
 
 export default class Ping extends Action {
 
@@ -36,21 +36,27 @@ export default class Ping extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.message.getText().length) {
-            return;
+        const message = this.context.getMessage();
+        if (!message?.getText().length) {
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat) {
-            return;
+            return Promise.resolve();
         }
 
         if (!await this.hasMention()) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
-        this.context.message.reply(Lang.get("pongMessage"));
+        Lang.set(chat.language || "en");
+        message.reply(Lang.get("pongMessage"));
     }
 
     /**
@@ -64,7 +70,7 @@ export default class Ping extends Action {
     private async hasMention(): Promise<boolean> {
 
         const mentionUsernames = [];
-        const mentions = await this.context.message.getMentions();
+        const mentions = await this.context.getMessage()?.getMentions() ?? [];
 
         for (const mention of mentions) {
             mentionUsernames.push(mention.getUsername());

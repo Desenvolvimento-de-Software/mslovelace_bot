@@ -9,18 +9,18 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Federation from "./Federation.js";
-import ChatHelper from "../../helper/Chat.js";
-import Chats from "../../model/Chats.js";
-import Context from "../../library/telegram/context/Context.js";
-import CommandContext from "../../library/telegram/context/Command.js";
-import { BotCommand } from "../../library/telegram/type/BotCommand.js";
-import FederationHelper from "../../helper/Federation.js";
-import Federations from "../../model/Federations.js";
-import Lang from "../../helper/Lang.js";
-import Log from "../../helper/Log.js";
-import Text from "../../helper/Text.js";
-import UserHelper from "../../helper/User.js";
+import Federation from "./Federation";
+import ChatHelper from "helper/Chat";
+import Chats from "model/Chats";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import { BotCommand } from "library/telegram/type/BotCommand";
+import FederationHelper from "helper/Federation";
+import Federations from "model/Federations";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import Text from "helper/Text";
+import UserHelper from "helper/User";
 
 export default class Manage extends Federation {
 
@@ -84,14 +84,24 @@ export default class Manage extends Federation {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        this.user = await UserHelper.getByTelegramId(this.context.user.getId());
-        this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-
-        if (!this.user?.id || !this.chat?.id) {
-            return;
+        if (!this.context) {
+            return Promise.resolve();
         }
 
-        Lang.set(this.chat.language || "us");
+        const userId = this.context.getUser()?.getId();
+        const chatId = this.context.getChat()?.getId();
+        if (!userId || !chatId) {
+            return Promise.resolve();
+        }
+
+        this.user = await UserHelper.getByTelegramId(userId);
+        this.chat = await ChatHelper.getByTelegramId(chatId);
+
+        if (!this.user?.id || !this.chat?.id) {
+            return Promise.resolve();
+        }
+
+        Lang.set(this.chat.language || "en");
 
         this.command = command;
         const method = this.command.getCommand().substring(1) as keyof Federation;
@@ -110,9 +120,9 @@ export default class Manage extends Federation {
      */
     private async create(): Promise<void> {
 
-        if (this.context!.chat.getType() !== "private") {
-            this.context!.message.reply(Lang.get("federationCreateOnlyPrivate"));
-            return;
+        if (this.context?.getChat()?.getType() !== "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCreateOnlyPrivate"));
+            return Promise.resolve();
         }
 
         const params = this.command?.getParams() || [];
@@ -134,18 +144,18 @@ export default class Manage extends Federation {
 
             const result = await federations.execute();
             if (!result) {
-                this.context!.message.reply(Lang.get("federationCreateError"));
-                return;
+                this.context?.getMessage()?.reply(Lang.get("federationCreateError"));
+                return Promise.resolve();
             }
 
             const message = Lang.get("federationCreateSuccess")
                 .replace(/{name}/g, description.length ? description : federationHash)
                 .replace(/{hash}/g, federationHash);
 
-            this.context!.message.reply(message, { parseMode: "HTML" });
+            this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
 
         } catch (err: any) {
-            this.context!.message.reply(Lang.get("federationCreateError"));
+            this.context?.getMessage()?.reply(Lang.get("federationCreateError"));
             Log.error(err.toString());
         }
     }
@@ -158,9 +168,9 @@ export default class Manage extends Federation {
      */
     private async list(): Promise<void> {
 
-        if (this.context!.chat.getType() !== "private") {
-            this.context!.message.reply(Lang.get("federationCommandOnlyPrivateError"));
-            return;
+        if (this.context?.getChat()?.getType() !== "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCommandOnlyPrivateError"));
+            return Promise.resolve();
         }
 
         const federations = new Federations();
@@ -171,8 +181,8 @@ export default class Manage extends Federation {
 
         const result = await federations.execute();
         if (!result.length) {
-            this.context!.message.reply(Lang.get("federationListEmpty"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("federationListEmpty"));
+            return Promise.resolve();
         }
 
         let message = Lang.get("federationListHeader");
@@ -183,7 +193,7 @@ export default class Manage extends Federation {
                 .replace("{groups}", (await this.countGroups(federation.id)).toString());
         }
 
-        this.context!.message.reply(message, { parseMode: "HTML" });
+        this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -194,33 +204,33 @@ export default class Manage extends Federation {
      */
     private async delete(): Promise<void> {
 
-        if (this.context!.chat.getType() !== "private") {
-            this.context!.message.reply(Lang.get("federationCommandOnlyPrivateError"));
-            return;
+        if (this.context?.getChat()?.getType() !== "private") {
+            this.context?.getMessage()?.reply(Lang.get("federationCommandOnlyPrivateError"));
+            return Promise.resolve();
         }
 
         const params = this.command?.getParams() || [];
         if (!params.length) {
-            this.context!.message.reply(Lang.get("federationDeleteNoHashError"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("federationDeleteNoHashError"));
+            return Promise.resolve();
         }
 
         const hash = params[0].trim();
         const federation = await FederationHelper.getByHash(hash);
         if (!federation) {
-            this.context!.message.reply(Lang.get("federationInvalidHashError"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("federationInvalidHashError"));
+            return Promise.resolve();
         }
 
         if (federation.user_id !== this.user!.id) {
-            this.context!.message.reply(Lang.get("federationNotOwnerError"));
-            return;
+            this.context?.getMessage()?.reply(Lang.get("federationNotOwnerError"));
+            return Promise.resolve();
         }
 
         const groups = await this.countGroups(federation.id);
         if (groups === 0 || (!!params[1] && params[1] === "force")) {
             await this.deleteFederation(federation.id);
-            return;
+            return Promise.resolve();
         }
 
         const message = Lang.get("federationDeleteConfirm")
@@ -228,7 +238,7 @@ export default class Manage extends Federation {
             .replace("{hash}", federation.hash)
             .replace("{groups}", groups.toString());
 
-        this.context!.message.reply(message, { parseMode: "HTML" });
+        this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
     }
 
     /**
@@ -313,9 +323,9 @@ export default class Manage extends Federation {
             await chats.execute();
 
         } catch (err: any) {
-            this.context!.message.reply(Lang.get("federationDeleteError"));
+            this.context?.getMessage()?.reply(Lang.get("federationDeleteError"));
             Log.error(err.toString(), true);
-            return;
+            return Promise.resolve();
         }
 
         const federations = new Federations();
@@ -325,10 +335,10 @@ export default class Manage extends Federation {
 
         try {
             await federations.execute();
-            this.context!.message.reply(Lang.get("federationDeleteSuccess"));
+            this.context?.getMessage()?.reply(Lang.get("federationDeleteSuccess"));
 
         } catch (err: any) {
-            this.context!.message.reply(Lang.get("federationDeleteError"));
+            this.context?.getMessage()?.reply(Lang.get("federationDeleteError"));
             Log.error(err.toString(), true);
         }
     }

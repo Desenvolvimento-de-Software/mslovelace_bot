@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import User from "../library/telegram/context/User.js";
-import Users from "../model/Users.js";
-import Log from "./Log.js";
+import User from "context/User";
+import Users from "model/Users";
+import Log from "./Log";
 
 export default class UserHelper {
 
@@ -107,7 +107,7 @@ export default class UserHelper {
             .set("first_name", user.getFirstName() || null)
             .set("last_name", user.getLastName() || null)
             .set("username", user.getUsername() || null)
-            .set("language_code", user.getLanguageCode() || "us")
+            .set("language_code", user.getLanguageCode() || "en")
             .set("is_channel", user.getId() > 0 ? 0 : 1)
             .set("is_bot", user.getIsBot() || 0)
             .set("is_premium", user.getIsPremium() || 0);
@@ -147,7 +147,7 @@ export default class UserHelper {
             .set("first_name", user.getFirstName() || null)
             .set("last_name", user.getLastName() || null)
             .set("username", user.getUsername() || null)
-            .set("language_code", user.getLanguageCode() || "us")
+            .set("language_code", user.getLanguageCode() || "en")
             .set("is_premium", user.getIsPremium() || 0)
             .where('id').equal(row.id);
 

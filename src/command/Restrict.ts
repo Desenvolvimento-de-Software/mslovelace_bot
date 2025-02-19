@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatConfigs from "../model/ChatConfigs.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import ChatConfigs from "model/ChatConfigs";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Restrict extends Command {
 
@@ -54,8 +54,8 @@ export default class Restrict extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
         const params = command.getParams();
@@ -65,7 +65,7 @@ export default class Restrict extends Command {
             action = this.isRegisteredParam(params[0]) ? params[0] : "index";
         }
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
 
         const method = action as keyof Restrict;
         if (typeof this[method] === "function") {
@@ -83,9 +83,14 @@ export default class Restrict extends Command {
      */
     private async index(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         const chatConfig = new ChatConfigs();
@@ -95,14 +100,14 @@ export default class Restrict extends Command {
 
         const config = await chatConfig.execute();
         if (!config.length) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
         const restrictStatus = Lang.get(parseInt(config[0].restrict_new_users) === 1 ? "textEnabled" : "textDisabled");
         const restrictMessage = Lang.get("restrictStatus").replace("{status}", restrictStatus);
 
-        this.context!.chat.sendMessage(restrictMessage);
+        this.context?.getChat()?.sendMessage(restrictMessage);
     }
 
     /**
@@ -115,9 +120,14 @@ export default class Restrict extends Command {
      */
     private async on(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         await this.update(chat.id, 1);
@@ -134,9 +144,14 @@ export default class Restrict extends Command {
      */
     private async off(): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         await this.update(chat.id, 0);

@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Callback from "./Callback.js";
-import Warnings from "../model/Warnings.js";
-import Context from "../library/telegram/context/Context.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import Callback from "./Callback";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import UserHelper from "helper/User";
+import Warnings from "model/Warnings";
 
 export default class Warning extends Callback {
 
@@ -39,40 +39,52 @@ export default class Warning extends Callback {
      */
     public async run(): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(this.context.user.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const userId = this.context?.getUser()?.getId();
+        const chatId = this.context?.getChat()?.getId();
 
+        if (!userId || !chatId) {
+            return Promise.resolve();
+        }
+
+        const user = await UserHelper.getByTelegramId(userId);
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!user || !chat) {
             return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
 
-        if (!await this.context.user.isAdmin()) {
-            this.context.callbackQuery?.answer(Lang.get("adminOnlyAction"));
+        if (!await this.context.getUser()?.isAdmin()) {
+            this.context.getCallbackQuery()?.answer(Lang.get("adminOnlyAction"));
 
             const message = Lang.get("adminOnlyActionMessage")
-                .replace("{userid}", this.context.user.getId())
-                .replace("{username}", this.context.user.getFirstName() || this.context.user.getUsername());
+                .replace("{userid}", this.context.getUser()?.getId())
+                .replace("{username}", this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername());
 
-            this.context.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
             return Promise.resolve();
         }
 
-        const [userId, chatId, warningId] = this.context.callbackQuery?.callbackData?.d?.split(",");
-        this.context.callbackQuery?.answer("OK");
-        this.context.message.delete();
+        const callbackData = this.context.getCallbackQuery()?.callbackData?.d;
+        if (!callbackData) {
+            return Promise.resolve();
+        }
+
+        const [callbackUserId, callbackChatId, callbackWarningId] = callbackData.split(",");
+
+        this.context.getCallbackQuery()?.answer("OK");
+        this.context.getMessage()?.delete();
 
         const contextUser = await UserHelper.getByTelegramId(userId);
-        await this.remove(userId, chatId, warningId);
+        await this.remove(callbackUserId, callbackChatId, callbackWarningId);
 
-        let message = Lang.get(typeof warningId === "undefined" ? "warningAdminRemovedAll" : "warningAdminRemovedLast")
+        let message = Lang.get(typeof callbackWarningId === "undefined" ? "warningAdminRemovedAll" : "warningAdminRemovedLast")
             .replace("{userid}", contextUser.user_id)
             .replace("{username}", contextUser.first_name || user.username)
-            .replace("{adminId}", this.context.user.getId())
-            .replace("{adminUsername}", this.context.user.getFirstName() || this.context.user.getUsername());
+            .replace("{adminId}", this.context.getUser()?.getId())
+            .replace("{adminUsername}", this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername());
 
-        this.context.chat.sendMessage(message, { parseMode: "HTML" });
+        this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
     }
 
     /**

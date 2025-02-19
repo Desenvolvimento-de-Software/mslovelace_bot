@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import Command from "./Command.js";
-import ChatHelper from "../helper/Chat.js";
-import YarnPackage from "../helper/YarnPackage.js";
-import Lang from "../helper/Lang.js";
-import Log from "../helper/Log.js";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import { BotCommand } from "../library/telegram/type/BotCommand";
+import Command from "./Command";
+import ChatHelper from "../helper/Chat";
+import YarnPackage from "../helper/YarnPackage";
+import Lang from "../helper/Lang";
+import Log from "../helper/Log";
 import { exec } from "child_process";
 
 export default class Yarn extends Command {
@@ -55,22 +55,27 @@ export default class Yarn extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        const text = this.context.message.getText().split(/\s+/);
-        if (!text.length || text.length < 2) {
-            return;
+        const text = this.context.getMessage()?.getText().split(/\s+/);
+        if (!text?.length || text.length < 2) {
+            return Promise.resolve();
         }
 
-        const library = text[1].replace(/[^\w\d_-]/g, '').toLowerCase();
+        const library = text[1].replace(/[^\w-]/g, '').toLowerCase();
         if (!library.length) {
-            return;
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        Lang.set(chat.language || "en");
         this.getPackage(library);
 
         return Promise.resolve();
@@ -125,7 +130,7 @@ export default class Yarn extends Command {
         }
 
         const yarnPackage = new YarnPackage(library);
-        if (this.context!.callbackQuery) {
+        if (this.context?.getCallbackQuery()) {
             return this.updateMessage(yarnPackage);
         }
 
@@ -142,16 +147,21 @@ export default class Yarn extends Command {
      */
     async sendNewMessage(yarnPackage: YarnPackage): Promise<void> {
 
-        const chat = await ChatHelper.getByTelegramId(this.context!.chat.getId());
-        if (!chat?.id) {
-            return;
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
         }
 
-        Lang.set(chat.language || "us");
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        if (!chat?.id) {
+            return Promise.resolve();
+        }
+
+        Lang.set(chat.language || "en");
 
         const options: Record<string, any> = {
-            disableWebPagePreview: true,
-            parseMode: "HTML"
+            disable_web_page_preview: true,
+            parse_mode: "HTML"
         };
 
         const dependencies = yarnPackage.getDependencies();
@@ -159,12 +169,11 @@ export default class Yarn extends Command {
             options.replyMarkup = dependencies;
         }
 
-        if (this.context!.message.getReplyToMessage()) {
-            options.replyToMessageId = this.context!.message.getReplyToMessage()?.getId();
+        if (this.context?.getMessage()?.getReplyToMessage()) {
+            options.replyToMessageId = this.context.getMessage()?.getReplyToMessage()?.getId() ?? null;
         }
 
-        this.context!.chat.sendMessage(yarnPackage.getMessage(), options);
-
+        this.context?.getChat()?.sendMessage(yarnPackage.getMessage(), options);
         return Promise.resolve();
     }
 
@@ -179,8 +188,8 @@ export default class Yarn extends Command {
     async updateMessage(yarnPackage: YarnPackage): Promise<void> {
 
         const options: Record<string, any> = {
-            disableWebPagePreview: true,
-            parseMode: "HTML"
+            disable_web_page_preview: true,
+            parse_mode: "HTML"
         };
 
         const dependencies = yarnPackage.getDependencies();
@@ -188,6 +197,6 @@ export default class Yarn extends Command {
             options.replyMarkup = dependencies;
         }
 
-        this.context!.message.edit(yarnPackage.getMessage(), options);
+        this.context?.getMessage()?.edit(yarnPackage.getMessage(), options);
     }
 }

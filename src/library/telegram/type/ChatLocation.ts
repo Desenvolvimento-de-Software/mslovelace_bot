@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Location } from "./Location.js";
+import { Location } from "./Location";
 
 export type ChatLocation = {
     location: Location;

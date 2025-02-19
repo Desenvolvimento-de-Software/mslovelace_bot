@@ -9,10 +9,10 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import Command from "./Command";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class SetCommands extends Command {
 
@@ -50,24 +50,24 @@ export default class SetCommands extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
+        if (!await this.context.getUser()?.isAdmin()) {
             return;
         }
 
         const currentCommand = command.getCommand();
 
-        let text = this.context.message.getText();
+        let text = this.context.getMessage()?.getText() ?? "";
         text = text.replace(`/${currentCommand}`, "").trim();
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
 
-        const options = { parseMode: "HTML" };
-        const replyToMessage = this.context.message.getReplyToMessage();
+        const options = { parse_mode : "HTML" };
+        const replyToMessage = this.context.getMessage()?.getReplyToMessage();
         if (replyToMessage) {
             replyToMessage.reply(text, options);
             return Promise.resolve();
         }
 
-        this.context.chat.sendMessage(text, options);
+        this.context.getChat()?.sendMessage(text, options);
     }
 }

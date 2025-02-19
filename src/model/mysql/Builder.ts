@@ -9,8 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JoinInterface from "./interface/Join.js";
-import OrderInterface from "./interface/Order.js";
+import JoinInterface from "./interface/Join";
+import OrderInterface from "./interface/Order";
 
 export default abstract class Builder {
 
@@ -129,9 +129,9 @@ export default abstract class Builder {
      * @param {string} field
      * @param {string} value
      *
-     * @returns {Builder}
+     * @returns {this}
      */
-    public set(field: string, value: any): Builder {
+    public set(field: string, value: any): this {
         this.fields.push(field);
         this.values.push(this.parseValue(value));
         return this;
@@ -146,9 +146,9 @@ export default abstract class Builder {
      * @param table
      * @param condition
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public innerJoin(table: string, condition: string) {
+    public innerJoin(table: string, condition: string): this {
 
         const join: JoinInterface = {
             type: 'inner join',
@@ -169,9 +169,9 @@ export default abstract class Builder {
      * @param table
      * @param condition
      *
-     * @return {Builder}
+     * @return {this}
      */
-     public leftJoin(table: string, condition: string) {
+     public leftJoin(table: string, condition: string): this {
 
         const join: JoinInterface = {
             type: 'left join',
@@ -192,9 +192,9 @@ export default abstract class Builder {
      * @param table
      * @param condition
      *
-     * @return {Builder}
+     * @return {this}
      */
-     public leftOuterJoin(table: string, condition: string) {
+     public leftOuterJoin(table: string, condition: string): this {
 
         const join: JoinInterface = {
             type: 'left outer join',
@@ -214,9 +214,9 @@ export default abstract class Builder {
      *
      * @param field
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public where(field: string): Builder {
+    public where(field: string): this {
         this.conditions.push("where " + field);
         return this;
     }
@@ -229,9 +229,9 @@ export default abstract class Builder {
      *
      * @param field
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public and(field: string): Builder {
+    public and(field: string): this {
         this.conditions.push("and " + field);
         return this;
     }
@@ -244,9 +244,9 @@ export default abstract class Builder {
      *
      * @param field
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public or(field: string): Builder {
+    public or(field: string): this {
         this.conditions.push("or " + field);
         return this;
     }
@@ -259,9 +259,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public equal(value: any): Builder {
+    public equal(value: any): this {
         this.conditions.push("= " + this.parseValue(value));
         return this;
     }
@@ -274,9 +274,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public notEqual(value: any): Builder {
+    public notEqual(value: any): this {
         this.conditions.push("<> " + this.parseValue(value));
         return this;
     }
@@ -289,9 +289,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public greaterThan(value: any): Builder {
+    public greaterThan(value: any): this {
         this.conditions.push("> " + this.parseValue(value));
         return this;
     }
@@ -304,9 +304,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public greaterThanOrEqual(value: any): Builder {
+    public greaterThanOrEqual(value: any): this {
         this.conditions.push(">= " + this.parseValue(value));
         return this;
     }
@@ -319,9 +319,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public lessThan(value: any): Builder {
+    public lessThan(value: any): this {
         this.conditions.push("< " + this.parseValue(value));
         return this;
     }
@@ -334,9 +334,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public lessThanOrEqual(value: any): Builder {
+    public lessThanOrEqual(value: any): this {
         this.conditions.push("<= " + this.parseValue(value));
         return this;
     }
@@ -349,9 +349,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public in(value: Array<any>): Builder {
+    public in(value: Array<any>): this {
         this.conditions.push("in " + this.parseValue(value));
         return this;
     }
@@ -364,9 +364,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public notIn(value: Array<any>): Builder {
+    public notIn(value: Array<any>): this {
         this.conditions.push("not in " + this.parseValue(value));
         return this;
     }
@@ -379,9 +379,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public like(value: string): Builder {
+    public like(value: string): this {
         this.conditions.push("like " + this.parseValue(value));
         return this;
     }
@@ -394,9 +394,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public notLike(value: string): Builder {
+    public notLike(value: string): this {
         this.conditions.push("not like " + this.parseValue(value));
         return this;
     }
@@ -410,9 +410,9 @@ export default abstract class Builder {
      * @param min
      * @param max
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public between(min: number, max: number): Builder {
+    public between(min: number, max: number): this {
         this.conditions.push("between " + min + " and " + max);
         return this;
     }
@@ -426,9 +426,9 @@ export default abstract class Builder {
      * @param min
      * @param max
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public notBetween(min: number, max: number): Builder {
+    public notBetween(min: number, max: number): this {
         this.conditions.push("not between " + min + " and " + max);
         return this;
     }
@@ -441,9 +441,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public groupBy(field: string): Builder {
+    public groupBy(field: string): this {
         this.group.push("group by " + field);
         return this;
     }
@@ -456,9 +456,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public orderBy(field: string, direction: string): Builder {
+    public orderBy(field: string, direction: string): this {
 
         const order: OrderInterface = {
             field : field,
@@ -477,9 +477,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public offset(value: number): Builder {
+    public offset(value: number): this {
         this.queryOffset = value;
         return this;
     }
@@ -492,9 +492,9 @@ export default abstract class Builder {
      *
      * @param value
      *
-     * @return {Builder}
+     * @return {this}
      */
-    public limit(value: number): Builder {
+    public limit(value: number): this {
         this.queryLimit = value;
         return this;
     }
@@ -514,8 +514,8 @@ export default abstract class Builder {
         if (Array.isArray(value)) {
 
             let result = [];
-            for (let i = 0; i < value.length; i++) {
-                result.push(this.parseValue(value[i]));
+            for (const val of value) {
+                result.push(this.parseValue(val));
             }
 
             return "(" + result.join(", ") + ")";

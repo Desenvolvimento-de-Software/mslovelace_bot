@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Builder from "./Builder.js";
+import Builder from "./Builder";
 
 export default class Insert extends Builder {
 
@@ -46,7 +46,7 @@ export default class Insert extends Builder {
     protected parseFields(): string {
 
         if (!this.fields.length) {
-            throw "No fields defined.";
+            throw Error("No fields defined.");
         }
 
         return this.fields.join(", ");
@@ -61,11 +61,11 @@ export default class Insert extends Builder {
     protected parseValues(): string {
 
         if (!this.values.length) {
-            throw "No values defined.";
+            throw Error("No values defined.");
         }
 
         if (this.values.length !== this.fields.length) {
-            throw "Fields and values must have the same length.";
+            throw Error("Fields and values must have the same length.");
         }
 
         return this.values.join(", ");

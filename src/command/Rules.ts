@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import ChatRules from "../model/ChatRules.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
-import Log from "../helper/Log.js";
+import ChatHelper from "helper/Chat";
+import ChatRules from "../model/ChatRules";
+import Command from "./Command";
+import Context from "context/Context";
+import CommandContext from "context/Command";
+import Lang from "helper/Lang";
+import Log from "helper/Log";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Rules extends Command {
 
@@ -74,17 +74,22 @@ export default class Rules extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context?.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        Lang.set(chat?.language || "us");
+        const chatId = this.context?.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        Lang.set(chat?.language || "en");
 
         this.command = command;
         this.chat = chat || { id: null };
 
-        this.context.message.delete();
+        this.context?.getMessage()?.delete();
         switch (this.command.getCommand()) {
 
             case "rules":
@@ -109,7 +114,7 @@ export default class Rules extends Command {
     private async rules(): Promise<void> {
 
         if (!this.chat) {
-            return this.context!.chat.sendMessage(Lang.get("rulesNotFound"));
+            return this.context?.getChat()?.sendMessage(Lang.get("rulesNotFound"));
         }
 
         const chatRules = new ChatRules();
@@ -120,10 +125,10 @@ export default class Rules extends Command {
         const result = await chatRules.execute();
 
         if (!result.length) {
-            return this.context!.chat.sendMessage(Lang.get("rulesNotFound"));
+            return this.context?.getChat()?.sendMessage(Lang.get("rulesNotFound"));
         }
 
-        return this.context!.chat.sendMessage(result[0].rules, { parseMode: "HTML" });
+        return this.context?.getChat()?.sendMessage(result[0].rules, { parse_mode : "HTML" });
     }
 
     /**
@@ -134,9 +139,9 @@ export default class Rules extends Command {
      */
     private async addrules(): Promise<void> {
 
-        const text = this.context!.message.getText().replace(`/${this.command!.getCommand()}`, "").trim();
+        const text = this.context?.getMessage()?.getText().replace(`/${this.command!.getCommand()}`, "").trim() ?? "";
         if (!text.length || text.length < 2) {
-            return;
+            return Promise.resolve();
         }
 
         const rules = text.replace(/^\\n/, "").replace(/\\n$/, "").trim();
@@ -148,7 +153,7 @@ export default class Rules extends Command {
             let message = Lang.get("rulesUpdated");
             message += "\n\n" + rules;
 
-            this.context!.chat.sendMessage(message, { parseMode: "HTML" });
+            this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
 
         } catch (error: any) {
             Log.save(error.message);

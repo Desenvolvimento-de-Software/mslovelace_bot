@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "../action/Action.js";
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import ReportCommand from "../command/Report.js";
-import { Options as OptionsType } from "../type/Options.js";
+import Action from "action/Action";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import ReportCommand from "command/Report";
+import { Options as OptionsType } from "type/Options";
 
 export default class Report extends Action {
 
@@ -37,8 +37,13 @@ export default class Report extends Action {
      */
     public async run(): Promise<void> {
 
-        const text = this.context.message.getText();
-        const entities = this.context.message.getEntities();
+        const message = this.context.getMessage();
+        if (!message) {
+            return;
+        }
+
+        const text = message.getText();
+        const entities = message.getEntities();
 
         for (const entity of entities) {
             this.parseEntity(text, entity);

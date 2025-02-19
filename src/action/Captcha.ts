@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Lang from "../helper/Lang.js";
-import Action from "../action/Action.js";
-import Context from "../library/telegram/context/Context.js";
-import UserHelper from "../helper/User.js";
-import ChatHelper from "../helper/Chat.js";
-import RelUsersChats from "../model/RelUsersChats.js";
-import RestrictChatMember from "../library/telegram/resource/RestrictChatMember.js";
-import { ChatPermissions } from "../library/telegram/type/ChatPermissions.js";
+import Action from "action/Action";
+import ChatHelper from "helper/Chat";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import RelUsersChats from "model/RelUsersChats";
+import RestrictChatMember from "library/telegram/resource/RestrictChatMember";
+import UserHelper from "helper/User";
+import { ChatPermissions } from "library/telegram/type/ChatPermissions";
 
 export default class Captcha extends Action {
 
@@ -60,11 +60,11 @@ export default class Captcha extends Action {
      */
     public async run(): Promise<void> {
 
-        if (this.context.newChatMember) {
+        if (this.context.getNewChatMember()) {
             return this.executeNewChatMember();
         }
 
-        const text = this.context.message.getText();
+        const text = this.context.getMessage()?.getText() ?? "";
         if (text.length === 6) {
             return this.resolveCaptcha(text);
         }
@@ -78,15 +78,20 @@ export default class Captcha extends Action {
      */
     private async executeNewChatMember(): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(this.context.newChatMember!.getId());
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const userId = this.context.getNewChatMember()?.getId();
+        const chatId = this.context.getChat()?.getId();
+        if (!userId || !chatId) {
+            return Promise.resolve();
+        }
 
+        const user = await UserHelper.getByTelegramId(userId);
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!user?.id || !chat?.id) {
             return Promise.resolve();
         }
 
-        this.user = user!;
-        this.chat = chat!;
+        this.user = user;
+        this.chat = chat;
 
         if (parseInt(this.chat.captcha) !== 1) {
             return Promise.resolve();
@@ -109,7 +114,7 @@ export default class Captcha extends Action {
             can_manage_topics: false
         };
 
-        this.context.newChatMember!.setPermissions(permissions);
+        this.context.getNewChatMember()?.setPermissions(permissions);
     }
 
     /**
@@ -122,7 +127,12 @@ export default class Captcha extends Action {
      */
     private async resolveCaptcha(text: string): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(this.context.user.getId());
+        const userId = this.context.getUser()?.getId();
+        if (!userId) {
+            return Promise.resolve();
+        }
+
+        const user = await UserHelper.getByTelegramId(userId);
         if (!user) {
             return Promise.resolve();
         }
@@ -170,7 +180,12 @@ export default class Captcha extends Action {
      *
      * @param chat
      */
-    private async addPermissions(chat: Record<string, any>): Promise<Record<string, any>> {
+    private async addPermissions(chat: Record<string, any>): Promise<void> {
+
+        const userId = this.context.getUser()?.getId();
+        if (!userId) {
+            return Promise.resolve();
+        }
 
         const permissions: ChatPermissions = {
             can_send_messages: true,
@@ -190,11 +205,13 @@ export default class Captcha extends Action {
         };
 
         const restrictChatMember = new RestrictChatMember();
-        return restrictChatMember
-            .setUserId(this.context.user.getId())
+        restrictChatMember
+            .setUserId(userId)
             .setChatId(chat.chat_id)
             .setChatPermissions(permissions)
             .post();
+
+        return Promise.resolve();
     }
 
     /**
@@ -206,6 +223,11 @@ export default class Captcha extends Action {
      * @param chat
      */
     private async restrictUser(chat: Record<string, any>): Promise<void> {
+
+        const userId = this.context.getUser()?.getId();
+        if (!userId) {
+            return Promise.resolve();
+        }
 
         const permissions: ChatPermissions = {
             can_send_messages: true,
@@ -224,12 +246,14 @@ export default class Captcha extends Action {
         const until = Math.floor(Date.now() / 1000) + (60 * 60 * 24);
         const restrictChatMember = new RestrictChatMember();
 
-        return restrictChatMember
-            .setUserId(this.context.user.getId())
+        restrictChatMember
+            .setUserId(userId)
             .setChatId(chat.chat_id)
             .setChatPermissions(permissions)
             .setUntilDate(until)
             .post();
+
+        return Promise.resolve();
     }
 
     /**
@@ -246,6 +270,6 @@ export default class Captcha extends Action {
         message = message.replace("{groupid}", chat.chat_id);
         message = message.replace("{groupname}", chat.title);
 
-        this.context.chat.sendMessage(message, { parse_mode: "HTML" });
+        this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
     }
 }

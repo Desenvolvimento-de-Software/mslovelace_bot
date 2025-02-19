@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Action from "./Action.js";
-import Context from "../library/telegram/context/Context.js";
-import ChatHelper from "../helper/Chat.js";
+import Action from "./Action";
+import ChatHelper from "../helper/Chat";
+import Context from "context/Context";
 
 export default class NewChatMember extends Action {
 
@@ -37,17 +37,22 @@ export default class NewChatMember extends Action {
      */
     public async run(): Promise<void> {
 
-        if (!this.context.newChatMember) {
-            return;
+        if (!this.context.getNewChatMember()) {
+            return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
+        const chatId = this.context.getChat()?.getId();
+        if (!chatId) {
+            return Promise.resolve();
+        }
+
+        const chat = await ChatHelper.getByTelegramId(chatId);
         if (!chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         if (parseInt(chat.remove_event_messages) === 1) {
-            this.context.message.delete();
+            this.context.getMessage()?.delete();
         }
     }
 }

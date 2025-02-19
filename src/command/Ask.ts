@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Command from "./Command.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import Context from "../library/telegram/context/Context.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
-import ChatHelper from "../helper/Chat.js";
-import Lang from "../helper/Lang.js";
+import ChatHelper from "helper/Chat";
+import Command from "./Command";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import Lang from "helper/Lang";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default class Ask extends Command {
 
@@ -54,21 +54,26 @@ export default class Ask extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        if (!await this.context.user.isAdmin()) {
-            return;
+        if (!await this.context.getUser()?.isAdmin()) {
+            return Promise.resolve();
         }
 
-        this.context.message.delete();
+        this.context.getMessage()?.delete();
 
-        const chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
-        Lang.set(chat?.language || "us");
+        let chat;
+        const chatId = this.context.getChat()?.getId();
+        if (chatId) {
+            chat = await ChatHelper.getByTelegramId(chatId);
+        }
 
-        const replyToMessage = this.context.message.getReplyToMessage();
+        Lang.set(chat?.language || "en");
+
+        const replyToMessage = this.context.getMessage()?.getReplyToMessage();
         if (replyToMessage) {
             replyToMessage.reply(Lang.get("askToAskLink"));
-            return;
+            return Promise.resolve();
         }
 
-        this.context.chat.sendMessage(Lang.get("askToAskLink"));
+        this.context.getChat()?.sendMessage(Lang.get("askToAskLink"));
     }
 }

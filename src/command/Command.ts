@@ -9,9 +9,9 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
-import CommandContext from "../library/telegram/context/Command.js";
-import { BotCommand } from "../library/telegram/type/BotCommand.js";
+import CommandContext from "context/Command";
+import Context from "context/Context";
+import { BotCommand } from "library/telegram/type/BotCommand";
 
 export default abstract class Command {
 
@@ -95,13 +95,14 @@ export default abstract class Command {
             return;
         }
 
-        let commandList = [];
+        let commandList: string[] = [];
         this.commands.forEach(command => {
             commandList.push(command.command);
             commandList.push(`${command.command}@${process.env.TELEGRAM_USERNAME}`);
         });
 
-        for (const command of context.message.getCommands()) {
+        const commands = context.getMessage()?.getCommands() ?? [];
+        for (const command of commands) {
             if (commandList.includes(command.getCommand())) {
                 return command;
             }

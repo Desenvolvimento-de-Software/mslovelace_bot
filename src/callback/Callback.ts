@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "../library/telegram/context/Context.js";
+import Context from "context/Context";
 
 export default abstract class Callback {
 
@@ -66,11 +66,11 @@ export default abstract class Callback {
      */
     public isCalled(): boolean {
 
-        if (!this.context.callbackQuery?.callbackData?.c) {
+        if (!this.context.getCallbackQuery()?.callbackData?.c) {
             return false;
         }
 
-        return this.callbacks.includes(this.context.callbackQuery?.callbackData.c);
+        return this.callbacks.includes(this.context.getCallbackQuery()?.callbackData.c);
     }
 
     /**
