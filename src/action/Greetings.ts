@@ -77,21 +77,25 @@ export default class Greetings extends Action {
      */
     public async run(): Promise<void> {
 
+        if (this.context.getType() !== "chat_member") {
+            return Promise.resolve();
+        }
+
         if (!this.context.newChatMember) {
-            return;
+            return Promise.resolve();
         }
 
         this.chat = await ChatHelper.getByTelegramId(this.context.chat.getId());
         if (!this.chat?.id) {
-            return;
+            return Promise.resolve();
         }
 
         if (parseInt(this.chat.greetings) !== 1) {
-            return;
+            return Promise.resolve();
         }
 
         if (parseInt(this.chat.grouped_greetings) === 1) {
-            return;
+            return Promise.resolve();
         }
 
         this.user = await UserHelper.getByTelegramId(this.context.user.getId());
@@ -118,7 +122,6 @@ export default class Greetings extends Action {
             .limit(1);
 
         this.chatMessages = await chatMessages.execute();
-
         this.greetings();
     }
 
