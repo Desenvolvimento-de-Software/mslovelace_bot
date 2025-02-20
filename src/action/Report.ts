@@ -50,6 +50,15 @@ export default class Report extends Action {
         }
     }
 
+    /**
+     * Parses the entity.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     *
+     * @param text
+     * @param entity
+     */
     private async parseEntity(text: string, entity: Record<string, any>): Promise<void> {
 
         if (entity.type !== "mention") {
@@ -57,16 +66,18 @@ export default class Report extends Action {
         }
 
         const mention = text.substring(entity.offset, entity.offset + entity.length);
-        if (mention !== "@admin") {
+        if (mention !== "admin") {
             return;
         }
 
         const options: OptionsType = {
-            start: 0,
-            end: 0,
+            start: entity.offset,
+            end: entity.end,
         };
 
         const reportCommand = new ReportCommand();
         await reportCommand.run(new CommandContext("", options), this.context);
+
+        return Promise.resolve();
     }
 }

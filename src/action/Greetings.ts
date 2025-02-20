@@ -289,7 +289,7 @@ export default class Greetings extends Action {
 
         const chatConfig = await chatConfigs.execute();
         const message = await context.chat.sendMessage(text, { parse_mode : "HTML" });
-        const timeout = ((chatConfig[0]?.captcha_ban_seconds || 300) * 1000);
+        const timeout = ((chatConfig[0]?.captcha_ban_seconds || 60) * 1000);
 
         setTimeout(() => {
             message.delete();
