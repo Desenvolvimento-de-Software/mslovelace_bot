@@ -9,11 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import JsPackage from "./JsPackage";
-import SizeHelper from "./Size";
-import Lang from "./Lang";
-import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton";
-import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup";
+import JsPackage from "./JsPackage.js";
+import SizeHelper from "./Size.js";
+import Lang from "./Lang.js";
+import { InlineKeyboardButton } from "../library/telegram/type/InlineKeyboardButton.js";
+import { InlineKeyboardMarkup } from "../library/telegram/type/InlineKeyboardMarkup.js";
 
 export default class YarnPackage extends JsPackage {
 

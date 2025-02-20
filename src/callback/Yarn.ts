@@ -10,8 +10,10 @@
  */
 
 import Callback from "./Callback";
-import Context from "context/Context";
+import CallbackQuery from "context/CallbackQuery";
+import Command from "context/Command";
 import YarnCommand from "../command/Yarn";
+import { Options as OptionsType } from "type/Options";
 
 export default class Yarn extends Callback {
 
@@ -21,7 +23,7 @@ export default class Yarn extends Callback {
      * @author Marcos Leandro
      * @since 1.0.0
      */
-    public constructor(context: Context) {
+    public constructor(context: CallbackQuery) {
         super(context);
         this.setCallbacks(["yarn"]);
     }
@@ -37,13 +39,25 @@ export default class Yarn extends Callback {
      */
      public async run(): Promise<void> {
 
-        const callbackQuery = this.context.getCallbackQuery();
-        if (!callbackQuery?.callbackData.d.package) {
-            return;
+        const callbackData = this.context.getData();
+        if (!callbackData?.d || typeof callbackData.d !== "object") {
+            return Promise.resolve();
         }
 
+        if (!("package" in callbackData.d) || !callbackData.d.package) {
+            return Promise.resolve();
+        }
+
+        const options: OptionsType = {
+            start: 0,
+            end: 5,
+            params: callbackData.d.package as string
+        };
+
+        const commandContext = new Command("yarn", options);
         const yarnCommand = new YarnCommand();
-        await yarnCommand.getPackage(callbackQuery?.callbackData.d.package);
-        callbackQuery.answer(this.context.getCallbackQuery()?.callbackData.d.package.toUpperCase());
+        yarnCommand.run(commandContext, this.context);
+
+        this.context.answer((callbackData.d.package as string).toUpperCase());
     }
 }

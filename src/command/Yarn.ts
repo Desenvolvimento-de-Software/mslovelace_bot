@@ -55,12 +55,17 @@ export default class Yarn extends Command {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
-        const text = this.context.getMessage()?.getText().split(/\s+/);
-        if (!text?.length || text.length < 2) {
+        const params = command.getParams();
+
+        if (!params?.length) {
             return Promise.resolve();
         }
 
-        const library = text[1].replace(/[^\w-]/g, '').toLowerCase();
+        if (!params[0] || params[0].length < 2) {
+            return Promise.resolve();
+        }
+
+        const library = params[0].replace(/[^\w-]/g, '').toLowerCase();
         if (!library.length) {
             return Promise.resolve();
         }
@@ -130,7 +135,7 @@ export default class Yarn extends Command {
         }
 
         const yarnPackage = new YarnPackage(library);
-        if (this.context?.getCallbackQuery()) {
+        if (this.context?.getType() === "callback_query") {
             return this.updateMessage(yarnPackage);
         }
 
@@ -166,11 +171,11 @@ export default class Yarn extends Command {
 
         const dependencies = yarnPackage.getDependencies();
         if (dependencies) {
-            options.replyMarkup = dependencies;
+            options.reply_markup = dependencies;
         }
 
         if (this.context?.getMessage()?.getReplyToMessage()) {
-            options.replyToMessageId = this.context.getMessage()?.getReplyToMessage()?.getId() ?? null;
+            options.reply_to_message_id = this.context.getMessage()?.getReplyToMessage()?.getId() ?? null;
         }
 
         this.context?.getChat()?.sendMessage(yarnPackage.getMessage(), options);
@@ -194,7 +199,7 @@ export default class Yarn extends Command {
 
         const dependencies = yarnPackage.getDependencies();
         if (dependencies) {
-            options.replyMarkup = dependencies;
+            options.reply_markup = dependencies;
         }
 
         this.context?.getMessage()?.edit(yarnPackage.getMessage(), options);

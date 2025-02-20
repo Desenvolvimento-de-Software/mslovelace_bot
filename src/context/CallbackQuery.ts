@@ -9,52 +9,33 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chat from "./Chat";
-import Message from "./Message";
-import User from "./User";
 import AnswerCallbackQuery from "library/telegram/resource/AnswerCallbackQuery";
+import Context from "context/Context";
+import Message from "context/Message";
+import { Error as ErrorType } from "library/telegram/type/Error";
+import { Update as UpdateType } from "library/telegram/type/Update";
 
-export default class CallbackQuery {
-
-    /**
-     * Chat object.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-13
-     */
-    public chat: Chat;
+export default class CallbackQuery extends Context {
 
     /**
-     * Message object.
+     * The callback query id.
      *
      * @author Marcos Leandro
-     * @since  2023-06-13
+     * @since  2025-02-19
+     *
+     * @var {number}
      */
-    public message: Message;
+    protected id: string;
 
     /**
-     * User Object.
+     * The callback query payload.
      *
      * @author Marcos Leandro
-     * @since  2023-06-13
-     */
-    public user: User;
-
-    /**
-     * Callback data.
+     * @since  2025-02-19
      *
-     * @author Marcos Leandro
-     * @since  2023-06-13
+     * @var {Record<string, unknown>}
      */
-    public callbackData: Record<string, any>;
-
-    /**
-     * The payload.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-13
-     */
-    private readonly payload: Record<string, any>;
+    protected data: Record<string, unknown>|undefined;
 
     /**
      * The constructor.
@@ -64,19 +45,10 @@ export default class CallbackQuery {
      *
      * @param context
      */
-    public constructor(payload: Record<string, any>) {
+    public constructor(type: string, payload: UpdateType) {
+        super(type, payload);
+        this.id = this.payload.callback_query!.id;
 
-        this.payload = payload;
-        this.chat = new Chat(this.payload.callback_query);
-        this.message = new Message(this.payload.callback_query);
-        this.user = new User(this.payload.callback_query.from, this.chat);
-
-        try {
-            this.callbackData = JSON.parse(this.payload.callback_query.data);
-
-        } catch (err) {
-            this.callbackData = this.payload.callback_query.data;
-        }
     }
 
     /**
@@ -85,10 +57,37 @@ export default class CallbackQuery {
      * @author Marcos Leandro
      * @since  2023-06-12
      *
-     * @return {number}
+     * @return {string}
      */
-    public getId(): number {
-        return this.payload.callbackQuery.id;
+    public getId(): string {
+        return this.id;
+    }
+
+    /**
+     * Returns the callback query data.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     *
+     * @return {Record<string, unknown>|undefined}
+     */
+    public getData(): Record<string, unknown>|undefined {
+        return this.data;
+    }
+
+    /**
+     * Sets the callback query data.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     *
+     * @param {string} data
+     */
+    public setData(data: string): void {
+
+        try {
+            this.data = JSON.parse(data);
+        } catch (error) {}
     }
 
     /**
@@ -99,16 +98,17 @@ export default class CallbackQuery {
      *
      * @param {string} content
      */
-    public async answer(content: string): Promise<any> {
+    public async answer(content: string): Promise<Message|ErrorType> {
 
         const answer = new AnswerCallbackQuery();
         answer
-            .setCallbackQueryId(this.payload.callback_query.id)
+            .setCallbackQueryId(this.getId())
             .setText(content);
 
         return answer
             .post()
             .then((response) => response.json())
-            .then((json) => new Message(json.result));
+            .then((json) => new Message(json.result))
+            .catch((error) => error);
     }
 }

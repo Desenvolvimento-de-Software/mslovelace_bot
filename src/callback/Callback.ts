@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "context/Context";
+import CallbackQuery from "context/CallbackQuery";
 
 export default abstract class Callback {
 
@@ -21,7 +21,7 @@ export default abstract class Callback {
      *
      * @var {Context}
      */
-    protected context: Context;
+    protected context: CallbackQuery;
 
     /**
      * Registered callbacks.
@@ -42,7 +42,7 @@ export default abstract class Callback {
      * @param context
      * @param type
      */
-    public constructor(context: Context) {
+    public constructor(context: CallbackQuery) {
         this.context = context;
     }
 
@@ -66,11 +66,12 @@ export default abstract class Callback {
      */
     public isCalled(): boolean {
 
-        if (!this.context.getCallbackQuery()?.callbackData?.c) {
+        const callbackData = this.context.getData();
+        if (!callbackData?.c) {
             return false;
         }
 
-        return this.callbacks.includes(this.context.getCallbackQuery()?.callbackData.c);
+        return typeof callbackData.c === "string" && this.callbacks.includes(callbackData.c);
     }
 
     /**
