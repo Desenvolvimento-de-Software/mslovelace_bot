@@ -112,6 +112,11 @@ export default class ContextFactory {
             context.setNewChatMember(newChatMember);
         }
 
+        if (typeof chat !== "undefined" && "left_chat_member" in updateData) {
+            const leftChatMember = new User(updateData.left_chat_member as UserType, chat);
+            context.setLeftChatMember(leftChatMember);
+        }
+
         const message = new Message(updateData);
         context.setMessage(message);
 
@@ -329,16 +334,10 @@ export default class ContextFactory {
 
         if (typeof chat !== "undefined" && "new_chat_member" in updateData) {
 
-            const newChatMember: ChatMemberTypes = updateData.new_chat_member;
             const oldChatMember: ChatMemberTypes = updateData.old_chat_member;
+            const newChatMember: ChatMemberTypes = updateData.new_chat_member;
 
-            const isNewChatMember = (
-                "user" in newChatMember && (
-                    !("is_member" in oldChatMember) || oldChatMember.is_member === false
-                )
-            );
-
-            if (isNewChatMember) {
+            if (ContextFactory.hasNewChatMember(oldChatMember, newChatMember)) {
                 const newUser = new User(newChatMember.user, chat);
                 context.setNewChatMember(newUser);
             }
@@ -386,5 +385,45 @@ export default class ContextFactory {
      */
     private static createFromChatBoost(key: string, update: Update): Context|undefined {
         return undefined;
+    }
+
+    /**
+     * Returns whether the chat has a new member or not.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     *
+     * @param oldChatMember
+     * @param newChatMember
+     *
+     * @return {boolean}
+     */
+    private static hasNewChatMember(oldChatMember: ChatMemberTypes, newChatMember: ChatMemberTypes): boolean {
+
+        let newUser, oldUser;
+        "user" in newChatMember && (newUser = newChatMember.user);
+        "user" in oldChatMember && (oldUser = oldChatMember.user);
+
+        if (!newUser || !oldUser) {
+            return false;
+        }
+
+        if ("is_member" in oldUser && oldUser.is_member) {
+            return false;
+        }
+
+        if ("status" in oldChatMember && oldChatMember.status !== "left") {
+            return false;
+        }
+
+        if ("is_member" in newChatMember && !newChatMember.is_member) {
+            return false;
+        }
+
+        if ("status" in newChatMember && newChatMember.status === "left") {
+            return false;
+        }
+
+        return true;
     }
 };
