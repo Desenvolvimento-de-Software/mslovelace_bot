@@ -112,6 +112,7 @@ export default class Controller {
      */
     protected async handle(payload: UpdateType): Promise<void> {
 
+        console.log(JSON.stringify(payload));
         if (!payload.update_id) {
             Log.save("Invalid payload.\n" + JSON.stringify(payload), "", false, "error");
             return Promise.resolve();

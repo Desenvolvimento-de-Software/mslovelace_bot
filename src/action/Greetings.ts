@@ -201,7 +201,7 @@ export default class Greetings extends Action {
             inline_keyboard : [[captchaButton]]
         };
 
-        options.replyMarkup = markup;
+        options.reply_markup = markup;
         return options;
     }
 

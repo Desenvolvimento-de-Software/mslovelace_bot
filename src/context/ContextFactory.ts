@@ -330,9 +330,12 @@ export default class ContextFactory {
         if (typeof chat !== "undefined" && "new_chat_member" in updateData) {
 
             const newChatMember: ChatMemberTypes = updateData.new_chat_member;
+            const oldChatMember: ChatMemberTypes = updateData.old_chat_member;
+
             const isNewChatMember = (
-                ("is_member" in newChatMember && newChatMember.is_member) ||
-                ("status" in newChatMember && newChatMember.status === "member")
+                "user" in newChatMember && (
+                    !("is_member" in oldChatMember) || oldChatMember.is_member === false
+                )
             );
 
             if (isNewChatMember) {
@@ -341,8 +344,9 @@ export default class ContextFactory {
             }
 
             const isLeftChatMember = (
-                ("is_member" in newChatMember && !newChatMember.is_member) ||
-                ("status" in newChatMember && newChatMember.status === "left")
+                "status" in newChatMember && (
+                    newChatMember.status === "left" || ("is_member" in newChatMember && newChatMember.is_member === false)
+                )
             );
 
             if (isLeftChatMember) {
