@@ -41,7 +41,7 @@ export default class AnswerCallbackQuery extends TelegramBotApi {
      *
      * @return {this}
      */
-    public setCallbackQueryId(callbackQueryId: number): this {
+    public setCallbackQueryId(callbackQueryId: string): this {
         this.payload.callback_query_id = callbackQueryId;
         return this;
     }

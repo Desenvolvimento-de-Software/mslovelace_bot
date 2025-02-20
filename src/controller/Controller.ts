@@ -14,6 +14,7 @@ import App from "App";
 import Action from "action/Action";
 import Command from "command/Command";
 import Callback from "callback/Callback";
+import CallbackQuery from "context/CallbackQuery";
 import Context from "context/Context";
 import ContextFactory from "context/ContextFactory";
 import Log from "helper/Log";
@@ -111,6 +112,7 @@ export default class Controller {
      */
     protected async handle(payload: UpdateType): Promise<void> {
 
+        console.log(JSON.stringify(payload));
         if (!payload.update_id) {
             Log.save("Invalid payload.\n" + JSON.stringify(payload), "", false, "error");
             return Promise.resolve();
@@ -173,7 +175,7 @@ export default class Controller {
      */
     private async handleCallbacks(context: Context): Promise<void> {
         for (const callbackName of callbacks) {
-            const callback = new callbackName(context);
+            const callback = new callbackName(context as CallbackQuery);
             this.executeCallback(callback);
         }
     }

@@ -13,11 +13,13 @@ import Chat from "./Chat";
 import Context from "./Context";
 import Message from "./Message";
 import User from "./User";
+import { CallbackQuery as CallbackQueryType} from "library/telegram/type/CallbackQuery";
 import { ChatMemberUpdated } from "library/telegram/type/ChatMemberUpdated";
 import { Message as MessageType } from "library/telegram/type/Message";
 import { User as UserType } from "library/telegram/type/User";
 import { Update } from "library/telegram/type/Update";
 import { ChatMemberTypes } from "library/telegram/type/ChatMember";
+import CallbackQuery from "./CallbackQuery";
 
 export default class ContextFactory {
 
@@ -203,7 +205,35 @@ export default class ContextFactory {
      * @return {Context|undefined}
      */
     private static createFromCallbackQuery(key: string, update: Update): Context|undefined {
-        return undefined;
+
+        const context = new CallbackQuery(key, update);
+        const updateData = update[key as keyof Update] as CallbackQueryType;
+        if (typeof updateData !== "object") {
+            return undefined;
+        }
+
+        let chat;
+        if ("message" in updateData && updateData.message && "chat" in updateData.message) {
+            chat = new Chat(updateData.message.chat);
+            context.setChat(chat);
+        }
+
+        if (typeof chat !== "undefined" && "from" in updateData) {
+            const from = updateData.from;
+            const user = new User(from, chat);
+            context.setUser(user);
+        }
+
+        if ("message" in updateData && updateData.message) {
+            const message = new Message(updateData.message);
+            context.setMessage(message);
+        }
+
+        if ("data" in updateData && typeof updateData.data === "string") {
+            context.setData(updateData.data);
+        }
+
+        return context;
     }
 
     /**
@@ -292,7 +322,7 @@ export default class ContextFactory {
         }
 
         if (typeof chat !== "undefined" && "from" in updateData) {
-            const from = updateData.from as UserType;
+            const from = updateData.from;
             const user = new User(from, chat);
             context.setUser(user);
         }
@@ -300,9 +330,12 @@ export default class ContextFactory {
         if (typeof chat !== "undefined" && "new_chat_member" in updateData) {
 
             const newChatMember: ChatMemberTypes = updateData.new_chat_member;
+            const oldChatMember: ChatMemberTypes = updateData.old_chat_member;
+
             const isNewChatMember = (
-                ("is_member" in newChatMember && newChatMember.is_member) ||
-                ("status" in newChatMember && newChatMember.status === "member")
+                "user" in newChatMember && (
+                    !("is_member" in oldChatMember) || oldChatMember.is_member === false
+                )
             );
 
             if (isNewChatMember) {
@@ -311,8 +344,9 @@ export default class ContextFactory {
             }
 
             const isLeftChatMember = (
-                ("is_member" in newChatMember && !newChatMember.is_member) ||
-                ("status" in newChatMember && newChatMember.status === "left")
+                "status" in newChatMember && (
+                    newChatMember.status === "left" || ("is_member" in newChatMember && newChatMember.is_member === false)
+                )
             );
 
             if (isLeftChatMember) {

@@ -9,10 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Warning from "../callback/Warning";
-import YarnCallback from "../callback/Yarn";
-
-export const callbacks = [
-    Warning,
-    YarnCallback
-];
+export type Error = {
+    ok: boolean;
+    error_code: number;
+    description: string;
+};

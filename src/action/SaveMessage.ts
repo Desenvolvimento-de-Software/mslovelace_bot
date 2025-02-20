@@ -15,6 +15,7 @@ import Context from "context/Context";
 import Log from "helper/Log";
 import Messages from "model/Messages";
 import UserHelper from "helper/User";
+import CallbackQuery from "context/CallbackQuery";
 
 export default class SaveMessage extends Action {
 
@@ -121,7 +122,7 @@ export default class SaveMessage extends Action {
             insert.set("reply_to", replyTo);
         }
 
-        const callbackData = this.context.getCallbackQuery()?.callbackData;
+        const callbackData = this.context instanceof CallbackQuery ? this.context?.getData() : null;
         if (callbackData) {
             insert.set("callbackQuery", JSON.stringify(callbackData));
         }

@@ -94,32 +94,7 @@ export default class Context {
      *
      * @var {Update}
      */
-    private readonly payload: Update;
-
-    /**
-     * The types of the context.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-19
-     *
-     * @var {string[]}
-     */
-    private readonly types: string[] = [
-        "message",
-        "edited_message",
-        "channel_post",
-        "edited_channel_post",
-        "inline_query",
-        "chosen_inline_result",
-        "callback_query",
-        "shipping_query",
-        "pre_checkout_query",
-        "poll",
-        "poll_answer",
-        "chat_join_request",
-        "chat_member",
-        "message_reaction"
-    ];
+    protected readonly payload: Update;
 
     /**
      * The constructor.
