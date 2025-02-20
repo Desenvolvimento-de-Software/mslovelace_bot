@@ -10,8 +10,8 @@
  */
 
 import Callback from "./Callback";
+import CallbackQuery from "context/CallbackQuery";
 import ChatHelper from "helper/Chat";
-import Context from "context/Context";
 import Lang from "helper/Lang";
 import UserHelper from "helper/User";
 import Warnings from "model/Warnings";
@@ -26,7 +26,7 @@ export default class Warning extends Callback {
      *
      * @param context
      */
-     public constructor(context: Context) {
+     public constructor(context: CallbackQuery) {
         super(context);
         this.setCallbacks(["warning"]);
     }
@@ -65,24 +65,30 @@ export default class Warning extends Callback {
             return Promise.resolve();
         }
 
-        const callbackData = this.context.getCallbackQuery()?.callbackData?.d;
+        const callbackQuery = this.context.getCallbackQuery();
+        if (!callbackQuery) {
+            return Promise.resolve();
+        }
+
+        const callbackData = callbackQuery.getData();
         if (!callbackData) {
             return Promise.resolve();
         }
 
-        const [callbackUserId, callbackChatId, callbackWarningId] = callbackData.split(",");
+        const data = callbackData.d as string;
+        const [callbackUserId, callbackChatId, callbackWarningId] = data.split(",");
 
         this.context.getCallbackQuery()?.answer("OK");
         this.context.getMessage()?.delete();
 
         const contextUser = await UserHelper.getByTelegramId(userId);
-        await this.remove(callbackUserId, callbackChatId, callbackWarningId);
+        await this.remove(parseInt(callbackUserId), parseInt(callbackChatId), parseInt(callbackWarningId));
 
         let message = Lang.get(typeof callbackWarningId === "undefined" ? "warningAdminRemovedAll" : "warningAdminRemovedLast")
             .replace("{userid}", contextUser.user_id)
             .replace("{username}", contextUser.first_name || user.username)
             .replace("{adminId}", this.context.getUser()?.getId())
-            .replace("{adminUsername}", this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername());
+            .replace("{adminUsername}", this.context.getUser()?.getFirstName() ?? this.context.getUser()?.getUsername());
 
         this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
     }
