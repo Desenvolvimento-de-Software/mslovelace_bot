@@ -28,7 +28,6 @@ export default class YarnPackage extends JsPackage {
     public constructor(record: Record<string, any>) {
 
         super(record);
-
         this.addDescription();
         this.addDetails();
         this.addLinks();
@@ -37,6 +36,18 @@ export default class YarnPackage extends JsPackage {
         this.addMaintainers();
         this.addKeywords();
         this.addFooter();
+    }
+
+    /**
+     * Returns the package name.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-19
+     *
+     * @return {string}
+     */
+    public getName(): string {
+        return this.package.data.name;
     }
 
     /**
@@ -117,7 +128,7 @@ export default class YarnPackage extends JsPackage {
             this.message.push(Lang.get("packageVersion").replace("{version}", version));
         }
 
-        if (this.package.data?.time && this.package.data.time[version]) {
+        if (this.package.data?.time[version]) {
             this.message.push(Lang.get("packageDate").replace("{date}", this.package.data.time[version]));
         }
 
