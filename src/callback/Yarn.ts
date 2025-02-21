@@ -39,7 +39,11 @@ export default class Yarn extends Callback {
      */
      public async run(): Promise<void> {
 
-        const callbackData = this.context.getData();
+        let callbackData;
+        if (typeof this.context?.getData === "function") {
+            const callbackData = this.context?.getData() ?? undefined;
+        }
+
         if (!callbackData?.d || typeof callbackData.d !== "object") {
             return Promise.resolve();
         }
