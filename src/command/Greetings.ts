@@ -17,6 +17,8 @@ import CommandContext from "context/Command";
 import Context from "context/Context";
 import Lang from "helper/Lang";
 import { BotCommand } from "library/telegram/type/BotCommand";
+import { ChatMessage as ChatMessageType } from "model/type/ChatMessage";
+import { ResultSetHeader } from "mysql2";
 
 export default class GreetingsCommand extends Command {
 
@@ -109,8 +111,7 @@ export default class GreetingsCommand extends Command {
             .select()
             .where("chat_id").equal(chat.id);
 
-        const result = await chatMessages.execute();
-
+        const result = await chatMessages.execute<ChatMessageType[]>();
         if (!result.length) {
             this.context?.getChat()?.sendMessage(Lang.get("greetingsMessageNotSet"), { parse_mode : "HTML" });
             return;
@@ -219,8 +220,7 @@ export default class GreetingsCommand extends Command {
             .set("greetings", params.join(" "))
             .where("chat_id").equal(chat.id);
 
-        const result = await chatMessage.execute();
-
+        const result = await chatMessage.execute<ResultSetHeader>();
         if (result.affectedRows > 0) {
             this.index();
         }

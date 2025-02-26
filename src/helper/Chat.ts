@@ -9,9 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "../model/Chats";
-import ChatConfigs from "../model/ChatConfigs";
+import Chats from "model/Chats";
+import ChatConfigs from "model/ChatConfigs";
 import Log from "./Log";
+import { Chat as ChatType } from "type/Chat";
+import { ResultSetHeader } from "mysql2";
 
 export default class ChatHelper {
 
@@ -25,7 +27,7 @@ export default class ChatHelper {
      *
      * @return {Promise<Record<string, any>|undefined>}
      */
-    public static async getById(id: number): Promise<Record<string, any>|undefined> {
+    public static async getById(id: number): Promise<ChatType|undefined> {
 
         const fields = [
             "chats.*",
@@ -45,7 +47,7 @@ export default class ChatHelper {
             .leftOuterJoin("chat_configs", "chat_configs.chat_id = chats.id")
             .where("chats.id").equal(id);
 
-        const chat = await chats.execute();
+        const chat = await chats.execute<ChatType[]>();
         if (chat.length) {
             return chat[0];
         }
@@ -61,9 +63,9 @@ export default class ChatHelper {
      *
      * @param chatId
      *
-     * @return {Promise<Record<string, any>|undefined>}
+     * @return {Promise<ChatType|undefined>}
      */
-    public static async getByTelegramId(chatId: number): Promise<Record<string, any>|undefined> {
+    public static async getByTelegramId(chatId: number): Promise<ChatType|undefined> {
 
         const fields = [
             "chats.*",
@@ -83,7 +85,7 @@ export default class ChatHelper {
             .leftOuterJoin("chat_configs", "chat_configs.chat_id = chats.id")
             .where("chats.chat_id").equal(chatId);
 
-        const chat = await chats.execute();
+        const chat = await chats.execute<ChatType[]>();
         if (chat.length) {
             return chat[0];
         }
@@ -114,7 +116,7 @@ export default class ChatHelper {
 
         try {
 
-            const result = await newChat.execute();
+            const result = await newChat.execute<ResultSetHeader>();
             const chatId = result.insertId;
 
             const newChatConfig = new ChatConfigs();

@@ -82,6 +82,10 @@ export default class Warning extends Callback {
         this.context.getMessage()?.delete();
 
         const contextUser = await UserHelper.getByTelegramId(userId);
+        if (!contextUser) {
+            return Promise.resolve();
+        }
+
         await this.remove(parseInt(callbackUserId), parseInt(callbackChatId), parseInt(callbackWarningId));
 
         let message = Lang.get(typeof callbackWarningId === "undefined" ? "warningAdminRemovedAll" : "warningAdminRemovedLast")

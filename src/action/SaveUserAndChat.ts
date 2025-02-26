@@ -15,6 +15,7 @@ import Context from "context/Context";
 import Log from "helper/Log";
 import RelUsersChats from "model/RelUsersChats";
 import UserHelper from "helper/User";
+import { RelUserChat as RelUserChatType } from "model/type/RelUserChat";
 
 export default class SaveUserAndChat extends Action {
 
@@ -108,7 +109,7 @@ export default class SaveUserAndChat extends Action {
             .offset(0)
             .limit(1);
 
-        const row = await relUserChat.execute();
+        const row = await relUserChat.execute<RelUserChatType[]>();
         return !!row.length;
     }
 

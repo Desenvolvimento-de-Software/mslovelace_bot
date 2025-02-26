@@ -13,9 +13,12 @@ import express from "express";
 import TelegramBotApi from "./library/telegram/TelegramBotApi";
 import SetMyCommands from "./library/telegram/resource/SetMyCommands";
 import Command from "./command/Command";
+import Iinterval from "interface/Iinterval";
 import Log from "./helper/Log";
 import { controllers } from "./config/controllers";
 import { commands as commandsConfig } from "./config/commands";
+import DeleteExpiredMessages from "interval/DeleteExpiredMessages";
+import KickUnverifiedUsers from "interval/KickUnverifiedUsers";
 
 export default class App {
 
@@ -50,6 +53,14 @@ export default class App {
     private readonly commands: Command[] = [];
 
     /**
+     * Registered intervals.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     */
+    private readonly intervals: Iinterval[] = [];
+
+    /**
      * The constructor.
      *
      * @author Marcos Leandro
@@ -73,6 +84,7 @@ export default class App {
         await this.registerCommands();
         this.initializeMiddlewares();
         this.initializeControllers();
+        this.initializeIntervals();
     }
 
     /**
@@ -124,6 +136,19 @@ export default class App {
     private initializeMiddlewares(): void {
         this.expressApp.use(express.json());
         this.expressApp.use(express.urlencoded({ extended : true }));
+    }
+
+    /**
+     * Initializes the intervals.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     */
+    private initializeIntervals(): void {
+        this.intervals.push(...[
+            new DeleteExpiredMessages(),
+            new KickUnverifiedUsers()
+        ]);
     }
 
     /**

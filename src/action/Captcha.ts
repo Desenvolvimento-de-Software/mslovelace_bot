@@ -17,6 +17,7 @@ import RelUsersChats from "model/RelUsersChats";
 import RestrictChatMember from "library/telegram/resource/RestrictChatMember";
 import UserHelper from "helper/User";
 import { ChatPermissions } from "library/telegram/type/ChatPermissions";
+import { RelUserChat } from "model/type/RelUserChat";
 
 export default class Captcha extends Action {
 
@@ -146,7 +147,7 @@ export default class Captcha extends Action {
             .offset(0)
             .limit(1);
 
-        const row = await relUserChat.execute();
+        const row = await relUserChat.execute<RelUserChat[]>();
         if (!row.length) {
             return Promise.resolve();
         }

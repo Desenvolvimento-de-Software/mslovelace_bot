@@ -12,8 +12,27 @@
 import Action from "./Action";
 import ChatHelper from "../helper/Chat";
 import Context from "context/Context";
-
+import RelUsersChats from "../model/RelUsersChats";
+import UserHelper from "../helper/User";
+import { Chat as ChatType } from "type/Chat";
+import { User as UserType } from "model/type/User";
 export default class NewChatMember extends Action {
+
+    /**
+     * User row.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+    */
+    private user?: UserType;
+
+    /**
+     * Chat row.
+     *
+     * @author Marcos Leandro
+     * @since  2023-06-07
+     */
+    private chat?: ChatType;
 
     /**
      * The constructor.
@@ -41,18 +60,54 @@ export default class NewChatMember extends Action {
             return Promise.resolve();
         }
 
+        const userId = this.context.getNewChatMember()?.getId();
+        if (!userId) {
+            return Promise.resolve();
+        }
+
         const chatId = this.context.getChat()?.getId();
         if (!chatId) {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.id) {
+        this.user = await UserHelper.getByTelegramId(userId);
+        this.chat = await ChatHelper.getByTelegramId(chatId);
+        if (!this.user?.id || !this.chat?.id) {
             return Promise.resolve();
         }
 
-        if (parseInt(chat.remove_event_messages) === 1) {
+        this.updateRelationship();
+        if (this.chat.remove_event_messages === 1) {
             this.context.getMessage()?.delete();
         }
+    }
+
+    /**
+     * Updates the relationship.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     * @returns
+     */
+    private async updateRelationship(): Promise<void> {
+
+        if (!this.user?.id || !this.chat?.id) {
+            return;
+        }
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const timeout = this.chat?.captcha_ban_seconds ?? 60;
+        const ttl = timestamp + timeout;
+
+        const relUserChat = new RelUsersChats();
+        relUserChat
+            .update()
+            .set("checked", Math.abs(this.chat?.captcha - 1))
+            .set("date", timestamp)
+            .set("ttl", ttl)
+            .where("user_id").equal(this.user.id)
+            .and("chat_id").equal(this.chat.id);
+
+        await relUserChat.execute();
     }
 }

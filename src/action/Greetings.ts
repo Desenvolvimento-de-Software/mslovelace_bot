@@ -13,13 +13,22 @@ import Action from "./Action";
 import ChatConfigs from "model/ChatConfigs";
 import ChatHelper from "helper/Chat";
 import ChatMessages from "model/ChatMessages";
+import ContextFactory from "context/ContextFactory";
 import Context from "context/Context";
 import Lang from "helper/Lang";
-import Message from "context/Message";
 import RelUsersChats from "model/RelUsersChats";
+import SaveMessage from "./SaveMessage";
 import UserHelper from "helper/User";
+import { AdditionalData as AdditionalDataType } from "type/AdditionalData";
+import { Chat as ChatType } from "type/Chat";
+import { ChatConfigs as ChatConfigsType } from "model/type/ChatConfigs";
+import { ChatMessage as ChatMessageType } from "model/type/ChatMessage";
 import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
 import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
+import { Message as MessageType } from "library/telegram/type/Message";
+import { RelUserChat } from "model/type/RelUserChat";
+import { Update as UpdateType } from "library/telegram/type/Update";
+import { User as UserType } from "model/type/User";
 
 export default class Greetings extends Action {
 
@@ -29,7 +38,7 @@ export default class Greetings extends Action {
      * @author Marcos Leandro
      * @since  2023-06-07
      */
-    private user?: Record<string, any>;
+    private user?: UserType;
 
     /**
      * Chat row.
@@ -37,7 +46,7 @@ export default class Greetings extends Action {
      * @author Marcos Leandro
      * @since  2023-06-07
      */
-    private chat?: Record<string, any>;
+    private chat?: ChatType;
 
     /**
      * Chat configs.
@@ -95,11 +104,7 @@ export default class Greetings extends Action {
             return Promise.resolve();
         }
 
-        if (parseInt(this.chat.greetings) !== 1) {
-            return Promise.resolve();
-        }
-
-        if (parseInt(this.chat.grouped_greetings) === 1) {
+        if (this.chat.greetings !== 1) {
             return Promise.resolve();
         }
 
@@ -122,7 +127,7 @@ export default class Greetings extends Action {
             .offset(0)
             .limit(1);
 
-        this.chatConfigs = await chatConfigs.execute();
+        this.chatConfigs = chatConfigs.execute<ChatConfigsType[]>();
 
         const chatMessages = new ChatMessages();
         chatMessages
@@ -131,7 +136,7 @@ export default class Greetings extends Action {
             .offset(0)
             .limit(1);
 
-        this.chatMessages = await chatMessages.execute();
+        this.chatMessages = chatMessages.execute<ChatMessageType[]>();
         this.greetings();
     }
 
@@ -163,15 +168,8 @@ export default class Greetings extends Action {
         options = this.addCaptchaOptions(options);
 
         const message = await this.context.getChat()?.sendMessage(text, options);
-        const timeout = ((this.chatConfigs?.[0]?.captcha_ban_seconds || 60) * 1000);
-
-        setTimeout((message, user, chat, context) => {
-            this.deleteMessage(message);
-            if (parseInt(chat?.captcha) === 1) {
-                this.checkUserForKick(user!, chat!, context);
-            }
-
-        }, timeout, message, this.user, this.chat, this.context);
+        const messagePayload = message.getPayload();
+        this.insertMessage(messagePayload);
     }
 
     /**
@@ -206,6 +204,37 @@ export default class Greetings extends Action {
     }
 
     /**
+     * Inserts the message in the database.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @param payload
+     */
+    private insertMessage(payload: MessageType): void {
+
+        const update: UpdateType = {
+            update_id: 0,
+            message: payload
+        };
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const timeout = timestamp + ((this.chatConfigs?.[0]?.captcha_ban_seconds || 60));
+
+        const additionalData: AdditionalDataType = {
+            ttl: timeout
+        };
+
+        const context = ContextFactory.create(update);
+        if (!context) {
+            return;
+        }
+
+        const saveMessage = new SaveMessage(context);
+        saveMessage.run(additionalData);
+    }
+
+    /**
      * Returns id the user is joined in the chat.
      *
      * @author Marcos Leandro
@@ -223,76 +252,11 @@ export default class Greetings extends Action {
             .offset(0)
             .limit(1);
 
-        const row = await relUserChat.execute();
+        const row = await relUserChat.execute<RelUserChat[]>();
         if (!row.length) {
             return false;
         }
 
-        return parseInt(row[0].joined) === 1;
-    }
-
-    /**
-     * Deletes the message.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-07
-     *
-     * @param messageID
-     */
-    private readonly deleteMessage = async (message: Message) => {
-        message.delete();
-    }
-
-    /**
-     * Checks if the user checked the captcha. If not, them.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-16
-     *
-     * @param user User object.
-     * @param chat Chat object.
-     */
-    private async checkUserForKick(user: Record<string, any>, chat: Record<string, any>, context: Record<string, any>) {
-
-        const relUsersChats = new RelUsersChats();
-        relUsersChats
-            .select(['checked'])
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
-
-        const rel = await relUsersChats.execute();
-        if (!rel.length) {
-            return;
-        }
-
-        if (Number(rel[0].checked) === 1) {
-            return;
-        }
-
-        context.user.kick();
-
-        Lang.set(chat?.language || "en");
-
-        let text = Lang.get("captchaNotConfirmed");
-        text = text.replace("{userid}", context.newChatMember!.getId());
-        text = text.replace(
-            "{username}",
-            context.newChatMember?.getFirstName() ?? context.newChatMember?.getUsername()
-        );
-
-        const chatConfigs = new ChatConfigs();
-        chatConfigs
-            .select()
-            .where("chat_id").equal(chat.id)
-            .offset(0)
-            .limit(1);
-
-        const chatConfig = await chatConfigs.execute();
-        const message = await context.chat.sendMessage(text, { parse_mode : "HTML" });
-        const timeout = ((chatConfig[0]?.captcha_ban_seconds || 60) * 1000);
-
-        setTimeout(() => {
-            message.delete();
-        }, timeout);
+        return row[0].joined === 1;
     }
 }

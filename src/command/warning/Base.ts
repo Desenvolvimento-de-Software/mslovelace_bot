@@ -11,12 +11,13 @@
 
 import Command from "../Command";
 import User from "context/User";
-import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
-import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
 import ChatConfigs from "model/ChatConfigs";
 import WarningsModel from "model/Warnings";
 import UserHelper from "helper/User";
 import Lang from "helper/Lang";
+import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
+import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
+import { ChatConfigs as ChatConfigsType } from "model/type/ChatConfigs";
 
 export default class Base extends Command {
 
@@ -47,14 +48,14 @@ export default class Base extends Command {
             .select()
             .where("chat_id").equal(chat.id);
 
-        const chatConfig = await chatConfigs.execute();
-        const warningLimit = chatConfig[0].warn_limit;
+        const chatConfig = await chatConfigs.execute<ChatConfigsType[]>();
+        const warningLimit = chatConfig[0].warnings;
 
-        return warningLimit ? parseInt(warningLimit) : 3;
+        return warningLimit ?? 3;
     }
 
     /**
-     * Returns the user's warns.
+     * Returns the user's warnings.
      *
      * @author Marcos Leandro
      * @since  2024-04-22
@@ -106,7 +107,7 @@ export default class Base extends Command {
         let message = Lang.get(langIndex)
             .replace("{userid}", contextUser.getId())
             .replace("{username}", username)
-            .replace("{warns}", warnings.length.toString() + "/" + warningsLimit.toString());
+            .replace("{warnings}", warnings.length.toString() + "/" + warningsLimit.toString());
 
         for (let i = 0, length = warnings.length; i < length; i++) {
             message += ` • ${warnings[i].reason}\n`;

@@ -60,12 +60,13 @@ export default class LeftChatMember extends Action {
             .update()
             .set("joined", 0)
             .set("checked", 0)
+            .set("ttl", null)
             .where("user_id").equal(user.id)
             .and("chat_id").equal(chat.id);
 
         relUserChat.execute();
 
-        if (parseInt(chat.remove_event_messages) === 0) {
+        if (chat.remove_event_messages === 0) {
             return Promise.resolve();
         }
 

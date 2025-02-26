@@ -19,6 +19,7 @@ import UserHelper from "helper/User";
 import WarningsModel from "model/Warnings";
 import WarningsBase from "./Base";
 import { BotCommand } from "library/telegram/type/BotCommand";
+import { Warning as WarningType } from "model/type/Warning";
 
 export default class Warn extends WarningsBase {
 
@@ -198,7 +199,7 @@ export default class Warn extends WarningsBase {
             .and("status").equal(1)
             .orderBy("date", "ASC");
 
-        const results = await warnings.execute();
+        const results = await warnings.execute<WarningType[]>();
 
         if (results.length >= warningLimit) {
             contextUser.ban();

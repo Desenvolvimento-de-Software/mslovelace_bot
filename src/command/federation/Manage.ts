@@ -14,13 +14,15 @@ import ChatHelper from "helper/Chat";
 import Chats from "model/Chats";
 import Context from "context/Context";
 import CommandContext from "context/Command";
-import { BotCommand } from "library/telegram/type/BotCommand";
 import FederationHelper from "helper/Federation";
 import Federations from "model/Federations";
 import Lang from "helper/Lang";
 import Log from "helper/Log";
 import Text from "helper/Text";
 import UserHelper from "helper/User";
+import { BotCommand } from "library/telegram/type/BotCommand";
+import { CountType } from "model/type/Mysql";
+import { Federation as FederationType } from "model/type/Federation";
 
 export default class Manage extends Federation {
 
@@ -179,7 +181,7 @@ export default class Manage extends Federation {
             .where("user_id").equal(this.user!.id)
             .orderBy("description", "asc");
 
-        const result = await federations.execute();
+        const result = await federations.execute<FederationType[]>();
         if (!result.length) {
             this.context?.getMessage()?.reply(Lang.get("federationListEmpty"));
             return Promise.resolve();
@@ -265,7 +267,7 @@ export default class Manage extends Federation {
                 .offset(0)
                 .limit(1);
 
-            const result = await federations.execute();
+            const result = await federations.execute<FederationType[]>();
             federationHashExists = result.length > 0;
 
         } while (federationHashExists);
@@ -294,8 +296,8 @@ export default class Manage extends Federation {
 
         try {
 
-            const result = await chats.execute();
-            return parseInt(result[0].total);
+            const result = await chats.execute<CountType[]>();
+            return result[0].total;
 
         } catch (err: any) {
             Log.error(err.toString(), true);

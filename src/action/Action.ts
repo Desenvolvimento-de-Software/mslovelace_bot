@@ -50,8 +50,10 @@ export default abstract class Action {
      *
      * @author Marcos Leandro
      * @since  2023-06-07
+     *
+     * @param additionalData
      */
-    public async run(): Promise<void> {
+    public async run(additionalData?: Record<string, string|number|boolean>): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

@@ -10,13 +10,14 @@
  */
 
 import ChatHelper from "helper/Chat";
-import ChatRules from "../model/ChatRules";
+import ChatRules from "model/ChatRules";
 import Command from "./Command";
 import Context from "context/Context";
 import CommandContext from "context/Command";
 import Lang from "helper/Lang";
 import Log from "helper/Log";
 import { BotCommand } from "library/telegram/type/BotCommand";
+import { ChatRules as ChatRulesType } from "model/type/ChatRules";
 
 export default class Rules extends Command {
 
@@ -84,10 +85,10 @@ export default class Rules extends Command {
         }
 
         const chat = await ChatHelper.getByTelegramId(chatId);
-        Lang.set(chat?.language || "en");
+        Lang.set(chat?.language ?? "en");
 
         this.command = command;
-        this.chat = chat || { id: null };
+        this.chat = chat ?? { id: null };
 
         this.context?.getMessage()?.delete();
         switch (this.command.getCommand()) {
@@ -120,15 +121,16 @@ export default class Rules extends Command {
         const chatRules = new ChatRules();
         chatRules
             .select()
-            .where("chat_id").equal(this.chat.id);
+            .where("chat_id").equal(this.chat.id)
+            .and("rules").notEqual("");
 
-        const result = await chatRules.execute();
+        const result = await chatRules.execute<ChatRulesType[]>();
 
         if (!result.length) {
             return this.context?.getChat()?.sendMessage(Lang.get("rulesNotFound"));
         }
 
-        return this.context?.getChat()?.sendMessage(result[0].rules, { parse_mode : "HTML" });
+        return this.context?.getChat()?.sendMessage(result[0].rules!, { parse_mode : "HTML" });
     }
 
     /**
@@ -192,7 +194,7 @@ export default class Rules extends Command {
             .select()
             .where("chat_id").equal(this.chat!.id);
 
-        const result = await chatRules.execute();
+        const result = await chatRules.execute<ChatRulesType[]>();
         if (result.length) {
 
             chatRules

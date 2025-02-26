@@ -17,10 +17,19 @@ import User from "./User";
 import Chat from "./Chat";
 import Log from "helper/Log";
 import UserHelper from "helper/User";
+import { Animation as AnimationType } from "library/telegram/type/Animation";
+import { Audio as AudioType } from "library/telegram/type/Audio";
+import { Contact as ContactType } from "library/telegram/type/Contact";
+import { Document as DocumentType } from "library/telegram/type/Document";
 import { Message as MessageType } from "library/telegram/type/Message";
-import { MessageEntity } from "library/telegram/type/MessageEntity";
-import { User as UserType } from "library/telegram/type/User";
+import { MessageEntity as MessageEntityType } from "library/telegram/type/MessageEntity";
 import { Options as OptionsType } from "type/Options";
+import { PhotoSize as PhotoSizeType } from "library/telegram/type/PhotoSize";
+import { Sticker as StickerType } from "library/telegram/type/Sticker";
+import { User as UserType } from "library/telegram/type/User";
+import { Video as VideoType } from "library/telegram/type/Video";
+import { VideoNote as VideoNoteType } from "library/telegram/type/VideoNote";
+import { Voice as VoiceType } from "library/telegram/type/Voice";
 
 export default class Message {
 
@@ -60,9 +69,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-15
      *
-     * @var {Record<string, any>[]}
+     * @var {MessageEntityType[]}
      */
-    private entities: MessageEntity[] = [];
+    private entities: MessageEntityType[] = [];
 
     /**
      * The message mentions.
@@ -321,9 +330,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-15
      *
-     * @return {MessageEntity[]}
+     * @return {MessageEntityType[]}
      */
-    public getEntities(): MessageEntity[] {
+    public getEntities(): MessageEntityType[] {
         return this.entities;
     }
 
@@ -363,9 +372,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {AnimationType|undefined}
      */
-    public getAnimation(): Record<string, any>|undefined {
+    public getAnimation(): AnimationType|undefined {
         return this.message.animation || undefined;
     }
 
@@ -375,9 +384,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {AudioType|undefined}
      */
-    public getAudio(): Record<string, any>|undefined {
+    public getAudio(): AudioType|undefined {
         return this.message.audio || undefined;
     }
 
@@ -387,9 +396,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {DocumentType|undefined}
      */
-    public getDocument(): Record<string, any>|undefined {
+    public getDocument(): DocumentType|undefined {
         return this.message.document || undefined;
     }
 
@@ -399,9 +408,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {PhotoSizeType[]|undefined}
      */
-    public getPhoto(): Record<string, any>[]|undefined {
+    public getPhoto(): PhotoSizeType[]|undefined {
         return this.message.photo || undefined;
     }
 
@@ -411,9 +420,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {StickerType|undefined}
      */
-    public getSticker(): Record<string, any>|undefined {
+    public getSticker(): StickerType|undefined {
         return this.message.sticker || undefined;
     }
 
@@ -423,9 +432,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {VideoType|undefined}
      */
-    public getVideo(): Record<string, any>|undefined {
+    public getVideo(): VideoType|undefined {
         return this.message.video || undefined;
     }
 
@@ -435,9 +444,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {VideoNoteType|undefined}
      */
-    public getVideoNote(): Record<string, any>|undefined {
+    public getVideoNote(): VideoNoteType|undefined {
         return this.message.video_note || undefined;
     }
 
@@ -447,9 +456,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {VoiceType|undefined}
      */
-    public getVoice(): Record<string, any>|undefined {
+    public getVoice(): VoiceType|undefined {
         return this.message.voice || undefined;
     }
 
@@ -459,7 +468,7 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {string|undefined}
      */
     public getCaption(): string|undefined {
         return this.message.caption ?? undefined;
@@ -471,9 +480,9 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {MessageEntityType[]|undefined}
      */
-    public getCaptionEntities(): Record<string, any>[]|undefined {
+    public getCaptionEntities(): MessageEntityType[]|undefined {
         return this.message.caption_entities || undefined;
     }
 
@@ -483,10 +492,22 @@ export default class Message {
      * @author Marcos Leandro
      * @since  2023-06-19
      *
-     * @return {Record<string, any>|undefined}
+     * @return {ContactType|undefined}
      */
-    public getContact(): Record<string, any>|undefined {
+    public getContact(): ContactType|undefined {
         return this.message.contact || undefined;
+    }
+
+    /**
+     * Returns the message payload.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @returns {MessageType}
+     */
+    public getPayload(): MessageType {
+        return this.message;
     }
 
     /**
@@ -596,12 +617,12 @@ export default class Message {
 
         const mention: UserType = {
             id: user.user_id,
-            is_bot: user.is_bot,
-            first_name: user.first_name,
+            is_bot: user.is_bot === 1,
+            first_name: user.first_name ?? "",
             last_name: user.last_name,
             username: user.username,
             language_code: user.language_code,
-            is_premium: user.is_premium
+            is_premium: user.is_premium === 1
         };
 
         this.mentions!.push(
