@@ -136,7 +136,7 @@ export default class Greetings extends Action {
             .offset(0)
             .limit(1);
 
-        this.chatMessages = chatMessages.execute<ChatMessageType[]>();
+        this.chatMessages = await chatMessages.execute<ChatMessageType[]>();
         this.greetings();
     }
 
