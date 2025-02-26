@@ -9,9 +9,11 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Chats from "../model/Chats";
-import Federations from "../model/Federations";
-import RelUsersFederations from "../model/RelUsersFederations";
+import Chats from "model/Chats";
+import Federations from "model/Federations";
+import RelUsersFederations from "model/RelUsersFederations";
+import { Federation as FederationType } from "model/type/Federation";
+import { RelUserFederation as RelUserFederationType } from "model/type/RelUserFederation";
 
 export default class FederationHelper {
 
@@ -32,7 +34,7 @@ export default class FederationHelper {
             .select()
             .where("id").equal(id);
 
-        const federation = await federations.execute();
+        const federation = await federations.execute<FederationType[]>();
         if (federation.length) {
             return federation[0];
         }
@@ -57,7 +59,7 @@ export default class FederationHelper {
             .select()
             .where("hash").equal(hash);
 
-        const federation = await federations.execute();
+        const federation = await federations.execute<FederationType[]>();
         if (federation.length) {
             return federation[0];
         }
@@ -105,7 +107,7 @@ export default class FederationHelper {
             .select(["user_id"])
             .where("federation_id").equal(federation.id);
 
-        const admins = await federationAdmins.execute();
+        const admins = await federationAdmins.execute<RelUserFederationType[]>();
         if (!admins.length) {
             return Promise.resolve(false);
         }

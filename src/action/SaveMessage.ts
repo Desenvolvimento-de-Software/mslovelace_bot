@@ -16,6 +16,11 @@ import Log from "helper/Log";
 import Messages from "model/Messages";
 import UserHelper from "helper/User";
 import CallbackQuery from "context/CallbackQuery";
+import Builder from "model/mysql/Builder";
+import { AdditionalData as AdditionalDataType } from "type/AdditionalData";
+import { Message as MessageType } from "model/type/Message";
+
+type AdditionalData = Record<string, string | number | boolean>;
 
 export default class SaveMessage extends Action {
 
@@ -36,8 +41,10 @@ export default class SaveMessage extends Action {
      *
      * @author Marcos Leandro
      * @since  2023-06-06
+     *
+     * @param additionalData
      */
-    public async run(): Promise<void> {
+    public async run(additionalData?: AdditionalDataType): Promise<void> {
 
         if (!this.context.getMessage()?.getId()) {
             return Promise.resolve();
@@ -70,17 +77,43 @@ export default class SaveMessage extends Action {
             return Promise.resolve();
         }
 
-        switch (this.context.getType()) {
-
-            case "editedMessage":
-                this.updateMessage(user, chat);
-                break;
-
-            default:
-                this.saveNewMessage(user, chat);
+        const messageExists = await this.messageExists();
+        if (messageExists || this.context.getType() === "edited_message") {
+            this.updateMessage(user, chat, additionalData);
+            return Promise.resolve();
         }
 
+        this.saveNewMessage(user, chat, additionalData);
         return Promise.resolve();
+    }
+
+    /**
+     * Returns whether the message exists.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @return {Promise<boolean>}
+     */
+    private async messageExists(): Promise<boolean> {
+
+        const messageId = this.context.getMessage()?.getId();
+        const chatId = this.context.getChat()?.getId();
+
+        if (!chatId || !messageId) {
+            return Promise.resolve(false);
+        }
+
+        const messageModel = new Messages();
+        messageModel
+            .select()
+            .where("chat_id").equal(chatId)
+            .and("message_id").equal(messageId)
+            .offset(0)
+            .limit(1);
+
+        const message = await messageModel.execute<MessageType[]>();
+        return !!message.length;
     }
 
     /**
@@ -94,7 +127,11 @@ export default class SaveMessage extends Action {
      *
      * @return Promise<void>
      */
-    private async saveNewMessage(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+    private async saveNewMessage(
+        user: Record<string, any>,
+        chat: Record<string, any>,
+        additionalData?: AdditionalDataType
+    ): Promise<void> {
 
         const message = this.context.getMessage();
         if (!message) {
@@ -110,82 +147,9 @@ export default class SaveMessage extends Action {
             .set("chat_id", chat.id)
             .set("message_id", message.getId())
             .set("content", message.getText())
-            .set("date", message.getDate() || Math.floor(Date.now() / 1000));
+            .set("date", message.getDate() ?? Math.floor(Date.now() / 1000));
 
-        const threadId = message.getMessageThreadId();
-        if (threadId) {
-            insert.set("thread_id", threadId);
-        }
-
-        const replyTo = await this.getReplyMessageId();
-        if (replyTo) {
-            insert.set("reply_to", replyTo);
-        }
-
-        const callbackData = this.context instanceof CallbackQuery ? this.context?.getData() : null;
-        if (callbackData) {
-            insert.set("callbackQuery", JSON.stringify(callbackData));
-        }
-
-        const entities = message.getEntities();
-        if (entities) {
-            insert.set("entities", JSON.stringify(entities));
-        }
-
-        const animation = message.getAnimation();
-        if (animation) {
-            insert.set("animation", JSON.stringify(animation));
-        }
-
-        const audio = message.getAudio();
-        if (audio) {
-            insert.set("audio", JSON.stringify(audio));
-        }
-
-        const document = message.getDocument();
-        if (document) {
-            insert.set("document", JSON.stringify(document));
-        }
-
-        const photo = message.getPhoto();
-        if (photo) {
-            insert.set("photo", JSON.stringify(photo));
-        }
-
-        const sticker = message.getSticker();
-        if (sticker) {
-            insert.set("sticker", JSON.stringify(sticker));
-        }
-
-        const video = message.getVideo();
-        if (video) {
-            insert.set("video", JSON.stringify(video));
-        }
-
-        const videoNote = message.getVideoNote();
-        if (videoNote) {
-            insert.set("videoNote", JSON.stringify(videoNote));
-        }
-
-        const voice = message.getVoice();
-        if (voice) {
-            insert.set("voice", JSON.stringify(voice));
-        }
-
-        const caption = message.getCaption();
-        if (caption) {
-            insert.set("caption", caption);
-        }
-
-        const captionEntities = message.getCaptionEntities();
-        if (captionEntities) {
-            insert.set("captionEntities", JSON.stringify(captionEntities));
-        }
-
-        const contact = message.getContact();
-        if (contact) {
-            insert.set("contact", JSON.stringify(contact));
-        }
+        await this.addQueryParams(insert, additionalData);
 
         messageModel.execute();
         return Promise.resolve();
@@ -199,10 +163,15 @@ export default class SaveMessage extends Action {
      *
      * @param user
      * @param chat
+     * @param additionalData
      *
-     * @return Promise<void>
+     * @return {Promise<void>}
      */
-    private async updateMessage(user: Record<string, any>, chat: Record<string, any>): Promise<void> {
+    private async updateMessage(
+        user: Record<string, any>,
+        chat: Record<string, any>,
+        additionalData?: AdditionalDataType
+    ): Promise<void> {
 
         const message = this.context.getMessage();
         if (!message) {
@@ -214,28 +183,87 @@ export default class SaveMessage extends Action {
         update
             .set("type", this.context.getType())
             .set("content", message.getText())
-            .set("date", message.getDate() || Math.floor(Date.now() / 1000))
+            .set("date", message.getDate() ?? Math.floor(Date.now() / 1000))
             .where("user_id").equal(user.id)
             .and("chat_id").equal(chat.id)
             .and("message_id").equal(message.getId());
 
-        const threadId = message.getMessageThreadId();
-        if (threadId) {
-            update.set("thread_id", threadId);
-        }
-
-        const replyTo = await this.getReplyMessageId();
-        if (replyTo) {
-            update.set("reply_to", replyTo);
-        }
-
-        const entities = message.getEntities();
-        if (entities) {
-            update.set("entities", JSON.stringify(entities));
-        }
+        await this.addQueryParams(update, additionalData);
 
         messageModel.execute();
         return Promise.resolve();
+    }
+
+    /**
+     * Adds the query parameters.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @param operation
+     * @param additionalData
+     *
+     * @return {Promise<Builder>}
+     */
+    private async addQueryParams(operation: Builder, additionalData?: AdditionalDataType): Promise<Builder> {
+
+        const message = this.context.getMessage();
+        if (!message) {
+            return Promise.resolve(operation);
+        }
+
+        const threadId = message.getMessageThreadId();
+        threadId && (operation.set("thread_id", threadId));
+
+        const replyTo = await this.getReplyMessageId();
+        replyTo && (operation.set("reply_to", replyTo));
+
+        const callbackData = this.context instanceof CallbackQuery ? this.context?.getData() : null;
+        callbackData && (operation.set("callbackQuery", JSON.stringify(callbackData)));
+
+        const entities = message.getEntities();
+        entities && (operation.set("entities", JSON.stringify(entities)));
+
+        const animation = message.getAnimation();
+        animation && (operation.set("animation", JSON.stringify(animation)));
+
+        const audio = message.getAudio();
+        audio && (operation.set("audio", JSON.stringify(audio)));
+
+        const document = message.getDocument();
+        document && (operation.set("document", JSON.stringify(document)));
+
+        const photo = message.getPhoto();
+        photo && (operation.set("photo", JSON.stringify(photo)));
+
+        const sticker = message.getSticker();
+        sticker && (operation.set("sticker", JSON.stringify(sticker)));
+
+        const video = message.getVideo();
+        video && (operation.set("video", JSON.stringify(video)));
+
+        const videoNote = message.getVideoNote();
+        videoNote && (operation.set("videoNote", JSON.stringify(videoNote)));
+
+        const voice = message.getVoice();
+        voice && (operation.set("voice", JSON.stringify(voice)));
+
+        const caption = message.getCaption();
+        caption && (operation.set("caption", caption));
+
+        const captionEntities = message.getCaptionEntities();
+        captionEntities && (operation.set("captionEntities", JSON.stringify(captionEntities)));
+
+        const contact = message.getContact();
+        contact && (operation.set("contact", JSON.stringify(contact)));
+
+        if (additionalData) {
+            Object.keys(additionalData).forEach((key) => {
+                operation.set(key, additionalData[key]);
+            });
+        }
+
+        return Promise.resolve(operation);
     }
 
     /**
@@ -265,7 +293,7 @@ export default class SaveMessage extends Action {
             .select()
             .where("message_id").equal(replyToMessage.getId());
 
-        const reply = await messageModel.execute();
+        const reply = await messageModel.execute<MessageType[]>();
         if (reply.length) {
             return reply[0].id;
         }

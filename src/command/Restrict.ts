@@ -16,6 +16,7 @@ import CommandContext from "context/Command";
 import Context from "context/Context";
 import Lang from "helper/Lang";
 import { BotCommand } from "library/telegram/type/BotCommand";
+import { ChatConfigs as ChatConfigsType } from "model/type/ChatConfigs";
 
 export default class Restrict extends Command {
 
@@ -98,13 +99,13 @@ export default class Restrict extends Command {
             .select()
             .where("chat_id").equal(chat.id);
 
-        const config = await chatConfig.execute();
+        const config = await chatConfig.execute<ChatConfigsType[]>();
         if (!config.length) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language || "en");
-        const restrictStatus = Lang.get(parseInt(config[0].restrict_new_users) === 1 ? "textEnabled" : "textDisabled");
+        const restrictStatus = Lang.get(config[0].restrict_new_users === 1 ? "textEnabled" : "textDisabled");
         const restrictMessage = Lang.get("restrictStatus").replace("{status}", restrictStatus);
 
         this.context?.getChat()?.sendMessage(restrictMessage);

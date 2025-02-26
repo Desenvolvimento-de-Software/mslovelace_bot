@@ -155,10 +155,10 @@ export default class Ban extends Command {
         const user = await UserHelper.getByTelegramId(userId);
         const userType: UserType = {
             id: userId,
-            is_bot: user?.is_bot,
-            first_name: user?.first_name,
+            is_bot: user?.is_bot === 1,
+            first_name: user?.first_name ?? "",
             last_name: user?.last_name,
-            username: user?.username || userId
+            username: user?.username ?? userId.toString()
         };
 
         const chat = this.context?.getChat();

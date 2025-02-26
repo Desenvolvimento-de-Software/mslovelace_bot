@@ -68,7 +68,7 @@ export default abstract class Callback {
 
         let callbackData;
         if (typeof this.context?.getData === "function") {
-            const callbackData = this.context?.getData() ?? undefined;
+            callbackData = this.context?.getData() ?? undefined;
         }
 
         if (!callbackData?.c) {

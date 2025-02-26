@@ -215,13 +215,14 @@ export default class DB {
      *
      * @returns
      */
-    public execute(): any {
-        if (this.operation) {
-            this.lastQuery = this.operation.build();
-            return this.query(this.lastQuery);
+    public async execute<T>(): Promise<T> {
+
+        if (!this.operation) {
+            return [] as T;
         }
 
-        return null;
+        this.lastQuery = this.operation.build();
+        return await this.query(this.lastQuery) as T;
     }
 
     /**
@@ -230,14 +231,16 @@ export default class DB {
      * @author Marcos Leandro
      * @since  1.0.0
      */
-    public async query(query: string): Promise<any> {
+    public async query<T>(query: string): Promise<T> {
+
         return await new Promise((resolve, reject) => {
             this.connection().query(query, (error, results) => {
                 if (error) {
                     reject(error);
-                } else {
-                    resolve(results);
+                    return;
                 }
+
+                resolve(results as T);
             });
         });
     }

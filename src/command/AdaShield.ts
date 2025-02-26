@@ -96,7 +96,7 @@ export default class AdaShield extends Command {
         }
 
         Lang.set(chat.language || "en");
-        const adaShieldStatus = Lang.get(parseInt(chat.adashield) === 1 ? "textEnabled" : "textDisabled");
+        const adaShieldStatus = Lang.get(chat.adashield === 1 ? "textEnabled" : "textDisabled");
         const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
         this.context?.getChat()?.sendMessage(adaShieldMessage);

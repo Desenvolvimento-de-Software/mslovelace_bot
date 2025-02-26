@@ -418,6 +418,32 @@ export default abstract class Builder {
     }
 
     /**
+     * Adds a "is null" conditionto the query.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @return {this}
+     */
+    public isNull(): this {
+        this.conditions.push("is null");
+        return this;
+    }
+
+    /**
+     * Adds a "is not null" conditionto the query.
+     *
+     * @author Marcos Leandro
+     * @since  2025-02-25
+     *
+     * @return {this}
+     */
+    public isNotNull(): this {
+        this.conditions.push("is not null");
+        return this;
+    }
+
+    /**
      * Adds a "not between" conditionto the query.
      *
      * @author Marcos Leandro

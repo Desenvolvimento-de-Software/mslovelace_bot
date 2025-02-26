@@ -16,6 +16,7 @@ import ChatHelper from "helper/Chat";
 import Lang from "helper/Lang";
 import Macros from "model/Macros";
 import { BotCommand } from "library/telegram/type/BotCommand";
+import { Macro as MacroType } from "model/type/Macro";
 
 export default class Macro extends Command {
 
@@ -101,7 +102,7 @@ export default class Macro extends Command {
      *
      * @param command
      */
-    private index(command: CommandContext): void {
+    private async index(command: CommandContext): Promise<void> {
 
         const params = command.getParams();
         if (!Array.isArray(params) || params.length < 1) {
@@ -119,22 +120,20 @@ export default class Macro extends Command {
             .where("chat_id").equal(this.chat.id)
             .and("macro").equal(macro);
 
-        macros.execute().then((result: Record<string, any>) => {
+        const result = await macros.execute<MacroType[]>();
+        if (!result.length) {
+            return;
+        }
 
-            if (!result.length) {
-                return Promise.resolve();
-            }
+        const content = result[0].content;
+        const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
 
-            const content = result[0].content;
-            const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
+        if (replyToMessage) {
+            replyToMessage.reply(content, { parse_mode : "HTML" });
+            return;
+        }
 
-            if (replyToMessage) {
-                replyToMessage.reply(content, { parse_mode : "HTML" });
-                return Promise.resolve();
-            }
-
-            this.context?.getChat()?.sendMessage(content, { parse_mode : "HTML" });
-        });
+        this.context?.getChat()?.sendMessage(content, { parse_mode : "HTML" });
     }
 
     /**
@@ -171,8 +170,7 @@ export default class Macro extends Command {
             .where("chat_id").equal(this.chat.id)
             .and("macro").equal(macro.toLowerCase());
 
-        const result = await macros.execute();
-
+        const result = await macros.execute<MacroType[]>();
         if (result.length) {
             const alreadyExistLang = Lang.get("macroAlreadyExists").replace("{macro}", macro);
             this.context?.getChat()?.sendMessage(alreadyExistLang, { parse_mode : "HTML" });
@@ -209,7 +207,7 @@ export default class Macro extends Command {
             .where("chat_id").equal(this.chat.id)
             .orderBy("macro", "asc");
 
-        const result = await macros.execute();
+        const result = await macros.execute<MacroType[]>();
         if (!result.length) {
             this.context?.getChat()?.sendMessage(Lang.get("macroNoMacroFound"), { parse_mode : "HTML" });
             return Promise.resolve();
@@ -253,8 +251,7 @@ export default class Macro extends Command {
             .where("chat_id").equal(this.chat.id)
             .and("macro").equal(macro);
 
-        const result = await macros.execute();
-
+        const result = await macros.execute<MacroType[]>();
         if (result.length) {
 
             macros

@@ -17,9 +17,10 @@ import UserHelper from "helper/User";
 import ChatHelper from "helper/Chat";
 import Lang from "helper/Lang";
 import RelUsersChats from "model/RelUsersChats";
+import Captcha from "helper/Captcha";
 import { InlineKeyboardButton } from "library/telegram/type/InlineKeyboardButton";
 import { InlineKeyboardMarkup } from "library/telegram/type/InlineKeyboardMarkup";
-import Captcha from "helper/Captcha";
+import { RelUserChat as RelUserChatType } from "model/type/RelUserChat";
 
 export default class Start extends Command {
 
@@ -160,7 +161,7 @@ export default class Start extends Command {
             .offset(0)
             .limit(1);
 
-        const row = await relUserChat.execute();
+        const row = await relUserChat.execute<RelUserChatType[]>();
         if (!row.length) {
             return Promise.resolve();
         }

@@ -17,6 +17,7 @@ import Lang from "helper/Lang";
 import RelUsersChats from "model/RelUsersChats";
 import Shield from "model/Shield";
 import UserHelper from "helper/User";
+import { Shield as ShieldType } from "model/type/Shield";
 
 export default class AdaShield extends Action {
 
@@ -63,7 +64,7 @@ export default class AdaShield extends Action {
 
         newChatMember.ban();
 
-        const username = (newChatMember.getFirstName() || newChatMember.getUsername());
+        const username = (newChatMember.getFirstName() ?? newChatMember.getUsername());
         const lang = Lang.get(this.banMessage)
             .replace("{userid}", userId)
             .replace("{username}", username);
@@ -92,7 +93,7 @@ export default class AdaShield extends Action {
             .where("telegram_user_id")
             .equal(userId);
 
-        const result = await shield.execute();
+        const result = await shield.execute<ShieldType[]>();
         return !!result.length;
     }
 
@@ -151,17 +152,23 @@ export default class AdaShield extends Action {
         }
 
         const user = await UserHelper.getByTelegramId(newChatMember.getId());
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        const relUserChat = new RelUsersChats();
+        if (!user) {
+            return Promise.resolve();
+        }
 
+        const chat = await ChatHelper.getByTelegramId(chatId);
+        if (!chat) {
+            return Promise.resolve();
+        }
+
+        const relUserChat = new RelUsersChats();
         relUserChat
             .update()
             .set("joined", 0)
             .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat!.id);
+            .and("chat_id").equal(chat.id);
 
         await relUserChat.execute();
-
         return Promise.resolve();
     }
 }

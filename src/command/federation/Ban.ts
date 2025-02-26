@@ -103,8 +103,11 @@ export default class Ban extends Federation {
         }
 
         const user = await UserHelper.getByTelegramId(replyToMessageUser.getId());
-        const federationChats = await FederationHelper.getChats(this.federation!);
+        if (!user) {
+            return Promise.resolve();
+        }
 
+        const federationChats = await FederationHelper.getChats(this.federation!);
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
@@ -113,7 +116,7 @@ export default class Ban extends Federation {
 
         const message = Lang.get("fedBannedMessage")
             .replace("{userId}", user.user_id)
-            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{username}", user.first_name ?? user.username ?? user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
         this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
@@ -130,8 +133,11 @@ export default class Ban extends Federation {
     private async banByMention(mention: User, reason: string): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(mention.getId());
-        const federationChats = await FederationHelper.getChats(this.federation!);
+        if (!user) {
+            return Promise.resolve();
+        }
 
+        const federationChats = await FederationHelper.getChats(this.federation!);
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
@@ -140,7 +146,7 @@ export default class Ban extends Federation {
 
         const message = Lang.get("fedBannedMessage")
             .replace("{userId}", user.user_id)
-            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{username}", user.first_name ?? user.username ?? user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
         this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
@@ -160,8 +166,11 @@ export default class Ban extends Federation {
     private async banByUserId(userId: number, reason: string): Promise<void> {
 
         const user = await UserHelper.getByTelegramId(userId);
-        const federationChats = await FederationHelper.getChats(this.federation!);
+        if (!user) {
+            return Promise.resolve();
+        }
 
+        const federationChats = await FederationHelper.getChats(this.federation!);
         for (const chat of federationChats) {
             const context = this.getContext(user, chat);
             this.saveBan(context, reason);
@@ -170,7 +179,7 @@ export default class Ban extends Federation {
 
         const message = Lang.get("fedBannedMessage")
             .replace("{userId}", user.user_id)
-            .replace("{username}", user.first_name || user.username || user.user_id)
+            .replace("{username}", user.first_name ?? user.username ?? user.user_id)
             .replace("{reason}", reason.length ? reason : "Unknown");
 
         this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });

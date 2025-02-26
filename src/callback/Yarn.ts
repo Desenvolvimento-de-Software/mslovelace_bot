@@ -41,7 +41,7 @@ export default class Yarn extends Callback {
 
         let callbackData;
         if (typeof this.context?.getData === "function") {
-            const callbackData = this.context?.getData() ?? undefined;
+            callbackData = this.context?.getData() ?? undefined;
         }
 
         if (!callbackData?.d || typeof callbackData.d !== "object") {
