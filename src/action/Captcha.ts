@@ -181,7 +181,7 @@ export default class Captcha extends Action {
      *
      * @param chat
      */
-    private async addPermissions(chat: Record<string, any>): Promise<void> {
+    private async addPermissions(chat: Record<string, any>): Promise<any> {
 
         const userId = this.context.getUser()?.getId();
         if (!userId) {
@@ -206,13 +206,11 @@ export default class Captcha extends Action {
         };
 
         const restrictChatMember = new RestrictChatMember();
-        restrictChatMember
+        return await restrictChatMember
             .setUserId(userId)
             .setChatId(chat.chat_id)
             .setChatPermissions(permissions)
             .post();
-
-        return Promise.resolve();
     }
 
     /**
