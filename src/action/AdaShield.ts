@@ -66,8 +66,8 @@ export default class AdaShield extends Action {
 
         const username = (newChatMember.getFirstName() ?? newChatMember.getUsername());
         const lang = Lang.get(this.banMessage)
-            .replace("{userid}", userId)
-            .replace("{username}", username);
+            .replace(/{userid}/g, userId)
+            .replace(/{username}/g, username);
 
         this.context.getChat()?.sendMessage(lang, { parse_mode : "HTML" });
         await this.updateRelationship();

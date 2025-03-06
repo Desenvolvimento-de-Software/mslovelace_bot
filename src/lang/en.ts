@@ -29,7 +29,7 @@ export default {
     unbannedMessage: "Alright. <a href=\"tg://user?id={userid}\">{username}</a> can join the group again.",
     banErrorMessage: "Couldn't ban the user.",
     adaShieldMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: AdaShield banned.",
-    casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: <a href=\"https://cas.chat/\">CAS banned</a>.",
+    casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banned.\nReason: <a href=\"https://cas.chat/query?u={userid}\">CAS banned</a>.",
     adaShieldStatus: "AdaShield status: {status}",
     restrictStatus: "New users restriction status: {status}",
     textEnabled: "enabled",

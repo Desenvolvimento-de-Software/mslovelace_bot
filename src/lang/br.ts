@@ -29,7 +29,7 @@ export default {
     unbannedMessage: "Tudo bem. <a href=\"tg://user?id={userid}\">{username}</a> pode se juntar ao grupo novamente.",
     banErrorMessage: "Não foi possível banir o usuário.",
     adaShieldMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: AdaShield.",
-    casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: <a href=\"https://cas.chat/\">CAS</a>.",
+    casMessage: "<a href=\"tg://user?id={userid}\">{username}</a> banido.\nMotivo: <a href=\"https://cas.chat/query?u={userid}\">CAS</a>.",
     adaShieldStatus: "Status do AdaShield: {status}",
     restrictStatus: "Status da restrição de novos usuários: {status}",
     textEnabled: "ativado",
