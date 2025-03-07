@@ -12,10 +12,10 @@
 import ChatConfigs from "models/ChatConfigs";
 import ChatHelper from "helpers/Chat";
 import Command from "./Command";
-import CommandContext from "contexts/Commandd";
-import Context from "contexts/Contextt";
+import CommandContext from "contexts/Command";
+import Context from "contexts/Context";
 import Lang from "helpers/Lang";
-import { BotCommand } from "libraries/telegram/type/BotCommand";
+import { BotCommand } from "libraries/telegram/types/BotCommand";
 import { ChatConfigs as ChatConfigsType } from "models/type/ChatConfigs";
 
 export default class Restrict extends Command {

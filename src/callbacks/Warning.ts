@@ -10,7 +10,7 @@
  */
 
 import Callback from "./Callback";
-import CallbackQuery from "contexts/CallbackQueryy";
+import CallbackQuery from "contexts/CallbackQuery";
 import ChatHelper from "helpers/Chat";
 import Lang from "helpers/Lang";
 import UserHelper from "helpers/User";

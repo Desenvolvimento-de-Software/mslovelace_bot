@@ -45,7 +45,7 @@ export default class Lang {
      *
      * @return {string}
      */
-    public static get(index: string): any {
+    public static get(index: string): string {
         return Lang.langs[Lang.country][index] || index;
     }
 
@@ -60,7 +60,7 @@ export default class Lang {
     public static set(country: string) {
 
         if (!Lang.langs.hasOwnProperty(country)) {
-            Lang.country = "us";
+            Lang.country = "en";
             return;
         }
 

@@ -80,12 +80,11 @@ export default class SaveUserAndChat extends Action {
         UserHelper.updateUser(contextUser);
         ChatHelper.updateChat(contextChat);
 
-        if (!await this.hasRelationship(userId, newChatId)) {
-            const query = await this.saveRelationship(userId, newChatId);
-            return query;
+        if (await this.hasRelationship(userId, newChatId)) {
+            return await this.updateRelationship(userId, newChatId);
         }
 
-        return await this.updateRelationship(userId, newChatId);
+        return await this.saveRelationship(userId, newChatId);
     }
 
     /**

@@ -6,8 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "bun -r dotenv/config ./dist/index.js",
+    "watch": "bun --watch ./src/index.ts",
     "build": "tsc --project ./",
-    "watch": "bun --watch ./src/index.ts"
+    "node-start": "node -r dotenv/config ./dist/index.js",
+    "node-watch": "npx nodemon --watch './**/*.{ts,graphql}' --exec 'npm run node-watch-arg'",
+    "node-watch-arg": "node --experimental-specifier-resolution=node --loader ts-node/esm -r dotenv/config -r tsconfig-paths/register src/index.ts",
+    "node-dev": "tsc-watch --onSuccess \"npm run node-watch\""
   },
   "repository": {
     "type": "git",

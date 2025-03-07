@@ -9,7 +9,7 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import Context from "contexts/Contextt";
+import Context from "contexts/Context";
 
 export default abstract class Action {
 

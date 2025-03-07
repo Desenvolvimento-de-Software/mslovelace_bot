@@ -37,7 +37,7 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @since  2023-06-07
      */
     public constructor() {
-        this.interval = setInterval(this.run, 1000);
+        this.run();
     }
 
     /**
@@ -47,7 +47,7 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @since  2025-02-25
      */
     public destroy(): void {
-        clearInterval(this.interval);
+        clearTimeout(this.interval);
     }
 
     /**
@@ -57,6 +57,8 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @since  2025-02-25
      */
     private readonly run = async (): Promise<void> => {
+
+        this.interval = setTimeout(this.run, 5000);
 
         const users = await this.getUnverifiedUsers();
         if (users.length === 0) {
