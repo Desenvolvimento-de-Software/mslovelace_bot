@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bans {
+  id            Int          @id @default(autoincrement()) @db.UnsignedInt
+  user_id       Int          @db.UnsignedInt
+  chat_id       Int          @db.UnsignedInt
+  federation_id Int?         @db.UnsignedInt
+  reason        String?      @db.VarChar(50)
+  date          Int          @db.UnsignedInt
+  chats         chats        @relation(fields: [chat_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bans_chat_id")
+  federations   federations? @relation(fields: [federation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bans_federation_id")
+  users         users        @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bans_user_id")
+
+  @@index([federation_id], map: "fk_bans_federation_id_idx")
+  @@index([user_id], map: "fk_bans_user_id_idx")
+  @@index([chat_id, user_id], map: "idx_user_id_chat_id")
+}
+
+model chat_configs {
+  id                    Int     @id @default(autoincrement()) @db.UnsignedInt
+  chat_id               Int     @db.UnsignedInt
+  greetings             Boolean @default(false)
+  goodbye               Boolean @default(false)
+  warn_name_changing    Boolean @default(false)
+  remove_event_messages Boolean @default(false)
+  restrict_new_users    Boolean @default(false)
+  captcha               Boolean @default(false)
+  captcha_ban_seconds   Int     @default(300) @db.UnsignedInt
+  warn_ask_to_ask       Boolean @default(false)
+  adashield             Int     @default(0) @db.UnsignedTinyInt
+  warnings              Int     @default(3) @db.UnsignedInt
+  chats                 chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_chat_configs_chat_id")
+
+  @@index([chat_id], map: "fk_chat_configs_chat_id")
+}
+
+model chat_messages {
+  id        Int     @id @default(autoincrement()) @db.UnsignedInt
+  chat_id   Int     @db.UnsignedInt
+  greetings String? @db.Text
+  chats     chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_message_chat_id")
+
+  @@index([chat_id], map: "idx_chat_id")
+}
+
+model chat_rules {
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  chat_id Int     @unique(map: "idx_uq_chat_id") @db.UnsignedInt
+  rules   String? @db.Text
+  chats   chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_chat_rules_chat_id")
+}
+
+model chats {
+  id              Int               @id @default(autoincrement()) @db.UnsignedInt
+  federation_id   Int?              @db.UnsignedInt
+  chat_id         BigInt            @unique(map: "idx_chats_chat_id")
+  title           String            @db.VarChar(250)
+  type            String            @db.VarChar(50)
+  language        String            @default("us") @db.VarChar(20)
+  joined          Boolean           @default(true)
+  bans            bans[]
+  chat_configs    chat_configs[]
+  chat_messages   chat_messages[]
+  chat_rules      chat_rules?
+  federations     federations?      @relation(fields: [federation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_chats_federation_id")
+  macros          macros[]
+  messages        messages[]
+  rel_users_chats rel_users_chats[]
+  warnings        warnings[]
+
+  @@index([federation_id], map: "idx_federation_id")
+}
+
+
+model federations {
+  id                    Int                     @id @default(autoincrement()) @db.UnsignedInt
+  user_id               Int                     @db.UnsignedInt
+  hash                  String                  @unique(map: "idx_hash") @db.VarChar(32)
+  description           String?                 @db.VarChar(100)
+  bans                  bans[]
+  chats                 chats[]
+  users                 users                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_federations_user_id")
+  rel_users_federations rel_users_federations[]
+
+  @@index([user_id], map: "fk_federations_user_id_idx")
+}
+
+model macros {
+  id      Int    @id @default(autoincrement()) @db.UnsignedInt
+  chat_id Int    @db.UnsignedInt
+  macro   String @db.VarChar(50)
+  content String @db.Text
+  chats   chats  @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_macro_id_chat_id")
+
+  @@index([chat_id], map: "fk_macro_id_chat_id")
+}
+
+model messages {
+  id               Int           @id @default(autoincrement()) @db.UnsignedInt
+  user_id          Int           @db.UnsignedInt
+  chat_id          Int           @db.UnsignedInt
+  thread_id        Int?          @db.UnsignedInt
+  message_id       Int           @db.UnsignedInt
+  type             messages_type @default(message)
+  reply_to         Int?          @db.UnsignedInt
+  content          String?       @db.Text
+  callback_query   String?       @db.LongText
+  entities         String?       @db.LongText
+  animation        String?       @db.LongText
+  audio            String?       @db.LongText
+  document         String?       @db.LongText
+  photo            String?       @db.LongText
+  sticker          String?       @db.LongText
+  video            String?       @db.LongText
+  video_note       String?       @db.LongText
+  voice            String?       @db.LongText
+  caption          String?       @db.LongText
+  caption_entities String?       @db.LongText
+  date             Int           @db.UnsignedInt
+  ttl              Int?          @db.UnsignedInt
+  status           Boolean       @default(true)
+  chats            chats         @relation(fields: [chat_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_messages_chat_id")
+  messages         messages?     @relation("messagesTomessages", fields: [reply_to], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_messages_reply_to")
+  other_messages   messages[]    @relation("messagesTomessages")
+  users            users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_messages_user_id")
+
+  @@index([reply_to], map: "fk_messages_reply_to")
+  @@index([chat_id, message_id], map: "idx_chat_id_message_id")
+  @@index([user_id, chat_id], map: "idx_user_id_chat_id")
+}
+
+model rel_users_chats {
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  user_id Int     @db.UnsignedInt
+  chat_id Int     @db.UnsignedInt
+  joined  Boolean @default(true)
+  captcha String? @db.Char(6)
+  checked Boolean @default(false)
+  date    Int     @db.UnsignedInt
+  ttl     Int?    @db.UnsignedInt
+  chats   chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_chat_id")
+  users   users   @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_user_id")
+
+  @@unique([user_id, chat_id], map: "idx_user_id_chat_id")
+  @@index([chat_id], map: "idx_chat_id")
+  @@index([user_id], map: "idx_user_id")
+}
+
+model rel_users_federations {
+  id            Int         @id @default(autoincrement()) @db.UnsignedInt
+  user_id       Int         @db.UnsignedInt
+  federation_id Int         @db.UnsignedInt
+  date          Int         @db.UnsignedInt
+  federations   federations @relation(fields: [federation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rel_users_federations_federation_id")
+  users         users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rel_users_federations_user_id")
+
+  @@unique([user_id, federation_id], map: "idx_uq_user_id_federation_id")
+  @@index([federation_id], map: "fk_rel_users_federations_federation_id_idx")
+}
+
+model shield {
+  id               Int     @id @default(autoincrement()) @db.UnsignedInt
+  telegram_user_id BigInt  @unique(map: "idx_telegram_user_id") @db.UnsignedBigInt
+  date             Int     @db.UnsignedInt
+  reason           String? @db.Text
+}
+
+model users {
+  id                    Int                     @id @default(autoincrement()) @db.UnsignedInt
+  user_id               BigInt                  @unique(map: "idx_user_id")
+  username              String?                 @db.VarChar(100)
+  first_name            String?                 @db.VarChar(100)
+  last_name             String?                 @db.VarChar(100)
+  is_channel            Boolean                 @default(false)
+  is_bot                Boolean                 @default(false)
+  is_premium            Boolean                 @default(false)
+  language_code         String?                 @default("us") @db.VarChar(20)
+  bans                  bans[]
+  federations           federations[]
+  messages              messages[]
+  rel_users_chats       rel_users_chats[]
+  rel_users_federations rel_users_federations[]
+  warnings              warnings[]
+
+  @@index([is_premium], map: "idx_is_premium")
+}
+
+model warnings {
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  user_id Int     @db.UnsignedInt
+  chat_id Int     @db.UnsignedInt
+  date    Int     @db.UnsignedInt
+  reason  String? @db.VarChar(100)
+  status  Boolean @default(true)
+  chats   chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_warns_chat_id")
+  users   users   @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_warns_user_id")
+
+  @@index([chat_id], map: "fk_warns_chat_id")
+  @@index([user_id, chat_id], map: "idx_user_id_chat_id")
+}
+
+enum messages_type {
+  message
+  edited_message
+  channel_post
+  edited_channel_post
+  inline_query
+  chosen_inline_result
+  callback_query
+  shipping_query
+  pre_checkout_query
+  poll
+  poll_answer
+  my_chat_member
+  chat_member
+  chat_join_request
+}
