@@ -437,7 +437,6 @@ export default class Chat {
 
         } catch (error: any) {
             Log.save(error.message, error.stack);
-            return Promise.resolve();
         }
     }
 
@@ -471,7 +470,6 @@ export default class Chat {
 
         } catch (error: any) {
             Log.save(error.message, error.stack);
-            return Promise.resolve();
         }
     }
 
@@ -501,7 +499,5 @@ export default class Chat {
         } catch (error: any) {
             Log.save(error.message, error.stack);
         }
-
-        return Promise.resolve();
     }
 }

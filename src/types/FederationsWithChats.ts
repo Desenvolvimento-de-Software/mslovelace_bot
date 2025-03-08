@@ -9,7 +9,8 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import { Chat as Chatype } from "models/type/Chat";
-import { ChatConfigs as ChatConfigsType } from "models/type/ChatConfigs";
+import { chats, federations } from "@prisma/client";
 
-export type Chat = Chatype & ChatConfigsType;
+export type FederationsWithChats = federations & {
+    chats: chats[];
+};

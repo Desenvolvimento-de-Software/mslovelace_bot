@@ -10,14 +10,11 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
 import Check from "libraries/combot/resources/Check";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
-import RelUsersChats from "models/RelUsersChats";
-import Shield from "models/Shield";
-import UserHelper from "helpers/User";
-import { Shield as ShieldType } from "models/type/Shield";
+import User from "contexts/User";
+import { addUserToShield, getUserByTelegramId } from "services/AdaShield";
 
 export default class AdaShield extends Action {
 
@@ -57,44 +54,19 @@ export default class AdaShield extends Action {
             return Promise.resolve();
         }
 
-        const userId = newChatMember.getId();
-        if (!await this.adaShield(userId) && !await this.cas(userId)) {
+        if (!await getUserByTelegramId(newChatMember.getId()) && !await this.cas(newChatMember)) {
             return Promise.resolve();
         }
 
         newChatMember.ban();
 
+        const userId = newChatMember.getId();
         const username = (newChatMember.getFirstName() ?? newChatMember.getUsername());
         const lang = Lang.get(this.banMessage)
-            .replace(/{userid}/g, userId)
-            .replace(/{username}/g, username);
+            .replace(/{userid}/g, userId.toString())
+            .replace(/{username}/g, username ?? "");
 
         this.context.getChat()?.sendMessage(lang, { parse_mode : "HTML" });
-        await this.updateRelationship();
-
-        return Promise.resolve();
-    }
-
-    /**
-     * Executes the AdaShield to see if the user is a registered spammer.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-09
-     *
-     * @param userId
-     *
-     * @return
-     */
-    private async adaShield(userId: number): Promise<boolean> {
-
-        const shield = new Shield();
-        shield
-            .select(["telegram_user_id"])
-            .where("telegram_user_id")
-            .equal(userId);
-
-        const result = await shield.execute<ShieldType[]>();
-        return !!result.length;
     }
 
     /**
@@ -107,9 +79,9 @@ export default class AdaShield extends Action {
      *
      * @return
      */
-    private async cas(userId: number): Promise<boolean> {
+    private async cas(user: User): Promise<boolean> {
 
-        const casCheck = new Check(userId);
+        const casCheck = new Check(user.getId());
         const response = await casCheck.get();
         const json = await response.json();
 
@@ -118,57 +90,9 @@ export default class AdaShield extends Action {
             return false;
         }
 
-        const shield = new Shield();
-        shield
-            .insert()
-            .set("telegram_user_id", userId)
-            .set("date", Math.floor(Date.now() / 1000))
-            .set("reason", "CAS");
-
-        shield.execute();
+        await addUserToShield(user, "CAS");
 
         this.banMessage = "casMessage";
         return true;
-    }
-
-    /**
-     * Updates the relationship between the user and the chat.
-     *
-     * @author Marcos Leandro
-     * @since  2022-09-09
-     *
-     * @return {Promise<void>}
-     */
-    private async updateRelationship(): Promise<void> {
-
-        const newChatMember = this.context.getNewChatMember();
-        if (!newChatMember) {
-            return Promise.resolve();
-        }
-
-        const chatId = this.context.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const user = await UserHelper.getByTelegramId(newChatMember.getId());
-        if (!user) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat) {
-            return Promise.resolve();
-        }
-
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .update()
-            .set("joined", 0)
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
-
-        await relUserChat.execute();
-        return Promise.resolve();
     }
 }

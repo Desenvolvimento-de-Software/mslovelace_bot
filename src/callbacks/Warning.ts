@@ -9,12 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import { PrismaClient } from "@prisma/client";
 import Callback from "./Callback";
 import CallbackQuery from "contexts/CallbackQuery";
-import ChatHelper from "helpers/Chat";
 import Lang from "helpers/Lang";
-import UserHelper from "helpers/User";
-import Warnings from "models/Warnings";
+import { getUserByTelegramId } from "services/Users";
+import { getUserAndChatByTelegramId } from "services/UsersAndChats";
+import Log from "helpers/Log";
 
 export default class Warning extends Callback {
 
@@ -46,20 +47,26 @@ export default class Warning extends Callback {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!user || !chat) {
+        const userAndChat = await getUserAndChatByTelegramId(userId, chatId);
+        if (!userAndChat) {
             return Promise.resolve();
         }
 
-        Lang.set(chat.language || "en");
+        Lang.set(userAndChat.chats?.language || "en");
 
         if (!await this.context.getUser()?.isAdmin()) {
+
             this.context.getCallbackQuery()?.answer(Lang.get("adminOnlyAction"));
 
+            const username = (
+                this.context.getUser()?.getFirstName() ??
+                this.context.getUser()?.getUsername() ??
+                this.context.getUser()?.getId().toString()
+            );
+
             const message = Lang.get("adminOnlyActionMessage")
-                .replace("{userid}", this.context.getUser()?.getId())
-                .replace("{username}", this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername());
+                .replace("{userid}", this.context.getUser()!.getId().toString())
+                .replace("{username}", username!);
 
             this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
             return Promise.resolve();
@@ -81,18 +88,24 @@ export default class Warning extends Callback {
         this.context.getCallbackQuery()?.answer("OK");
         this.context.getMessage()?.delete();
 
-        const contextUser = await UserHelper.getByTelegramId(userId);
+        const contextUser = await getUserByTelegramId(parseInt(callbackUserId));
         if (!contextUser) {
             return Promise.resolve();
         }
 
         await this.remove(parseInt(callbackUserId), parseInt(callbackChatId), parseInt(callbackWarningId));
 
+        const admin = (
+            this.context.getUser()?.getFirstName() ??
+            this.context.getUser()?.getUsername() ??
+            this.context.getUser()?.getId().toString()
+        );
+
         let message = Lang.get(typeof callbackWarningId === "undefined" ? "warningAdminRemovedAll" : "warningAdminRemovedLast")
-            .replace("{userid}", contextUser.user_id)
-            .replace("{username}", contextUser.first_name || user.username)
-            .replace("{adminId}", this.context.getUser()?.getId())
-            .replace("{adminUsername}", this.context.getUser()?.getFirstName() ?? this.context.getUser()?.getUsername());
+            .replace("{userid}", contextUser.user_id.toString())
+            .replace("{username}", contextUser.first_name ?? contextUser.username ?? contextUser.user_id.toString())
+            .replace("{adminId}", this.context.getUser()!.getId().toString())
+            .replace("{adminUsername}", admin!);
 
         this.context.getChat()?.sendMessage(message, { parse_mode: "HTML" });
     }
@@ -107,23 +120,36 @@ export default class Warning extends Callback {
      * @param chatId
      * @param warningId
      */
-    private async remove(userId: number, chatId: number, warningId: number|undefined = undefined): Promise<void> {
+    private async remove(userId: number, chatId: number, warningId: number): Promise<boolean> {
 
-        const user = await UserHelper.getByTelegramId(userId);
-        const chat = await ChatHelper.getByTelegramId(chatId);
-
-        const warnings = new Warnings();
-        const update =  warnings.update();
-
-        update
-            .set("status", 0)
-            .where("user_id").equal(user!.id)
-            .and("chat_id").equal(chat!.id);
-
-        if (typeof warningId !== "undefined") {
-            update.and("id").equal(warningId);
+        const userAndChat = await getUserAndChatByTelegramId(userId, chatId);
+        if (!userAndChat) {
+            return Promise.resolve(false);
         }
 
-        await warnings.execute();
+        const where: { user_id: number; chat_id: number; id?: number } = {
+            user_id: userId,
+            chat_id: chatId
+        };
+
+        if (warningId > 0) {
+            where["id"] = warningId;
+        }
+
+        const prisma = new PrismaClient();
+        return await prisma.warnings.updateMany({
+            where: where,
+            data: { status: false }
+
+        }).then(() => {
+            return true;
+
+        }).catch (err => {
+            Log.save(err.message, err.stack);
+            return false;
+
+        }).finally(async () => {
+            await prisma.$disconnect();
+        });
     }
 }

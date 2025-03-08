@@ -91,7 +91,7 @@ export default class DeleteExpiredMessages implements Iinterval {
         messages.forEach(async (message) => {
             const deleteMessage = new DeleteMessage();
             deleteMessage
-                .setMessageId(message.from!.id)
+                .setMessageId(message.message_id)
                 .setChatId(message.chat.id)
                 .post();
         });

@@ -9,15 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Chat from "contexts/Chat";
 import Command from "../Command";
 import User from "contexts/User";
-import ChatConfigs from "models/ChatConfigs";
-import WarningsModel from "models/Warnings";
-import UserHelper from "helpers/User";
 import Lang from "helpers/Lang";
 import { InlineKeyboardButton } from "libraries/telegram/types/InlineKeyboardButton";
 import { InlineKeyboardMarkup } from "libraries/telegram/types/InlineKeyboardMarkup";
-import { ChatConfigs as ChatConfigsType } from "models/type/ChatConfigs";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserWarnings } from "services/Warnings";
 
 export default class Base extends Command {
 
@@ -29,59 +28,6 @@ export default class Base extends Command {
      */
     public constructor() {
         super();
-    }
-
-    /**
-     * Returns the group's warning limits.
-     *
-     * @author Marcos Leandro
-     * @since  2024-04-22
-     *
-     * @param chat
-     *
-     * @return Warning limit.
-     */
-    protected async getWarningLimit(chat: Record<string, any>): Promise<number> {
-
-        const chatConfigs = new ChatConfigs();
-        chatConfigs
-            .select()
-            .where("chat_id").equal(chat.id);
-
-        const chatConfig = await chatConfigs.execute<ChatConfigsType[]>();
-        const warningLimit = chatConfig[0].warnings;
-
-        return warningLimit ?? 3;
-    }
-
-    /**
-     * Returns the user's warnings.
-     *
-     * @author Marcos Leandro
-     * @since  2024-04-22
-     *
-     * @param user
-     * @param chat
-     *
-     * @return Warnings length.
-     */
-    protected async getWarnings(contextUser: User, chat: Record<string, any>): Promise<Record<string, any>[]> {
-
-        const user = await UserHelper.getByTelegramId(contextUser.getId());
-
-        if (!user || !chat) {
-            return Promise.resolve([]);
-        }
-
-        const warnings = new WarningsModel();
-        warnings
-            .select()
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id)
-            .and("status").equal(1)
-            .orderBy("date", "ASC");
-
-        return await warnings.execute();
     }
 
     /**
@@ -105,8 +51,8 @@ export default class Base extends Command {
         langIndex = warnings.length === 0 ? "warningNoneMessage" : langIndex;
 
         let message = Lang.get(langIndex)
-            .replace("{userid}", contextUser.getId())
-            .replace("{username}", username)
+            .replace("{userid}", contextUser.getId().toString())
+            .replace("{username}", username!)
             .replace("{warnings}", warnings.length.toString() + "/" + warningsLimit.toString());
 
         for (let i = 0, length = warnings.length; i < length; i++) {
@@ -122,21 +68,26 @@ export default class Base extends Command {
      * @author Marcos Leandro
      * @since  2024-04-22
      *
-     * @param users
-     * @param chat
+     * @param usersContext
+     * @param chatContext
      *
      * @return
      */
-    protected async sendWarningMessages(users: User[], chat: Record<string, any>): Promise<void> {
+    protected async sendWarningMessages(usersContext: User[], chatContext: Chat): Promise<void> {
+
+        const chat = await getChatByTelegramId(chatContext.getId());
+        if (!chat) {
+            return Promise.resolve();
+        }
 
         Lang.set(chat.language || "en");
 
-        const warnings = await this.getWarnings(users[0], chat);
-        const warningLimit = await this.getWarningLimit(chat);
+        const warnings = await getUserWarnings(usersContext[0], chatContext);
+        const warningLimit = chat.chat_configs?.warnings ?? 3;
         const messages = [];
 
-        for (let i = 0, length = users.length; i < length; i++) {
-            const contextUser = users[i];
+        for (let i = 0, length = usersContext.length; i < length; i++) {
+            const contextUser = usersContext[i];
             messages.push(await this.getWarningMessage(contextUser, warnings, warningLimit));
         }
 
@@ -145,7 +96,7 @@ export default class Base extends Command {
         }
 
         const message = messages.join("\n-----\n");
-        const options = this.getMessageOptions(users, warnings);
+        const options = this.getMessageOptions(usersContext, warnings);
 
         await this.context?.getChat()?.sendMessage(message, options);
     }

@@ -10,12 +10,13 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
+import Chat from "contexts/Chat";
 import Context from "contexts/Context";
 import Log from "helpers/Log";
-import RelUsersChats from "models/RelUsersChats";
-import UserHelper from "helpers/User";
-import { RelUserChat as RelUserChatype } from "models/type/RelUserChat";
+import { createAndGetChat } from "services/Chats";
+import { createAndGetUser } from "services/Users";
+import User from "contexts/User";
+import { chats, users, PrismaClient } from "@prisma/client";
 
 export default class SaveUserAndChat extends Action {
 
@@ -39,122 +40,112 @@ export default class SaveUserAndChat extends Action {
      */
     public async run(): Promise<void> {
 
-        const contextUser = this.context.getNewChatMember() || this.context.getLeftChatMember() || this.context.getUser();
+        try {
+
+            const user = await this.getUser(this.getContextUser());
+            const chat = await this.getChat(this.context.getChat());
+
+            const prisma = new PrismaClient();
+            await prisma.rel_users_chats.upsert({
+                where: {
+                    user_id_chat_id: {
+                        user_id: user.id,
+                        chat_id: chat.id
+                    }
+                },
+                create: {
+                    user_id: user.id,
+                    chat_id: chat.id,
+                    joined: true,
+                    date: Math.floor(Date.now() / 1000),
+                    last_seen: Math.floor(Date.now() / 1000)
+                },
+                update: {
+                    joined: true,
+                    last_seen: Math.floor(Date.now() / 1000)
+                }
+
+            }).catch((err: Error) => {
+                Log.save(err.message, err.stack);
+
+            }).finally(async () => {
+                await prisma.$disconnect();
+            });
+
+        } catch (err: any) {
+            Log.save("SaveUserAndChat :: " + err.message, err.stack);
+        }
+    }
+
+    /**
+     * Returns the context user.
+     *
+     * @author Marcos Leandro
+     * @since  2025-03-08
+     *
+     * @throws Error User not found.
+     *
+     * @return Context user.
+     */
+    private getContextUser(): User {
+
+        const contextUser = this.context.getNewChatMember() ?? this.context.getLeftChatMember() ?? this.context.getUser();
         if (!contextUser) {
-            return Promise.resolve();
+            throw new Error("User not found in the context.");
         }
 
-        const contextUserId = contextUser.getId();
-        if (!contextUserId) {
-            Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
+        return contextUser;
+    }
+
+    /**
+     * Returns the user.
+     *
+     * @author Marcos Leandro
+     * @since  2025-03-08
+     *
+     * @param contextUser
+     *
+     * @throws Error User not found.
+     *
+     * @return User.
+     */
+    private async getUser(contextUser: User): Promise<users> {
+
+        if (!contextUser) {
+            throw new Error("User not found in the context.");
         }
 
-        const contextChat = this.context.getChat();
+        const user = await createAndGetUser(contextUser);
+        if (!user) {
+            throw new Error("User not found in the context. " + JSON.stringify(this.context.getPayload()));
+        }
+
+        return user;
+    }
+
+    /**
+     * Returns the context chat.
+     *
+     * @author Marcos Leandro
+     * @since  2025-03-08
+     *
+     * @param contextChat
+     *
+     * @throws Error Chat not found.
+     *
+     * @return Context chat.
+     */
+    private async getChat(contextChat?: Chat): Promise<chats> {
+
         if (!contextChat) {
-            return Promise.resolve();
+            throw new Error("Chat not found in the context.");
         }
 
-        const user = await UserHelper.getByTelegramId(contextUserId);
-        const userId = user?.id ?? await UserHelper.createUser(contextUser);
-
-        if (!userId) {
-            Log.save("SaveUserAndChat :: User ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
+        const chat = await createAndGetChat(contextChat);
+        if (!chat) {
+            throw new Error("Chat not found in the context. " + JSON.stringify(this.context.getPayload()));
         }
 
-        const chatId = this.context.getChat()?.getId();
-        if (!chatId) {
-            Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        const newChatId = chat?.id ?? await ChatHelper.createChat(contextChat);
-
-        if (!newChatId) {
-            Log.save("SaveUserAndChat :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
-        }
-
-        UserHelper.updateUser(contextUser);
-        ChatHelper.updateChat(contextChat);
-
-        if (await this.hasRelationship(userId, newChatId)) {
-            return await this.updateRelationship(userId, newChatId);
-        }
-
-        return await this.saveRelationship(userId, newChatId);
-    }
-
-    /**
-     * Returns if the user has a relationship with the chat.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-06
-     *
-     * @param userId
-     * @param chatId
-     *
-     * @returns {Promise<boolean>}
-     */
-    private async hasRelationship(userId: number, chatId: number): Promise<boolean> {
-
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .select()
-            .where("user_id").equal(userId)
-            .and("chat_id").equal(chatId)
-            .offset(0)
-            .limit(1);
-
-        const row = await relUserChat.execute<RelUserChatype[]>();
-        return !!row.length;
-    }
-
-    /**
-     * Saves the relationship between the user and the chat.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-06
-     *
-     * @param userId
-     * @param chatId
-     *
-     * @returns {Promise<void>}
-     */
-    public async saveRelationship(userId: number, chatId: number): Promise<void> {
-
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .insert()
-            .set("user_id", userId)
-            .set("chat_id", chatId)
-            .set("date", Math.floor(Date.now() / 1000));
-
-        return relUserChat.execute();
-    }
-
-    /**
-     * Updates the relationship between the user and the chat.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-06
-     *
-     * @param userId
-     * @param chatId
-     *
-     * @returns {Promise<void>}
-     */
-    private async updateRelationship(userId: number, chatId: number): Promise<void> {
-
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .update()
-            .set("joined", 1)
-            .where("user_id").equal(userId)
-            .and("chat_id").equal(chatId);
-
-        return relUserChat.execute();
+        return chat;
     }
 }

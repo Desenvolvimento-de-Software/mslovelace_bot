@@ -9,16 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatConfigs from "models/ChatConfigs";
-import ChatHelper from "helpers/Chat";
-import ChatMessages from "models/ChatMessages";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { ChatMessage as ChatMessageType } from "models/type/ChatMessage";
-import { ResultSetHeader } from "mysql2";
+import { getChatByTelegramId, getChatMessagesByChatId } from "services/Chats";
+import { PrismaClient } from "@prisma/client";
+import Log from "helpers/Log";
 
 export default class GreetingsCommand extends Command {
 
@@ -82,8 +80,6 @@ export default class GreetingsCommand extends Command {
         if (typeof this[method] === "function") {
             await (this[method] as Function).call(this);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -99,30 +95,29 @@ export default class GreetingsCommand extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.id) {
+        const chat = await getChatByTelegramId(chatId);
+        if (!chat) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language || "en");
 
-        const chatMessages = new ChatMessages();
-        chatMessages
-            .select()
-            .where("chat_id").equal(chat.id);
-
-        const result = await chatMessages.execute<ChatMessageType[]>();
-        if (!result.length) {
+        const chatMessages = await getChatMessagesByChatId(chat.id);
+        if (chatMessages) {
             this.context?.getChat()?.sendMessage(Lang.get("greetingsMessageNotSet"), { parse_mode : "HTML" });
             return;
         }
 
+        const username = (
+            this.context?.getUser()?.getFirstName() ??
+            this.context?.getUser()?.getUsername() ??
+            this.context?.getUser()?.getId().toString()
+        );
+
         const greetingsDemo = Lang.get("greetingsMessageDemo")
-            .replace("{greetings}", result[0].greetings)
-            .replace("{userid}", this.context?.getUser()?.getId())
-            .replace(
-                "{username}", this.context?.getUser()?.getFirstName() ?? this.context?.getUser()?.getUsername()
-            );
+            .replace("{greetings}", chatMessages!.greetings ?? "")
+            .replace("{userid}", this.context!.getUser()!.getId().toString())
+            .replace("{username}", username!);
 
         this.context?.getChat()?.sendMessage(greetingsDemo, { parse_mode : "HTML" });
     }
@@ -140,18 +135,17 @@ export default class GreetingsCommand extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language);
-        const result = await this.updateGreetingsStatus(chat.id, 1);
-
+        const result = await this.updateGreetingsStatus(chat.id, true);
         const greetingsStatus = Lang.get("textEnabled");
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
-        if (result.affectedRows > 0) {
+        if (result) {
             this.context?.getChat()?.sendMessage(greetingsMessage);
         }
     }
@@ -169,18 +163,18 @@ export default class GreetingsCommand extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language);
-        const result = await this.updateGreetingsStatus(chat.id, 0);
+        const result = await this.updateGreetingsStatus(chat.id, false);
 
         const greetingsStatus = Lang.get("textDisabled");
         const greetingsMessage = Lang.get("greetingsStatus").replace("{status}", greetingsStatus);
 
-        if (result.affectedRows > 0) {
+        if (result) {
             this.context?.getChat()?.sendMessage(greetingsMessage);
         }
     }
@@ -209,21 +203,25 @@ export default class GreetingsCommand extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
 
-        const chatMessage = new ChatMessages();
-        chatMessage
-            .update()
-            .set("greetings", params.join(" "))
-            .where("chat_id").equal(chat.id);
+        const prisma = new PrismaClient();
+        await prisma.chat_messages.upsert({
+            where: { chat_id: chat.id },
+            update: { greetings: params.join(" ") },
+            create: { chat_id: chat.id, greetings: params.join(" ") }
 
-        const result = await chatMessage.execute<ResultSetHeader>();
-        if (result.affectedRows > 0) {
+        }).then(() => {
             this.index();
-        }
+
+        }).catch(async (err: Error) => {
+            Log.save(err.message, err.stack);
+        }).finally(() => {
+            prisma.$disconnect();
+        });
     }
 
     /**
@@ -233,16 +231,27 @@ export default class GreetingsCommand extends Command {
      * @since  2023-06-13
      *
      * @param {number} chatId
-     * @param {number} status
+     * @param {boolean} status
+     *
+     * @return {boolean}
      */
-    private async updateGreetingsStatus(chatId: number, status: number): Promise<any> {
+    private async updateGreetingsStatus(chatId: number, status: boolean): Promise<boolean> {
 
-        const update = new ChatConfigs();
-        update
-            .update()
-            .set("greetings", status)
-            .where("chat_id").equal(chatId);
+        const prisma = new PrismaClient();
+        return await prisma.chat_configs.update({
+            where: { chat_id: chatId },
+            data: { greetings: status }
 
-        return update.execute();
+        }).then(() => {
+            this.index();
+            return true;
+
+        }).catch(async (err: Error) => {
+            Log.save(err.message, err.stack);
+            return false;
+
+        }).finally(() => {
+            prisma.$disconnect();
+        });
     }
 }

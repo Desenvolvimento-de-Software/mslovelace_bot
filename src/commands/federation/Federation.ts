@@ -9,17 +9,20 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
 import Command from "../Command";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import FederationHelper from "helpers/Federation";
 import Lang from "helpers/Lang";
-import UserHelper from "helpers/User";
 import { Chat as Chatype } from "libraries/telegram/types/Chat";
+import { ChatWithConfigs } from "types/ChatWithConfigs";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserByTelegramId } from "services/Users";
+import { getFederationWithChatsById } from "services/Federations";
 import { Message as MessageType } from "libraries/telegram/types/Message";
 import { User as UserType } from "libraries/telegram/types/User";
 import { Update as UpdateType } from "libraries/telegram/types/Update";
+import { FederationsWithChats } from "types/FederationsWithChats";
+import { users } from "@prisma/client";
 
 export default class Federation extends Command {
 
@@ -29,7 +32,7 @@ export default class Federation extends Command {
      * @author Marcos Leandro
      * @since  2023-07-04
      */
-    protected user?: Record<string, any>;
+    protected user?: users;
 
     /**
      * Chat object.
@@ -37,7 +40,7 @@ export default class Federation extends Command {
      * @author Marcos Leandro
      * @since  2023-07-04
      */
-    protected chat?: Record<string, any>;
+    protected chat?: ChatWithConfigs;
 
     /**
      * Federation object.
@@ -45,7 +48,7 @@ export default class Federation extends Command {
      * @author Marcos Leandro
      * @since  2023-07-04
      */
-    protected federation?: Record<string, any>;
+    protected federation?: FederationsWithChats;
 
     /**
      * Command context.
@@ -80,13 +83,12 @@ export default class Federation extends Command {
 
         const userId = this.context?.getUser()?.getId();
         const chatId = this.context?.getChat()?.getId();
-
         if (!userId || !chatId) {
             return Promise.resolve();
         }
 
-        this.user = await UserHelper.getByTelegramId(userId);
-        this.chat = await ChatHelper.getByTelegramId(chatId);
+        this.user = await getUserByTelegramId(userId) ?? undefined;
+        this.chat = await getChatByTelegramId(chatId) ?? undefined;
 
         if (!this.user?.id || !this.chat?.id) {
             return Promise.resolve();
@@ -95,7 +97,7 @@ export default class Federation extends Command {
         Lang.set(this.chat.language || "en");
 
         if (this.chat.federation_id) {
-            this.federation = await FederationHelper.getById(Number(this.chat?.federation_id));
+            this.federation = await getFederationWithChatsById(Number(this.chat?.federation_id)) ?? undefined;
         }
 
         this.command = command;
@@ -103,8 +105,6 @@ export default class Federation extends Command {
         if (typeof this[method] === "function") {
             await (this[method] as Function).call(this);
         }
-
-        return Promise.resolve();
     }
 
     /**

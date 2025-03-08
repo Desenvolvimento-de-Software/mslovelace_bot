@@ -9,15 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
-import ChatRules from "models/ChatRules";
 import Command from "./Command";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
 import Lang from "helpers/Lang";
 import Log from "helpers/Log";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { ChatRules as ChatRulesType } from "models/type/ChatRules";
+import { getChatByTelegramId, getChatRulesByChatId } from "services/Chats";
+import { PrismaClient } from "@prisma/client";
 
 export default class Rules extends Command {
 
@@ -84,7 +83,7 @@ export default class Rules extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         Lang.set(chat?.language ?? "en");
 
         this.command = command;
@@ -94,16 +93,17 @@ export default class Rules extends Command {
         switch (this.command.getCommand()) {
 
             case "rules":
-                return this.rules();
+                this.rules();
+                break;
 
             case "addrules":
-                return this.addrules();
+                this.addrules();
+                break;
 
             case "delrules":
-                return this.delrules();
+                this.delrules();
+                break;
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -118,19 +118,17 @@ export default class Rules extends Command {
             return this.context?.getChat()?.sendMessage(Lang.get("rulesNotFound"));
         }
 
-        const chatRules = new ChatRules();
-        chatRules
-            .select()
-            .where("chat_id").equal(this.chat.id)
-            .and("rules").notEqual("");
-
-        const result = await chatRules.execute<ChatRulesType[]>();
-
-        if (!result.length) {
+        const chatRules = await getChatRulesByChatId(this.chat.id);
+        if (!chatRules?.rules) {
             return this.context?.getChat()?.sendMessage(Lang.get("rulesNotFound"));
         }
 
-        return this.context?.getChat()?.sendMessage(result[0].rules!, { parse_mode : "HTML" });
+        await this.context?.getChat()?.sendMessage(chatRules.rules, { parse_mode : "HTML" }).then(() => {
+            return true;
+        }).catch (error => {
+            Log.save(error.message, error.stack);
+            return false;
+        });
     }
 
     /**
@@ -138,12 +136,14 @@ export default class Rules extends Command {
      *
      * @author Marcos Leandro
      * @since  2024-07-30
+     *
+     * @return true on success, false on failure.
      */
-    private async addrules(): Promise<void> {
+    private async addrules(): Promise<boolean> {
 
         const text = this.context?.getMessage()?.getText().replace(`/${this.command!.getCommand()}`, "").trim() ?? "";
         if (!text.length || text.length < 2) {
-            return Promise.resolve();
+            return Promise.resolve(false);
         }
 
         const rules = text.replace(/^\\n/, "").replace(/\\n$/, "").trim();
@@ -156,9 +156,11 @@ export default class Rules extends Command {
             message += "\n\n" + rules;
 
             this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
+            return true;
 
         } catch (error: any) {
-            Log.save(error.message);
+            Log.save(error.message, error.stack);
+            return false;
         }
     }
 
@@ -167,15 +169,26 @@ export default class Rules extends Command {
      *
      * @author Marcos Leandro
      * @since  2024-07-30
+     *
+     * @return true on success, false on failure.
      */
-    private async delrules(): Promise<void> {
+    private async delrules(): Promise<boolean> {
 
-        const chatRules = new ChatRules();
-        chatRules
-            .delete()
-            .where("chat_id").equal(this.chat!.id);
+        const prisma = new PrismaClient();
 
-        await chatRules.execute();
+        return await prisma.chat_rules.delete({
+            where: { chat_id: this.chat!.id }
+
+        }).then(() => {
+            return true;
+
+        }).catch(err => {
+            Log.save(err.message, err.stack);
+            return false;
+
+        }).finally(() => {
+            prisma.$disconnect();
+        });
     }
 
     /**
@@ -185,31 +198,26 @@ export default class Rules extends Command {
      * @since  2024-07-30
      *
      * @param rules
+     *
+     * @return true on success, false on failure.
      */
-    private async insertOrUpdateRules(rules: string): Promise<void> {
+    private async insertOrUpdateRules(rules: string): Promise<boolean> {
 
-        const chatRules = new ChatRules();
+        const prisma = new PrismaClient();
+        return prisma.chat_rules.upsert({
+            where: { chat_id: this.chat!.id },
+            update: { rules: rules },
+            create: { chat_id: this.chat!.id, rules: rules }
 
-        chatRules
-            .select()
-            .where("chat_id").equal(this.chat!.id);
+        }).then(() => {
+            return true;
 
-        const result = await chatRules.execute<ChatRulesType[]>();
-        if (result.length) {
+        }).catch(err => {
+            Log.save(err.message, err.stack);
+            return false;
 
-            chatRules
-                .update()
-                .set("rules", rules)
-                .where("chat_id").equal(this.chat!.id);
-
-            return await chatRules.execute();
-        }
-
-        chatRules
-            .insert()
-            .set("chat_id", this.chat!.id)
-            .set("rules", rules);
-
-        return await chatRules.execute();
+        }).finally(() => {
+            prisma.$disconnect();
+        });
     }
 }

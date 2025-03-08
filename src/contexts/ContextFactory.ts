@@ -412,7 +412,7 @@ export default class ContextFactory {
             return false;
         }
 
-        if ("status" in oldChatMember && oldChatMember.status !== "left") {
+        if ("status" in oldChatMember && !["left", "kicked", "banned"].includes(oldChatMember.status)) {
             return false;
         }
 

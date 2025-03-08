@@ -10,9 +10,11 @@
  */
 
 import AdaShield from "../commands/AdaShield";
+import Approve from "commands/Approve";
 import Ask from "../commands/Ask";
 import Ban from "../commands/Ban";
 import Captcha from "../commands/Captcha";
+import Events from "commands/Events";
 import FederationBan from "../commands/federation/Ban";
 import FederationGroup from "../commands/federation/Group";
 import FederationManage from "../commands/federation/Manage";
@@ -35,9 +37,11 @@ import Yarn from "../commands/Yarn";
 
 export const commands = [
     AdaShield,
+    Approve,
     Ask,
     Ban,
     Captcha,
+    Events,
     FederationBan,
     FederationGroup,
     FederationManage,

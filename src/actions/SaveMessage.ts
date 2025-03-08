@@ -10,17 +10,12 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
 import Log from "helpers/Log";
-import Messages from "models/Messages";
-import UserHelper from "helpers/User";
 import CallbackQuery from "contexts/CallbackQuery";
-import Builder from "models/mysql/Builder";
+import { getUserAndChatByTelegramId } from "services/UsersAndChats";
 import { AdditionalData as AdditionalDataType } from "types/AdditionalData";
-import { Message as MessageType } from "models/type/Message";
-
-type AdditionalData = Record<string, string | number | boolean>;
+import { PrismaClient, messages_type } from "@prisma/client";
 
 export default class SaveMessage extends Action {
 
@@ -51,147 +46,30 @@ export default class SaveMessage extends Action {
         }
 
         const contextUser = this.context.getNewChatMember() || this.context.getLeftChatMember() || this.context.getUser();
-        if (!contextUser) {
+        if (!contextUser || !this.context.getChat()?.getId()) {
+            Log.save("SaveMessage :: User or Chat not found " + JSON.stringify(this.context.getPayload()));
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const userId = user?.id ?? await UserHelper.createUser(contextUser);
+        const userAndChat = await getUserAndChatByTelegramId(contextUser.getId(), this.context.getChat()!.getId());
+        const data = {
+            user_id: userAndChat!.users.id,
+            chat_id: userAndChat!.chats.id,
+            message_id: this.context.getMessage()!.getId(),
+            type: this.context.getType() as messages_type,
+            content: this.context.getMessage()!.getText(),
+            date: this.context.getMessage()!.getDate() ?? Math.floor(Date.now() / 1000)
+        };
 
-        const telegramChat = this.context.getChat();
-        if (!telegramChat) {
-            Log.save("SaveMessage :: Chat not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
-        }
+        await this.addQueryParams(data, additionalData);
 
-        const chat = await ChatHelper.getByTelegramId(telegramChat.getId());
-        const chatId = chat?.id ?? await ChatHelper.createChat(telegramChat);
+        const prisma = new PrismaClient();
+        await prisma.messages.create({
+            data: data
 
-        if (!user || !userId) {
-            Log.save("SaveMessage :: User ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
-        }
-
-        if (!chat || !chatId) {
-            Log.save("SaveMessage :: Chat ID not found " + JSON.stringify(this.context.getPayload()));
-            return Promise.resolve();
-        }
-
-        const messageExists = await this.messageExists();
-        if (messageExists || this.context.getType() === "edited_message") {
-            this.updateMessage(user, chat, additionalData);
-            return Promise.resolve();
-        }
-
-        this.saveNewMessage(user, chat, additionalData);
-        return Promise.resolve();
-    }
-
-    /**
-     * Returns whether the message exists.
-     *
-     * @author Marcos Leandro
-     * @since  2025-02-25
-     *
-     * @return {Promise<boolean>}
-     */
-    private async messageExists(): Promise<boolean> {
-
-        const messageId = this.context.getMessage()?.getId();
-        const chatId = this.context.getChat()?.getId();
-
-        if (!chatId || !messageId) {
-            return Promise.resolve(false);
-        }
-
-        const messageModel = new Messages();
-        messageModel
-            .select()
-            .where("chat_id").equal(chatId)
-            .and("message_id").equal(messageId)
-            .offset(0)
-            .limit(1);
-
-        const message = await messageModel.execute<MessageType[]>();
-        return !!message.length;
-    }
-
-    /**
-     * Saves the new message.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-16
-     *
-     * @param user
-     * @param chat
-     *
-     * @return Promise<void>
-     */
-    private async saveNewMessage(
-        user: Record<string, any>,
-        chat: Record<string, any>,
-        additionalData?: AdditionalDataType
-    ): Promise<void> {
-
-        const message = this.context.getMessage();
-        if (!message) {
-            return Promise.resolve();
-        }
-
-        const messageModel = new Messages();
-        const insert = messageModel.insert();
-
-        insert
-            .set("type", this.context.getType())
-            .set("user_id", user.id)
-            .set("chat_id", chat.id)
-            .set("message_id", message.getId())
-            .set("content", message.getText())
-            .set("date", message.getDate() ?? Math.floor(Date.now() / 1000));
-
-        await this.addQueryParams(insert, additionalData);
-
-        messageModel.execute();
-        return Promise.resolve();
-    }
-
-    /**
-     * Updates a message.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-16
-     *
-     * @param user
-     * @param chat
-     * @param additionalData
-     *
-     * @return {Promise<void>}
-     */
-    private async updateMessage(
-        user: Record<string, any>,
-        chat: Record<string, any>,
-        additionalData?: AdditionalDataType
-    ): Promise<void> {
-
-        const message = this.context.getMessage();
-        if (!message) {
-            return Promise.resolve();
-        }
-
-        const messageModel = new Messages();
-        const update = messageModel.update();
-        update
-            .set("type", this.context.getType())
-            .set("content", message.getText())
-            .set("date", message.getDate() ?? Math.floor(Date.now() / 1000))
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id)
-            .and("message_id").equal(message.getId());
-
-        await this.addQueryParams(update, additionalData);
-
-        messageModel.execute();
-        return Promise.resolve();
+        }).catch((err) => {
+            Log.save(err.message, err.trace);
+        });
     }
 
     /**
@@ -200,70 +78,68 @@ export default class SaveMessage extends Action {
      * @author Marcos Leandro
      * @since  2025-02-25
      *
-     * @param operation
+     * @param data
      * @param additionalData
      *
      * @return {Promise<Builder>}
      */
-    private async addQueryParams(operation: Builder, additionalData?: AdditionalDataType): Promise<Builder> {
+    private async addQueryParams(data: Record<string, any>, additionalData?: AdditionalDataType): Promise<void> {
 
         const message = this.context.getMessage();
         if (!message) {
-            return Promise.resolve(operation);
+            return Promise.resolve();
         }
 
         const threadId = message.getMessageThreadId();
-        threadId && (operation.set("thread_id", threadId));
+        threadId && (data["thread_id"] = threadId);
 
         const replyTo = await this.getReplyMessageId();
-        replyTo && (operation.set("reply_to", replyTo));
+        replyTo && (data["reply_to"] = replyTo);
 
         const callbackData = this.context instanceof CallbackQuery ? this.context?.getData() : null;
-        callbackData && (operation.set("callbackQuery", JSON.stringify(callbackData)));
+        callbackData && (data["callbackQuery"] = JSON.stringify(callbackData));
 
         const entities = message.getEntities();
-        entities && (operation.set("entities", JSON.stringify(entities)));
+        entities && (data["entities"] = JSON.stringify(entities));
 
         const animation = message.getAnimation();
-        animation && (operation.set("animation", JSON.stringify(animation)));
+        animation && (data["animation"] = JSON.stringify(animation));
 
         const audio = message.getAudio();
-        audio && (operation.set("audio", JSON.stringify(audio)));
+        audio && (data["audio"] = JSON.stringify(audio));
 
         const document = message.getDocument();
-        document && (operation.set("document", JSON.stringify(document)));
+        document && (data["document"] = JSON.stringify(document));
 
         const photo = message.getPhoto();
-        photo && (operation.set("photo", JSON.stringify(photo)));
+        photo && (data["photo"] = JSON.stringify(photo));
 
         const sticker = message.getSticker();
-        sticker && (operation.set("sticker", JSON.stringify(sticker)));
+        sticker && (data["sticker"] = JSON.stringify(sticker));
 
         const video = message.getVideo();
-        video && (operation.set("video", JSON.stringify(video)));
+        video && (data["video"] = JSON.stringify(video));
 
         const videoNote = message.getVideoNote();
-        videoNote && (operation.set("videoNote", JSON.stringify(videoNote)));
+        videoNote && (data["videoNote"] = JSON.stringify(videoNote));
 
         const voice = message.getVoice();
-        voice && (operation.set("voice", JSON.stringify(voice)));
+        voice && (data["voice"] = JSON.stringify(voice));
 
         const caption = message.getCaption();
-        caption && (operation.set("caption", caption));
+        caption && (data["caption"] = caption);
 
         const captionEntities = message.getCaptionEntities();
-        captionEntities && (operation.set("captionEntities", JSON.stringify(captionEntities)));
+        captionEntities && (data["captionEntities"] = JSON.stringify(captionEntities));
 
         const contact = message.getContact();
-        contact && (operation.set("contact", JSON.stringify(contact)));
+        contact && (data["contact"] = JSON.stringify(contact));
 
         if (additionalData) {
             Object.keys(additionalData).forEach((key) => {
-                operation.set(key, additionalData[key]);
+                data[key] = additionalData[key];
             });
         }
-
-        return Promise.resolve(operation);
     }
 
     /**
@@ -288,16 +164,17 @@ export default class SaveMessage extends Action {
             return null;
         }
 
-        const messageModel = new Messages();
-        messageModel
-            .select()
-            .where("message_id").equal(replyToMessage.getId());
+        const prisma = new PrismaClient();
+        return await prisma.messages.findFirst({
+            where: {
+                message_id: replyToMessage.getId()
+            }
+        }).then((reply) => {
+            return reply?.id ?? null;
 
-        const reply = await messageModel.execute<MessageType[]>();
-        if (reply.length) {
-            return reply[0].id;
-        }
-
-        return null;
+        }).catch((err) => {
+            Log.save(err.message, err.trace);
+            return null;
+        });
     }
 }

@@ -16,7 +16,6 @@ import Command from "./Command";
 import User from "./User";
 import Chat from "./Chat";
 import Log from "helpers/Log";
-import UserHelper from "helpers/User";
 import { Animation as AnimationType } from "libraries/telegram/types/Animation";
 import { Audio as AudioType } from "libraries/telegram/types/Audio";
 import { Contact as ContactType } from "libraries/telegram/types/Contact";
@@ -30,6 +29,7 @@ import { User as UserType } from "libraries/telegram/types/User";
 import { Video as VideoType } from "libraries/telegram/types/Video";
 import { VideoNote as VideoNoteType } from "libraries/telegram/types/VideoNote";
 import { Voice as VoiceType } from "libraries/telegram/types/Voice";
+import { getUserByUsername } from "services/Users";
 
 export default class Message {
 
@@ -346,8 +346,7 @@ export default class Message {
      */
     public async getMentions(): Promise<User[]> {
 
-        if (typeof this.mentions === "undefined") {
-            this.mentions = [];
+        if (!Array.isArray(this.mentions)) {
             await this.parseMentions();
         }
 
@@ -564,6 +563,7 @@ export default class Message {
      * @since  2023-06-12
      */
     private async parseMentions(): Promise<void> {
+        this.mentions = [];
         for (const entity of this.entities) {
             await this.appendMention(entity);
         }
@@ -610,19 +610,19 @@ export default class Message {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getUserByUsername(username);
+        const user = await getUserByUsername(username);
         if (!user) {
             return Promise.resolve();
         }
 
         const mention: UserType = {
-            id: user.user_id,
-            is_bot: user.is_bot === 1,
+            id: Number(user.user_id),
+            is_bot: user.is_bot,
             first_name: user.first_name ?? "",
-            last_name: user.last_name,
-            username: user.username,
-            language_code: user.language_code,
-            is_premium: user.is_premium === 1
+            last_name: user.last_name ?? "",
+            username: user.username ?? "",
+            language_code: user.language_code ?? "",
+            is_premium: user.is_premium
         };
 
         this.mentions!.push(

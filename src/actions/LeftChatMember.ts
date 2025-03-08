@@ -10,10 +10,11 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
-import RelUsersChats from "models/RelUsersChats";
-import UserHelper from "helpers/User";
+import Log from "helpers/Log";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserByTelegramId } from "services/Users";
+import { leave } from "services/UsersAndChats";
 
 export default class LeftChatMember extends Action {
 
@@ -49,24 +50,17 @@ export default class LeftChatMember extends Action {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const user = await getUserByTelegramId(userId);
+        const chat = await getChatByTelegramId(chatId);
         if (!user || !chat) {
             return Promise.resolve();
         }
 
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .update()
-            .set("joined", 0)
-            .set("checked", 0)
-            .set("ttl", null)
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
+        await leave(user.id, chat.id).catch((err) => {
+            Log.save(err.message, err.stack);
+        });
 
-        relUserChat.execute();
-
-        if (chat.remove_event_messages === 0) {
+        if (!chat.chat_configs.remove_event_messages) {
             return Promise.resolve();
         }
 

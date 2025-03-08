@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
 import Text from "helpers/Text";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class Report extends Command {
 
@@ -61,7 +61,7 @@ export default class Report extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }

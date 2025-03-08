@@ -10,11 +10,11 @@
  */
 
 import Federation from "./Federation";
-import Chats from "../../models/Chats";
-import { BotCommand } from "../../libraries/telegram/types/BotCommand";
-import FederationsHelper from "../../helpers/Federation";
-import Lang from "../../helpers/Lang";
-import Log from "../../helpers/Log";
+import { BotCommand } from "libraries/telegram/types/BotCommand";
+import Lang from "helpers/Lang";
+import Log from "helpers/Log";
+import { getFederationById, getFederationByHash } from "services/Federations";
+import { PrismaClient } from "@prisma/client";
 
 export default class Group extends Federation {
 
@@ -62,14 +62,14 @@ export default class Group extends Federation {
             return;
         }
 
-        const federation = await FederationsHelper.getById(this.chat.federation_id);
+        const federation = await getFederationById(this.chat.federation_id);
         if (!federation) {
             this.context?.getMessage()?.reply(Lang.get("federationLeaveNoFederationError"));
             return;
         }
 
         const message = Lang.get("federationDetails")
-            .replace("{federation}", federation.description)
+            .replace("{federation}", federation.description ?? "")
             .replace("{hash}", federation.hash);
 
         this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
@@ -100,14 +100,14 @@ export default class Group extends Federation {
         }
 
         const hash = params[0].trim();
-        const federation = await FederationsHelper.getByHash(hash);
+        const federation = await getFederationByHash(hash);
 
         if (!federation) {
             this.context?.getMessage()?.reply(Lang.get("federationInvalidHashError"));
             return;
         }
 
-        if (this.chat?.federation_id?.length) {
+        if (this.chat?.federation_id) {
             this.context?.getMessage()?.reply(Lang.get("federationJoinHasFederationError"));
             return;
         }
@@ -117,17 +117,16 @@ export default class Group extends Federation {
             return;
         }
 
-        const chat = new Chats();
-        chat
-            .update()
-            .set("federation_id", federation.id)
-            .where("id").equal(this.chat!.id);
-
         try {
 
-            chat.execute();
+            const prisma = new PrismaClient();
+            await prisma.chats.update({
+                where: { chat_id: this.context!.getChat()!.getId() },
+                data: { federation_id: federation.id }
+            });
+
             const message = Lang.get("federationJoinSuccess")
-                .replace("{federation}", federation.description);
+                .replace("{federation}", federation.description ?? "");
 
             this.context?.getMessage()?.reply(message);
 
@@ -161,15 +160,14 @@ export default class Group extends Federation {
             return;
         }
 
-        const chat = new Chats();
-        chat
-            .update()
-            .set("federation_id", null)
-            .where("id").equal(this.chat.id);
-
         try {
 
-            chat.execute();
+            const prisma = new PrismaClient();
+            await prisma.chats.update({
+                where: { chat_id: this.context!.getChat()!.getId() },
+                data: { federation_id: null }
+            });
+
             this.context?.getMessage()?.reply(Lang.get("federationLeaveSuccess"));
 
         } catch (err: any) {

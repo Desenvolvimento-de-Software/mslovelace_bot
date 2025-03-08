@@ -10,36 +10,16 @@
  */
 
 import Action from "actions/Action";
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
-import RelUsersChats from "models/RelUsersChats";
+import Log from "helpers/Log";
 import RestrictChatMember from "libraries/telegram/resources/RestrictChatMember";
-import UserHelper from "helpers/User";
 import { ChatPermissions } from "libraries/telegram/types/ChatPermissions";
-import { RelUserChat } from "models/type/RelUserChat";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserByTelegramId, getUserAndChatByCaptcha } from "services/Users";
+import { approveOnChat } from "services/UsersAndChats";
 
 export default class Captcha extends Action {
-
-    /**
-     * User object.
-     *
-     * @author Marcos Leandro
-     * @since  2025-02-12
-     *
-     * @var {Record<string, unknown>}
-     */
-    private user: Record<string, any> = {};
-
-    /**
-     * Chat object.
-     *
-     * @author Marcos Leandro
-     * @since  2025-02-12
-     *
-     * @var {Record<string, unknown>}
-     */
-    private chat: Record<string, any> = {};
 
     /**
      * The constructor.
@@ -85,16 +65,8 @@ export default class Captcha extends Action {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!user?.id || !chat?.id) {
-            return Promise.resolve();
-        }
-
-        this.user = user;
-        this.chat = chat;
-
-        if (parseInt(this.chat.captcha) !== 1) {
+        const chat = await getChatByTelegramId(chatId);
+        if (!chat?.chat_configs?.captcha) {
             return Promise.resolve();
         }
 
@@ -133,44 +105,31 @@ export default class Captcha extends Action {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
+        const user = await getUserByTelegramId(userId);
         if (!user) {
             return Promise.resolve();
         }
 
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .select()
-            .where("user_id").equal(user.id)
-            .and("captcha").equal(text)
-            .and("checked").equal(0)
-            .offset(0)
-            .limit(1);
+        try {
 
-        const row = await relUserChat.execute<RelUserChat[]>();
-        if (!row.length) {
+            const relUserChat = await getUserAndChatByCaptcha(text);
+            if (!relUserChat) {
+                return Promise.resolve();
+            }
+
+            await approveOnChat(relUserChat.id, relUserChat.id);
+            await this.addPermissions(relUserChat.chats);
+
+            if (relUserChat.chats.chat_configs?.restrict_new_users) {
+                await this.restrictUser(relUserChat.chats);
+            }
+
+            this.sendConfirmationMessage(relUserChat.chats);
+
+        } catch (err: any) {
+            Log.save(err.message, err.stack);
             return Promise.resolve();
         }
-
-        const chat = await ChatHelper.getById(row[0].chat_id);
-        if (!chat) {
-            return Promise.resolve();
-        }
-
-        relUserChat
-            .update()
-            .set("checked", 1)
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
-
-        relUserChat.execute();
-
-        await this.addPermissions(chat);
-        if (chat.restrict_new_users) {
-            await this.restrictUser(chat);
-        }
-
-        this.sendConfirmationMessage(chat);
     }
 
     /**
@@ -208,7 +167,7 @@ export default class Captcha extends Action {
         const restrictChatMember = new RestrictChatMember();
         return await restrictChatMember
             .setUserId(userId)
-            .setChatId(chat.chat_id)
+            .setChatId(Number(chat.chat_id))
             .setChatPermissions(permissions)
             .post();
     }
@@ -251,8 +210,6 @@ export default class Captcha extends Action {
             .setChatPermissions(permissions)
             .setUntilDate(until)
             .post();
-
-        return Promise.resolve();
     }
 
     /**

@@ -11,13 +11,13 @@
 
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import { BotCommand } from "../libraries/telegram/types/BotCommand";
 import Command from "./Command";
-import ChatHelper from "../helpers/Chat";
 import YarnPackage from "../helpers/YarnPackage";
 import Lang from "../helpers/Lang";
 import Log from "../helpers/Log";
+import { BotCommand } from "../libraries/telegram/types/BotCommand";
 import { exec } from "child_process";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class Yarn extends Command {
 
@@ -75,15 +75,13 @@ export default class Yarn extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language || "en");
         this.getPackage(library);
-
-        return Promise.resolve();
     }
 
     /**
@@ -157,7 +155,7 @@ export default class Yarn extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
@@ -179,7 +177,6 @@ export default class Yarn extends Command {
         }
 
         this.context?.getChat()?.sendMessage(yarnPackage.getMessage(), options);
-        return Promise.resolve();
     }
 
     /**

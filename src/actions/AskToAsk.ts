@@ -10,9 +10,10 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
+import Log from "helpers/Log";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class AskToAsk extends Action {
 
@@ -38,43 +39,47 @@ export default class AskToAsk extends Action {
      */
      public async run(): Promise<void> {
 
-        if (await this.context.getUser()?.isAdmin()) {
-            return Promise.resolve();
+        try {
+
+            if (await this.context.getUser()?.isAdmin()) {
+                throw new Error();
+            }
+
+            const chatId = this.context.getChat()?.getId();
+            if (!chatId) {
+                throw new Error();
+            }
+
+            const chat = await getChatByTelegramId(chatId);
+            if (!chat) {
+                throw new Error();
+            }
+
+            if (this.context.getMessage()?.getReplyToMessage()) {
+                throw new Error();
+            }
+
+            const text = this.context.getMessage()?.getText();
+            if (!text || text.length > 50) {
+                throw new Error();
+            }
+
+            Lang.set(chat.language || "en");
+            if (!text.match(Lang.get("askToAskRegex"))) {
+                throw new Error();
+            }
+
+            this.context.getMessage()?.delete();
+
+            const userId = this.context.getUser()?.getId();
+            const username = this.context.getUser()?.getFirstName() ?? this.context.getUser()?.getUsername();
+            const link = Lang.get("askToAskLink");
+            const content = `<a href="tg://user?id=${userId}">${username}</a>,\n\n${link}`;
+
+            this.context.getChat()?.sendMessage(content, { parse_mode : "HTML" });
+
+        } catch (err: any) {
+            Log.save(err.message, err.stack);
         }
-
-        const chatId = this.context.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.warn_ask_to_ask) {
-            return Promise.resolve();
-        }
-
-        if (this.context.getMessage()?.getReplyToMessage()) {
-            return Promise.resolve();
-        }
-
-        const text = this.context.getMessage()?.getText();
-        if (!text || text.length > 50) {
-            return Promise.resolve();
-        }
-
-        Lang.set(chat.language || "en");
-        if (!text.match(Lang.get("askToAskRegex"))) {
-            return Promise.resolve();
-        }
-
-        this.context.getMessage()?.delete();
-
-        const userId = this.context.getUser()?.getId();
-        const username = this.context.getUser()?.getFirstName() || this.context.getUser()?.getUsername();
-        const link = Lang.get("askToAskLink");
-        const content = `<a href="tg://user?id=${userId}">${username}</a>,\n\n${link}`;
-
-        this.context.getChat()?.sendMessage(content, { parse_mode : "HTML" });
-
-        return Promise.resolve();
     }
 }

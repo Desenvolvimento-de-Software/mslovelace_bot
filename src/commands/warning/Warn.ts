@@ -9,17 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
+import Chat from "contexts/Chat";
 import Lang from "helpers/Lang";
-import Log from "helpers/Log";
 import User from "contexts/User";
-import UserHelper from "helpers/User";
-import WarningsModel from "models/Warnings";
 import WarningsBase from "./Base";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { Warning as WarningType } from "models/type/Warning";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserByTelegramId } from "services/Users";
+import { addWarning, getUserWarnings } from "services/Warnings";
 
 export default class Warn extends WarningsBase {
 
@@ -68,6 +67,7 @@ export default class Warn extends WarningsBase {
     public async run(command: CommandContext, context: Context): Promise<void> {
 
         this.context = context;
+
         if (!this.context) {
             return Promise.resolve();
         }
@@ -81,13 +81,9 @@ export default class Warn extends WarningsBase {
         }
 
         this.command = command;
+        const chatContext = this.context.getChat();
 
-        const chatId = this.context.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatContext!.getId());
         if (!chat) {
             return Promise.resolve();
         }
@@ -99,14 +95,12 @@ export default class Warn extends WarningsBase {
 
         Lang.set(chat.language || "en");
 
-        const users: User[] = [];
-        const warningLimit = await this.getWarningLimit(chat);
         const replyToMessage = this.context.getMessage()?.getReplyToMessage();
-
         if (replyToMessage && command.getCommand() === "delwarn") {
             replyToMessage.delete();
         }
 
+        const users: User[] = [];
         if (replyToMessage) {
             const user = replyToMessage.getUser();
             user && (users.push(user));
@@ -124,10 +118,11 @@ export default class Warn extends WarningsBase {
 
         for (let i = 0, length = users.length; i < length; i++) {
             const user = users[i];
-            user && (await this.warn(user, chat, warningLimit, params.join(" ")));
+            user && (await this.warn(user, chatContext!, params.join(" ")));
+            user && (await this.checkBan(user, chatContext!));
         }
 
-        users?.length && (this.sendWarningMessages(users, chat));
+        users?.length && (this.sendWarningMessages(users, chatContext!));
     }
 
     /**
@@ -141,7 +136,9 @@ export default class Warn extends WarningsBase {
      * @param warningLimit
      * @param reason
      */
-    private async warn(contextUser: User, chat: Record<string, any>, warningLimit: number, reason: string): Promise<void> {
+    private async warn(contextUser: User, chat: Chat, reason: string): Promise<void> {
+
+        this.context?.getMessage()?.delete();
 
         if (contextUser.getId() === parseInt(process.env.TELEGRAM_USER_ID!)) {
             this.context?.getMessage()?.reply(Lang.get("selfWarnMessage"));
@@ -153,29 +150,13 @@ export default class Warn extends WarningsBase {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(contextUser.getId());
+        const user = await getUserByTelegramId(contextUser.getId());
         if (!user) {
             return Promise.resolve();
         }
 
-        this.context?.getMessage()?.delete();
-
-        const warn = new WarningsModel();
-        warn
-            .insert()
-            .set("user_id", user.id)
-            .set("chat_id", chat.id)
-            .set("date", Math.ceil(Date.now() / 1000))
-            .set("reason", reason.length ? reason : Lang.get("reasonUnknown"));
-
-        try {
-
-            await warn.execute();
-            this.checkBan(contextUser, user, chat, warningLimit);
-
-        } catch (error: any) {
-            Log.save(error.message, error.stack);
-        }
+        const reasonMessage = reason.length ? reason : Lang.get("reasonUnknown");
+        await addWarning(contextUser, chat, reasonMessage);
     }
 
     /**
@@ -184,27 +165,22 @@ export default class Warn extends WarningsBase {
      * @author Marcos Leandro
      * @since  2023-06-14
      *
-     * @param contextUser
-     * @param user
-     * @param chat
-     * @param warningLimit
+     * @param userContext
+     * @param chatContext
      */
-    private async checkBan(contextUser: User, user: Record<string, any>, chat: Record<string, any>, warningLimit: number): Promise<void> {
+    private async checkBan(userContext: User, chatContext: Chat): Promise<void> {
 
-        const warnings = new WarningsModel();
-        warnings
-            .select()
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id)
-            .and("status").equal(1)
-            .orderBy("date", "ASC");
-
-        const results = await warnings.execute<WarningType[]>();
-
-        if (results.length >= warningLimit) {
-            contextUser.ban();
+        const chat = await getChatByTelegramId(chatContext.getId());
+        const warnings = await getUserWarnings(userContext, chatContext);
+        if (!chat || !warnings.length) {
+            return Promise.resolve();
         }
 
-        return Promise.resolve();
+        const warningLimit = chat.chat_configs?.warnings ?? 3;
+        if (warnings.length < warningLimit) {
+            return Promise.resolve();
+        }
+
+        userContext.ban();
     }
 }

@@ -9,16 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Context from "contexts/Context";
 import Iinterval from "interfaces/Iinterval";
-import RelUsersChats from "models/RelUsersChats";
-import UnbanChatMember from "libraries/telegram/resources/UnbanChatMember";
-import RestrictChatMember from "libraries/telegram/resources/RestrictChatMember";
-import { ChatPermissions as ChatPermissionsType } from "libraries/telegram/types/ChatPermissions";
-
-type UsersType = {
-    user_id: number,
-    chat_id: number
-};
+import Log from "helpers/Log";
+import { getNonVerifiedUsers } from "services/Users";
+import { Message as MessageType } from "libraries/telegram/types/Message";
+import ContextFactory from "contexts/ContextFactory";
 
 export default class KickUnverifiedUsers implements Iinterval {
 
@@ -28,7 +24,7 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @author Marcos Leandro
      * @since  2025-02-25
      */
-    private readonly interval: NodeJS.Timer;
+    private interval: NodeJS.Timer | null = null;
 
     /**
      * The constructor.
@@ -37,7 +33,12 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @since  2023-06-07
      */
     public constructor() {
-        this.run();
+
+        const run = () => {
+            this.run();
+        };
+
+        run();
     }
 
     /**
@@ -47,7 +48,9 @@ export default class KickUnverifiedUsers implements Iinterval {
      * @since  2025-02-25
      */
     public destroy(): void {
-        clearTimeout(this.interval);
+        if (this.interval) {
+            clearTimeout(this.interval);
+        }
     }
 
     /**
@@ -58,102 +61,60 @@ export default class KickUnverifiedUsers implements Iinterval {
      */
     private readonly run = async (): Promise<void> => {
 
-        this.interval = setTimeout(this.run, 5000);
+        try {
 
-        const users = await this.getUnverifiedUsers();
-        if (users.length === 0) {
+            const users = await getNonVerifiedUsers();
+            this.processUsers(users);
+
+        } catch (err: any) {
+            Log.save(err.message, err.stack)
+
+        } finally {
+            this.interval = setTimeout(this.run, 5000);
+        }
+    }
+
+    /**
+     * Processes the users.
+     *
+     * @author Marcos Leandro
+     * @since  2025-03-07
+     *
+     * @param users
+     */
+    private readonly processUsers = async (users: MessageType[]): Promise<void> => {
+
+        if (!users.length) {
             return;
         }
 
-        this.kickUsers(users);
-        this.unrestrictUsers(users);
-    }
-
-    /**
-     * Returns the unverified users.
-     *
-     * @author Marcos Leandro
-     * @since  2025-02-25
-     *
-     * @return {Promise<UsersType[]>}
-     */
-    private async getUnverifiedUsers(): Promise<UsersType[]> {
-
-        const timestamp = Math.floor(Date.now() / 1000);
-        const fields: string[] = [
-            "users.user_id",
-            "chats.chat_id"
-        ];
-
-        const users = new RelUsersChats();
-        users
-            .select(fields)
-            .innerJoin("users", "users.id = rel_users_chats.user_id")
-            .innerJoin("chats", "chats.id = rel_users_chats.chat_id")
-            .where("rel_users_chats.joined").equal(1)
-            .and("rel_users_chats.checked").equal(0)
-            .and("rel_users_chats.ttl").isNotNull()
-            .and("rel_users_chats.ttl").lessThan(timestamp);
-
-        const results = await users.execute<UsersType[]>();
-        return results;
-    }
-
-    /**
-     * Kicks the users.
-     *
-     * @author Marcos Leandro
-     * @since  2025-02-25
-     *
-     * @param users
-     */
-    private async kickUsers(users: UsersType[]): Promise<void> {
-
-        users.forEach(async (user) => {
-            const unban = new UnbanChatMember();
-            unban
-                .setUserId(user.user_id)
-                .setChatId(user.chat_id)
-                .setOnlyIfBanned(false)
-                .post();
+        users.forEach(async (message) => {
+            const context = ContextFactory.create({ update_id: 0, message: message });
+            if (context) {
+                await this.kickUser(context);
+                await this.unrestrictUser(context);
+            }
         });
     }
 
     /**
-     * Unrestricts the users.
+     * Kicks the user.
      *
      * @author Marcos Leandro
      * @since  2025-02-25
      *
-     * @param users
+     * @param context
      */
-    private async unrestrictUsers(users: UsersType[]): Promise<void> {
+    private readonly kickUser = async (context: Context): Promise<void> => {
+        await context.getUser()!.kick().then();
+    };
 
-        const permissions: ChatPermissionsType = {
-            can_send_messages: true,
-            can_send_audios: true,
-            can_send_documents: true,
-            can_send_photos: true,
-            can_send_videos: true,
-            can_send_video_notes: true,
-            can_send_voice_notes: true,
-            can_send_polls: true,
-            can_send_other_messages: true,
-            can_add_web_page_previews: true,
-            can_change_info: true,
-            can_invite_users: true,
-            can_pin_messages: true,
-            can_manage_topics: true
-        };
-
-        users.forEach(async (user) => {
-
-            const restrictChatMember = new RestrictChatMember();
-            restrictChatMember
-                .setUserId(user.user_id)
-                .setChatId(user.chat_id)
-                .setChatPermissions(permissions)
-                .post();
-        });
-    }
+    /**
+     * Unrestricts the user.
+     *
+     * @param context
+     */
+    private readonly unrestrictUser = async (context: Context): Promise<void> => {
+        await context.getUser()!.unrestrict();
+    };
 }

@@ -10,9 +10,9 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "helpers/Chat";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class Ping extends Action {
 
@@ -46,7 +46,7 @@ export default class Ping extends Action {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat) {
             return Promise.resolve();
         }

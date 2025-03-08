@@ -9,12 +9,12 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class Ask extends Command {
 
@@ -62,11 +62,12 @@ export default class Ask extends Command {
 
         let chat;
         const chatId = this.context.getChat()?.getId();
+
         if (chatId) {
-            chat = await ChatHelper.getByTelegramId(chatId);
+            chat = await getChatByTelegramId(chatId);
         }
 
-        Lang.set(chat?.language || "en");
+        Lang.set(chat?.language ?? "en");
 
         const replyToMessage = this.context.getMessage()?.getReplyToMessage();
         if (replyToMessage) {

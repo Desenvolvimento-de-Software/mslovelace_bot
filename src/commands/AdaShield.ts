@@ -9,13 +9,13 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatConfigs from "models/ChatConfigs";
-import ChatHelper from "helpers/Chat";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
+import { enableAdaShield, disableAdaShield } from "services/AdaShield";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class AdaShield extends Command {
 
@@ -71,8 +71,6 @@ export default class AdaShield extends Command {
         if (typeof this[method] === "function") {
             await (this[method] as Function).call(this);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -90,13 +88,13 @@ export default class AdaShield extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat?.id) {
             return Promise.resolve();
         }
 
-        Lang.set(chat.language || "en");
-        const adaShieldStatus = Lang.get(chat.adashield === 1 ? "textEnabled" : "textDisabled");
+        Lang.set(chat.language ?? "en");
+        const adaShieldStatus = Lang.get(chat.chat_configs?.adashield ? "textEnabled" : "textDisabled");
         const adaShieldMessage = Lang.get("adaShieldStatus").replace("{status}", adaShieldStatus);
 
         this.context?.getChat()?.sendMessage(adaShieldMessage);
@@ -109,7 +107,12 @@ export default class AdaShield extends Command {
      * @since  2023-06-12
      */
     private async on(): Promise<void> {
-        await this.change(1);
+
+        const chat = this.context?.getChat();
+        if (chat) {
+            await enableAdaShield(chat);
+        }
+
         this.index();
     }
 
@@ -120,36 +123,12 @@ export default class AdaShield extends Command {
      * @since  2023-06-12
      */
     private async off(): Promise<void> {
-        await this.change(0);
+
+        const chat = this.context?.getChat();
+        if (chat) {
+            await disableAdaShield(chat);
+        }
+
         this.index();
-    }
-
-    /**
-     * Changes the AdaShield status.
-     *
-     * @author Marcos Leandro
-     * @since  2023-06-12
-     *
-     * @param {Number} status New AdaShield status.
-     */
-    public async change(status: number) {
-
-        const chatId = this.context?.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.id) {
-            return Promise.resolve();
-        }
-
-        const update = new ChatConfigs();
-        update
-            .update()
-            .set("adashield", status)
-            .where("chat_id").equal(chat.id);
-
-        await update.execute();
     }
 }

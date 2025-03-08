@@ -14,7 +14,7 @@ import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
 import Lang from "helpers/Lang";
-import UserHelper from "helpers/User";
+import { getUserByTelegramId } from "services/Users";
 
 export default class Privacy extends Command {
 
@@ -61,14 +61,13 @@ export default class Privacy extends Command {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
-        if (!user?.id) {
+        const user = await getUserByTelegramId(userId);
+        if (!user) {
             return Promise.resolve();
         }
 
-        Lang.set(user.language_code || "en");
+        Lang.set(user.language_code ?? "en");
 
         this.context.getChat()?.sendMessage(Lang.get("privacyPolicy"), { parse_mode : "HTML" });
-        return Promise.resolve();
     }
 }

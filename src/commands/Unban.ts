@@ -9,7 +9,6 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatHelper from "helpers/Chat";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
@@ -17,8 +16,8 @@ import Lang from "helpers/Lang";
 import Log from "helpers/Log";
 import Message from "contexts/Message";
 import User from "contexts/User";
-import UserHelper from "helpers/User";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
+import { getUserAndChatByTelegramId } from "services/UsersAndChats";
 
 export default class Unban extends Command {
 
@@ -90,8 +89,6 @@ export default class Unban extends Command {
             const user = replyToMessage.getUser();
             user && (this.saveUnban(user));
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -101,12 +98,9 @@ export default class Unban extends Command {
      * @since  2023-06-07
      */
     private async unbanByMention(mention: User):  Promise<void> {
-
         if (await mention.unban()) {
             this.saveUnban(mention);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -119,29 +113,27 @@ export default class Unban extends Command {
      */
     private async saveUnban(contextUser: User): Promise<void> {
 
-        const user = await UserHelper.getByTelegramId(contextUser.getId());
-        const chatId = this.context?.getChat()?.getId();
-        if (!chatId) {
+        if (this.context?.getChat()?.getId()) {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!user || !chat) {
+        const userAndChat = await getUserAndChatByTelegramId(contextUser.getId(), this.context!.getChat()!.getId());
+        if (!userAndChat) {
             return Promise.resolve();
         }
 
-        Lang.set(chat.language || "en");
+        Lang.set(userAndChat.chats.language || "en");
 
-        try {
+        const username = (
+            contextUser.getFirstName() ?? contextUser.getUsername() ?? contextUser.getId().toString()
+        );
 
-            const message = Lang.get("unbannedMessage")
-                .replace("{userid}", contextUser.getId())
-                .replace("{username}", contextUser.getFirstName() || contextUser.getUsername());
+        const message = Lang.get("unbannedMessage")
+            .replace("{userid}", contextUser.getId().toString())
+            .replace("{username}", username);
 
-            this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
-
-        } catch (err: any) {
-            Log.error(err.toString());
-        }
+        this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" }).catch((err) => {
+            Log.error(err.message, err.stack);
+        });
     }
 }

@@ -10,19 +10,20 @@
  */
 
 import Federation from "./Federation";
-import ChatHelper from "helpers/Chat";
-import Chats from "models/Chats";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import FederationHelper from "helpers/Federation";
-import Federations from "models/Federations";
 import Lang from "helpers/Lang";
 import Log from "helpers/Log";
-import Text from "helpers/Text";
-import UserHelper from "helpers/User";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { CountType } from "models/type/Mysql";
-import { Federation as FederationType } from "models/type/Federation";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserByTelegramId } from "services/Users";
+import { PrismaClient } from "@prisma/client";
+import {
+    createFederation,
+    getFederationByHash,
+    getFederationsByUser,
+    getFederationWithChatsById
+} from "services/Federations";
 
 export default class Manage extends Federation {
 
@@ -39,22 +40,6 @@ export default class Manage extends Federation {
         { command: "flist", description: "List your federations." },
         { command: "fdelete", description: "Deletes a federation." }
     ];
-
-    /**
-     * User object.
-     *
-     * @author Marcos Leandro
-     * @since  2023-07-04
-     */
-    protected user?: Record<string, any>;
-
-    /**
-     * Chat object.
-     *
-     * @author Marcos Leandro
-     * @since  2023-07-04
-     */
-    protected chat?: Record<string, any>;
 
     /**
      * Command context.
@@ -90,28 +75,29 @@ export default class Manage extends Federation {
             return Promise.resolve();
         }
 
-        const userId = this.context.getUser()?.getId();
-        const chatId = this.context.getChat()?.getId();
-        if (!userId || !chatId) {
+        if (!this.context.getUser()?.getId() || !this.context.getChat()?.getId()) {
             return Promise.resolve();
         }
 
-        this.user = await UserHelper.getByTelegramId(userId);
-        this.chat = await ChatHelper.getByTelegramId(chatId);
-
+        this.user = await getUserByTelegramId(this.context.getUser()!.getId()) ?? undefined;
+        this.chat = await getChatByTelegramId(this.context.getChat()!.getId()) ?? undefined;
         if (!this.user?.id || !this.chat?.id) {
             return Promise.resolve();
         }
 
         Lang.set(this.chat.language || "en");
 
-        this.command = command;
-        const method = this.command.getCommand().substring(1) as keyof Federation;
-        if (typeof this[method] === "function") {
-            await (this[method] as Function).call(this);
-        }
+        const methods: Record<string, CallableFunction> = {
+            fcreate: this.create,
+            flist: this.list,
+            fdelete: this.delete
+        };
 
-        return Promise.resolve();
+        this.command = command;
+        const method = this.command.getCommand();
+        if (method in methods) {
+            await methods[method]();
+        }
     }
 
     /**
@@ -130,29 +116,17 @@ export default class Manage extends Federation {
         const params = this.command?.getParams() || [];
         const description = params.join(" ").trim();
 
-        const federationHash = await this.generateFederationHash();
-        const federations = new Federations();
-        const insert = federations.insert();
-
-        insert
-            .set("user_id", this.user!.id)
-            .set("hash", federationHash);
-
-        if (description.length) {
-            insert.set("description", description);
-        }
-
         try {
 
-            const result = await federations.execute();
+            const result = await createFederation(this.user!.id, description);
             if (!result) {
                 this.context?.getMessage()?.reply(Lang.get("federationCreateError"));
                 return Promise.resolve();
             }
 
             const message = Lang.get("federationCreateSuccess")
-                .replace(/{name}/g, description.length ? description : federationHash)
-                .replace(/{hash}/g, federationHash);
+                .replace(/{name}/g, description.length ? description : result.hash)
+                .replace(/{hash}/g, result.hash);
 
             this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
 
@@ -175,24 +149,21 @@ export default class Manage extends Federation {
             return Promise.resolve();
         }
 
-        const federations = new Federations();
-        federations
-            .select(["id", "hash", "description"])
-            .where("user_id").equal(this.user!.id)
-            .orderBy("description", "asc");
-
-        const result = await federations.execute<FederationType[]>();
-        if (!result.length) {
+        const federations = await getFederationsByUser(this.context.getUser()!);
+        if (!federations?.length) {
             this.context?.getMessage()?.reply(Lang.get("federationListEmpty"));
             return Promise.resolve();
         }
 
         let message = Lang.get("federationListHeader");
-        for (const federation of result) {
+        for (const federation of federations) {
+
+            const federationWithChats = await getFederationWithChatsById(federation.id);
+
             message += Lang.get("federationListRow")
                 .replace("{hash}", federation.hash)
-                .replace("{description}", federation.description)
-                .replace("{groups}", (await this.countGroups(federation.id)).toString());
+                .replace("{description}", federation.description ?? "")
+                .replace("{groups}", federationWithChats?.chats.length.toString() ?? "0");
         }
 
         this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
@@ -218,7 +189,7 @@ export default class Manage extends Federation {
         }
 
         const hash = params[0].trim();
-        const federation = await FederationHelper.getByHash(hash);
+        const federation = await getFederationByHash(hash);
         if (!federation) {
             this.context?.getMessage()?.reply(Lang.get("federationInvalidHashError"));
             return Promise.resolve();
@@ -229,80 +200,18 @@ export default class Manage extends Federation {
             return Promise.resolve();
         }
 
-        const groups = await this.countGroups(federation.id);
-        if (groups === 0 || (!!params[1] && params[1] === "force")) {
+        const federationWithChats = await getFederationWithChatsById(federation.id);
+        if (federationWithChats?.chats.length === 0 || (!!params[1] && params[1] === "force")) {
             await this.deleteFederation(federation.id);
             return Promise.resolve();
         }
 
         const message = Lang.get("federationDeleteConfirm")
-            .replace("{name}", federation.description)
+            .replace("{name}", federation.description ?? "")
             .replace("{hash}", federation.hash)
-            .replace("{groups}", groups.toString());
+            .replace("{groups}", federationWithChats?.chats?.length.toString() ?? "0");
 
         this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
-    }
-
-    /**
-     * Returns the federation hash.
-     *
-     * @author Marcos Leandro
-     * @since  2023-07-04
-     *
-     * @returns {string}
-     */
-    private async generateFederationHash(): Promise<string> {
-
-        let federationHash;
-        let federationHashExists: boolean;
-
-        do {
-
-            federationHash = Text.generateRandomString(32);
-
-            const federations = new Federations();
-            federations
-                .select(["id"])
-                .where("hash").equal(federationHash)
-                .offset(0)
-                .limit(1);
-
-            const result = await federations.execute<FederationType[]>();
-            federationHashExists = result.length > 0;
-
-        } while (federationHashExists);
-
-        return federationHash;
-    }
-
-    /**
-     * Counts the number of groups in a federation.
-     *
-     * @author Marcos Leandro
-     * @since  2023-07-04
-     *
-     * @param federationId
-     *
-     * @return {Promise<number>}
-     */
-    private async countGroups(federationId: number): Promise<number> {
-
-        const chats = new Chats();
-        chats
-            .select(["count(id) total"])
-            .where("federation_id").equal(federationId)
-            .offset(0)
-            .limit(1);
-
-        try {
-
-            const result = await chats.execute<CountType[]>();
-            return result[0].total;
-
-        } catch (err: any) {
-            Log.error(err.toString(), true);
-            return 0;
-        }
     }
 
     /**
@@ -315,33 +224,33 @@ export default class Manage extends Federation {
      */
     private async deleteFederation(federationId: number): Promise<void> {
 
-        const chats = new Chats();
-        chats
-            .update()
-            .set("federation_id", null)
-            .where("federation_id").equal(federationId);
+        const prisma = new PrismaClient();
 
         try {
-            await chats.execute();
+
+            await prisma.chats.updateMany({
+                where: { federation_id: federationId },
+                data: { federation_id: null }
+
+            }).catch((err: any) => {
+                prisma.$disconnect();
+                throw err;
+            });
+
+            await prisma.federations.delete({
+                where: { id: federationId }
+
+            }).catch((err: any) => {
+                prisma.$disconnect();
+                throw err;
+            });
 
         } catch (err: any) {
             this.context?.getMessage()?.reply(Lang.get("federationDeleteError"));
-            Log.error(err.toString(), true);
+            Log.save(err.toString());
             return Promise.resolve();
         }
 
-        const federations = new Federations();
-        federations
-            .delete()
-            .where("id").equal(federationId);
-
-        try {
-            await federations.execute();
-            this.context?.getMessage()?.reply(Lang.get("federationDeleteSuccess"));
-
-        } catch (err: any) {
-            this.context?.getMessage()?.reply(Lang.get("federationDeleteError"));
-            Log.error(err.toString(), true);
-        }
+        this.context?.getMessage()?.reply(Lang.get("federationDeleteSuccess"));
     }
 }

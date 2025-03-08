@@ -9,14 +9,14 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import ChatConfigs from "models/ChatConfigs";
-import ChatHelper from "helpers/Chat";
 import Command from "./Command";
 import CommandContext from "contexts/Command";
 import Context from "contexts/Context";
 import Lang from "helpers/Lang";
+import Log from "helpers/Log";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { ChatConfigs as ChatConfigsType } from "models/type/ChatConfigs";
+import { getChatByTelegramId } from "services/Chats";
+import { PrismaClient } from "@prisma/client";
 
 export default class Restrict extends Command {
 
@@ -72,8 +72,6 @@ export default class Restrict extends Command {
         if (typeof this[method] === "function") {
             await (this[method] as Function).call(this);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -89,23 +87,13 @@ export default class Restrict extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.id) {
-            return Promise.resolve();
-        }
-
-        const chatConfig = new ChatConfigs();
-        chatConfig
-            .select()
-            .where("chat_id").equal(chat.id);
-
-        const config = await chatConfig.execute<ChatConfigsType[]>();
-        if (!config.length) {
+        const chat = await getChatByTelegramId(chatId);
+        if (!chat) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language || "en");
-        const restrictStatus = Lang.get(config[0].restrict_new_users === 1 ? "textEnabled" : "textDisabled");
+        const restrictStatus = Lang.get(chat.chat_configs.restrict_new_users ? "textEnabled" : "textDisabled");
         const restrictMessage = Lang.get("restrictStatus").replace("{status}", restrictStatus);
 
         this.context?.getChat()?.sendMessage(restrictMessage);
@@ -121,17 +109,12 @@ export default class Restrict extends Command {
      */
     private async on(): Promise<void> {
 
-        const chatId = this.context?.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(this.context!.getChat()!.getId());
         if (!chat?.id) {
             return Promise.resolve();
         }
 
-        await this.update(chat.id, 1);
+        await this.update(chat.id, true);
         this.index();
     }
 
@@ -145,17 +128,12 @@ export default class Restrict extends Command {
      */
     private async off(): Promise<void> {
 
-        const chatId = this.context?.getChat()?.getId();
-        if (!chatId) {
-            return Promise.resolve();
-        }
-
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(this.context!.getChat()!.getId());
         if (!chat?.id) {
             return Promise.resolve();
         }
 
-        await this.update(chat.id, 0);
+        await this.update(chat.id, false);
         this.index();
     }
 
@@ -166,18 +144,30 @@ export default class Restrict extends Command {
      * @since  2023-06-13
      *
      * @param {number} chatId
-     * @param {number} status
+     * @param {boolean} status
      *
-     * @return {Promise<any>}
+     * @return true on success, false otherwise.
      */
-    private async update(chatId: number, status: number): Promise<any> {
+    private async update(chatId: number, status: boolean): Promise<boolean> {
 
-        const chatConfig = new ChatConfigs();
-        chatConfig
-            .update()
-            .set("restrict_new_users", status)
-            .where("chat_id").equal(chatId);
+        const prisma = new PrismaClient();
+        return await prisma.chat_configs.upsert({
+            where: { chat_id: chatId },
+            update: { restrict_new_users: status },
+            create: {
+                chat_id: chatId,
+                restrict_new_users: status
+            }
 
-        return chatConfig.execute();
+        }).then(async (response) => {
+            return true;
+
+        }).catch(async (e: Error) => {
+            Log.save(e.message, e.stack);
+            return false;
+
+        }).finally(() => {
+            prisma.$disconnect();
+        });
     }
 }

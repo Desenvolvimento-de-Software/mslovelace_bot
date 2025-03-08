@@ -77,7 +77,5 @@ export default class Report extends Action {
 
         const reportCommand = new ReportCommand();
         await reportCommand.run(new CommandContext("", options), this.context);
-
-        return Promise.resolve();
     }
 }

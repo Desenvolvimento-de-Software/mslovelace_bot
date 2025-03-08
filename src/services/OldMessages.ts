@@ -10,7 +10,6 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import Log from "helpers/Log";
 import { Chat as ChatType } from "libraries/telegram/types/Chat";
 import { Message as MessageType } from "libraries/telegram/types/Message";
 import { User as UserType } from "libraries/telegram/types/User";
@@ -42,11 +41,12 @@ export const getOldMessages = async (): Promise<MessageType[]> => {
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        Log.save(JSON.stringify(e));
+        throw e;
+
+    }).finally(async () => {
         prisma.$disconnect();
     });
 
@@ -105,11 +105,12 @@ export const disableOldMessages = async (messages: MessageType[]): Promise<void>
         }
     };
 
-    return await prisma.messages.updateMany(params).then(async () => {
+    await prisma.messages.updateMany(params).then(async (response) => {
         prisma.$disconnect();
+        return response;
 
     }).catch(async (e: Error) => {
-        Log.save(JSON.stringify(e));
         prisma.$disconnect();
+        throw e;
     });
 }

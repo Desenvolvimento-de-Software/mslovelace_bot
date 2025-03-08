@@ -12,11 +12,16 @@
 import Command from "./Command";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import ChatHelper from "helpers/Chat";
 import Lang from "helpers/Lang";
-import Macros from "models/Macros";
+import Log from "helpers/Log";
 import { BotCommand } from "libraries/telegram/types/BotCommand";
-import { Macro as MacroType } from "models/type/Macro";
+import { getChatByTelegramId } from "services/Chats";
+import {
+    addMacroToChat,
+    getMacroByChatIdAndMacro,
+    getMacrosByChatId,
+    removeMacro
+} from "services/Macros";
 
 export default class Macro extends Command {
 
@@ -72,7 +77,7 @@ export default class Macro extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
         if (!chat) {
             return Promise.resolve();
         }
@@ -90,8 +95,6 @@ export default class Macro extends Command {
         if (typeof this[method] === "function") {
             await (this[method] as Function).call(this);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -109,31 +112,23 @@ export default class Macro extends Command {
             return;
         }
 
-        const macro = params.shift()?.trim();
-        if (!macro?.length) {
+        const content = params.shift()?.trim();
+        if (!content?.length) {
             return;
         }
 
-        const macros = new Macros();
-        macros
-            .select()
-            .where("chat_id").equal(this.chat.id)
-            .and("macro").equal(macro);
-
-        const result = await macros.execute<MacroType[]>();
-        if (!result.length) {
+        const macro = await getMacroByChatIdAndMacro(this.chat.id, content);
+        if (!macro?.content) {
             return;
         }
 
-        const content = result[0].content;
         const replyToMessage = this.context?.getMessage()?.getReplyToMessage();
-
         if (replyToMessage) {
-            replyToMessage.reply(content, { parse_mode : "HTML" });
+            replyToMessage.reply(macro.content, { parse_mode : "HTML" });
             return;
         }
 
-        this.context?.getChat()?.sendMessage(content, { parse_mode : "HTML" });
+        this.context?.getChat()?.sendMessage(macro.content, { parse_mode : "HTML" });
     }
 
     /**
@@ -164,31 +159,19 @@ export default class Macro extends Command {
             return Promise.resolve();
         }
 
-        const macros = new Macros();
-        macros
-            .select()
-            .where("chat_id").equal(this.chat.id)
-            .and("macro").equal(macro.toLowerCase());
-
-        const result = await macros.execute<MacroType[]>();
-        if (result.length) {
+        const existingMacro = await getMacroByChatIdAndMacro(this.chat.id, macro.toLocaleLowerCase());
+        if (existingMacro?.content) {
             const alreadyExistLang = Lang.get("macroAlreadyExists").replace("{macro}", macro);
             this.context?.getChat()?.sendMessage(alreadyExistLang, { parse_mode : "HTML" });
             return Promise.resolve();
         }
 
-        macros
-            .insert()
-            .set("chat_id", this.chat.id)
-            .set("macro", macro.toLowerCase())
-            .set("content", content);
+        await addMacroToChat(this.chat.id, macro.toLowerCase(), content).catch(err => {
+            Log.save(err.mesage, err.stack);
+            this.context?.getChat()?.sendMessage(Lang.get("macroAddError"), { parse_mode : "HTML" });
+        });
 
-        if (await macros.execute()) {
-            this.mlist(command);
-            return Promise.resolve();
-        }
-
-        this.context?.getChat()?.sendMessage(Lang.get("macroAddError"), { parse_mode : "HTML" });
+        this.mlist(command);
     }
 
     /**
@@ -201,24 +184,24 @@ export default class Macro extends Command {
      */
     private async mlist(command: CommandContext): Promise<void> {
 
-        const macros = new Macros();
-        macros
-            .select()
-            .where("chat_id").equal(this.chat.id)
-            .orderBy("macro", "asc");
+        await getMacrosByChatId(this.chat.id).then(macros => {
 
-        const result = await macros.execute<MacroType[]>();
-        if (!result.length) {
+            if (!macros.length) {
+                this.context?.getChat()?.sendMessage(Lang.get("macroNoMacroFound"), { parse_mode : "HTML" });
+                return Promise.resolve();
+            }
+
+            let message = Lang.get("macroList");
+            for (const macro of macros) {
+                message += ` • <code>${macro.macro}</code>\n`;
+            }
+
+            this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
+
+        }).catch(err => {
+            Log.save(err.mesage, err.stack);
             this.context?.getChat()?.sendMessage(Lang.get("macroNoMacroFound"), { parse_mode : "HTML" });
-            return Promise.resolve();
-        }
-
-        let message = Lang.get("macroList");
-        for (const row of result) {
-            message += ` • <code>${row.macro}</code>\n`;
-        }
-
-        this.context?.getChat()?.sendMessage(message, { parse_mode : "HTML" });
+        });
     }
 
     /**
@@ -240,28 +223,22 @@ export default class Macro extends Command {
             return Promise.resolve();
         }
 
-        const macro = params.shift()?.trim();
-        if (!macro?.length) {
+        const content = params.shift()?.trim();
+        if (!content?.length) {
             return Promise.resolve();
         }
 
-        const macros = new Macros();
-        macros
-            .select()
-            .where("chat_id").equal(this.chat.id)
-            .and("macro").equal(macro);
-
-        const result = await macros.execute<MacroType[]>();
-        if (result.length) {
-
-            macros
-                .delete()
-                .where("chat_id").equal(this.chat.id)
-                .and("macro").equal(macro.toLowerCase());
-
-            macros.execute();
+        const macro = await getMacroByChatIdAndMacro(this.chat.id, content);
+        if (!macro) {
+            return Promise.resolve();
         }
 
-        this.mlist(command);
+        await removeMacro(macro.id).then(async () => {
+            await this.mlist(command);
+
+        }).catch(err => {
+            Log.save(err.mesage, err.stack);
+            this.context?.getChat()?.sendMessage(Lang.get("macroRemoveError"), { parse_mode : "HTML" });
+        });
     }
 }

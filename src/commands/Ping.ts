@@ -12,9 +12,9 @@
 import Command from "./Command";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import { BotCommand } from "libraries/telegram/types/BotCommand";
-import ChatHelper from "helpers/Chat";
 import Lang from "helpers/Lang";
+import { BotCommand } from "libraries/telegram/types/BotCommand";
+import { getChatByTelegramId } from "services/Chats";
 
 export default class Ping extends Command {
 
@@ -59,17 +59,14 @@ export default class Ping extends Command {
      */
     public async run(command: CommandContext, context: Context): Promise<void> {
 
-        this.command = command;
-        this.context = context;
-
-        const chatId = this.context.getChat()?.getId();
+        const chatId = context.getChat()?.getId();
         if (!chatId) {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
+        const chat = await getChatByTelegramId(chatId);
 
-        Lang.set(chat?.language || "en");
-        this.context.getMessage()?.reply(Lang.get("pongMessage"));
+        Lang.set(chat?.language ?? "en");
+        context.getMessage()?.reply(Lang.get("pongMessage"));
     }
 }

@@ -44,7 +44,6 @@ export default class User extends Federation {
      * @since  2023-07-04
      */
     private async fpromote(): Promise<void> {
-        return Promise.resolve();
     }
 
     /**
@@ -54,6 +53,5 @@ export default class User extends Federation {
      * @since  2023-07-04
      */
     private async fdemote(): Promise<void> {
-        return Promise.resolve();
     }
 }

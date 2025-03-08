@@ -10,29 +10,22 @@
  */
 
 import Action from "./Action";
-import ChatHelper from "../helpers/Chat";
 import Context from "contexts/Context";
-import RelUsersChats from "../models/RelUsersChats";
-import UserHelper from "../helpers/User";
-import { Chat as Chatype } from "types/Chat";
-import { User as UserType } from "models/type/User";
+import Log from "helpers/Log";
+import { getUserAndChatByTelegramId, join } from "services/UsersAndChats";
+import { RelUserAndChat } from "types/UserAndChat";
+
 export default class NewChatMember extends Action {
 
     /**
-     * User row.
+     * User and chat relationship object.
      *
      * @author Marcos Leandro
-     * @since  2023-06-07
-    */
-    private user?: UserType;
-
-    /**
-     * Chat row.
+     * @since  2025-03-08
      *
-     * @author Marcos Leandro
-     * @since  2023-06-07
+     * @var RelUserAndChat
      */
-    private chat?: Chatype;
+    private userAndChat?: RelUserAndChat
 
     /**
      * The constructor.
@@ -61,23 +54,18 @@ export default class NewChatMember extends Action {
         }
 
         const userId = this.context.getNewChatMember()?.getId();
-        if (!userId) {
-            return Promise.resolve();
-        }
-
         const chatId = this.context.getChat()?.getId();
-        if (!chatId) {
+        if (!userId || !chatId) {
             return Promise.resolve();
         }
 
-        this.user = await UserHelper.getByTelegramId(userId);
-        this.chat = await ChatHelper.getByTelegramId(chatId);
-        if (!this.user?.id || !this.chat?.id) {
+        this.userAndChat = await getUserAndChatByTelegramId(userId, chatId) ?? undefined;
+        if (!this.userAndChat?.users?.id || !this.userAndChat.chats?.id) {
             return Promise.resolve();
         }
 
         this.updateRelationship();
-        if (this.chat.remove_event_messages === 1) {
+        if (this.userAndChat.chats.chat_configs?.remove_event_messages) {
             this.context.getMessage()?.delete();
         }
     }
@@ -91,23 +79,13 @@ export default class NewChatMember extends Action {
      */
     private async updateRelationship(): Promise<void> {
 
-        if (!this.user?.id || !this.chat?.id) {
-            return;
-        }
-
         const timestamp = Math.floor(Date.now() / 1000);
-        const timeout = this.chat?.captcha_ban_seconds ?? 60;
-        const ttl = timestamp + timeout;
+        const timeout = this.userAndChat?.chats.chat_configs?.captcha_ban_seconds ?? 60;
+        const ttl = this.userAndChat?.chats.chat_configs?.captcha ? timestamp + timeout : null;
+        const checked = !this.userAndChat?.chats.chat_configs?.captcha;
 
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .update()
-            .set("checked", Math.abs(this.chat?.captcha - 1))
-            .set("date", timestamp)
-            .set("ttl", ttl)
-            .where("user_id").equal(this.user.id)
-            .and("chat_id").equal(this.chat.id);
-
-        await relUserChat.execute();
+        await join(this.userAndChat!.users.id, this.userAndChat!.chats.id, checked, ttl).catch((err) => {
+            Log.save(err.message, err.stack);
+        });
     }
 }

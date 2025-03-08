@@ -9,16 +9,16 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
-import SendMessage from "../libraries/telegram/resources/SendMessage";
-import SendChatAction from "../libraries/telegram/resources/SendChatAction";
 import BanChatMember from "../libraries/telegram/resources/BanChatMember";
-import UnbanChatMember from "../libraries/telegram/resources/UnbanChatMember";
-import RestrictChatMember from "../libraries/telegram/resources/RestrictChatMember";
 import Chat from "./Chat";
+import Log from "helpers/Log";
 import Message from "./Message";
-import { User as UserType } from "../libraries/telegram/types/User";
-import { ChatPermissions } from "../libraries/telegram/types/ChatPermissions";
-import Log from "../helpers/Log";
+import RestrictChatMember from "../libraries/telegram/resources/RestrictChatMember";
+import SendMessage from "libraries/telegram/resources/SendMessage";
+import SendChatAction from "libraries/telegram/resources/SendChatAction";
+import UnbanChatMember from "libraries/telegram/resources/UnbanChatMember";
+import { User as UserType } from "libraries/telegram/types/User";
+import { ChatPermissions as ChatPermissionsType } from "../libraries/telegram/types/ChatPermissions";
 
 export default class User {
 
@@ -234,8 +234,6 @@ export default class User {
         } catch (error: any) {
             Log.save(error.message, error.stack);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -264,8 +262,6 @@ export default class User {
         } catch (error: any) {
             Log.save(error.message, error.stack);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -348,7 +344,7 @@ export default class User {
      *
      * @param permissions
      */
-    public async setPermissions(permissions: ChatPermissions, untilDate?: number): Promise<Record<string, any>> {
+    public async setPermissions(permissions: ChatPermissionsType, untilDate?: number): Promise<Record<string, any>> {
 
         const restrictChatMember = new RestrictChatMember();
         restrictChatMember
@@ -360,6 +356,44 @@ export default class User {
             const now = Math.ceil(Date.now() / 1000);
             restrictChatMember.setUntilDate(now + untilDate);
         }
+
+        return restrictChatMember
+            .post()
+            .then((response: Record<string, any>) => response.json());
+    }
+
+    /**
+     * Unrestricts the user.
+     *
+     * @author Marcos Leandro
+     * @since  2025-03-07
+     *
+     * @returns {Promise<boolean>}
+     */
+    public async unrestrict(): Promise<boolean> {
+
+        const permissions: ChatPermissionsType = {
+            can_send_messages: true,
+            can_send_audios: true,
+            can_send_documents: true,
+            can_send_photos: true,
+            can_send_videos: true,
+            can_send_video_notes: true,
+            can_send_voice_notes: true,
+            can_send_polls: true,
+            can_send_other_messages: true,
+            can_add_web_page_previews: true,
+            can_change_info: true,
+            can_invite_users: true,
+            can_pin_messages: true,
+            can_manage_topics: true
+        };
+
+        const restrictChatMember = new RestrictChatMember();
+        restrictChatMember
+            .setUserId(this.getId())
+            .setChatId(this.chat.getId())
+            .setChatPermissions(permissions);
 
         return restrictChatMember
             .post()

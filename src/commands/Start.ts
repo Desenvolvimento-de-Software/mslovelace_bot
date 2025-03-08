@@ -9,18 +9,17 @@
  * @license  GPLv3 <http://www.gnu.org/licenses/gpl-3.0.en.html>
  */
 
+import Captcha from "helpers/Captcha";
 import Command from "./Command";
 import Context from "contexts/Context";
 import CommandContext from "contexts/Command";
-import { BotCommand } from "libraries/telegram/types/BotCommand";
-import UserHelper from "helpers/User";
-import ChatHelper from "helpers/Chat";
 import Lang from "helpers/Lang";
-import RelUsersChats from "models/RelUsersChats";
-import Captcha from "helpers/Captcha";
+import { BotCommand } from "libraries/telegram/types/BotCommand";
 import { InlineKeyboardButton } from "libraries/telegram/types/InlineKeyboardButton";
 import { InlineKeyboardMarkup } from "libraries/telegram/types/InlineKeyboardMarkup";
-import { RelUserChat as RelUserChatype } from "models/type/RelUserChat";
+import { getChatByTelegramId } from "services/Chats";
+import { getUserAndChatByTelegramId } from "services/UsersAndChats";
+import { PrismaClient } from "@prisma/client";
 
 export default class Start extends Command {
 
@@ -62,13 +61,12 @@ export default class Start extends Command {
             return Promise.resolve();
         }
 
-        const chat = await ChatHelper.getByTelegramId(chatId);
-        if (!chat?.id) {
+        const chat = await getChatByTelegramId(chatId);
+        if (!chat) {
             return Promise.resolve();
         }
 
         Lang.set(chat.language || "en");
-
         if (this.context?.getChat()?.getType() !== "private") {
             this.sendGroupMessage();
             return Promise.resolve();
@@ -121,9 +119,15 @@ export default class Start extends Command {
      * @since  2025-02-12
      */
     private async sendGroupMessage(): Promise<void> {
+
+        const contextUser = this.context?.getUser()!;
+        const username = (
+            contextUser.getFirstName() ?? contextUser.getUsername() ?? contextUser.getId().toString()
+        );
+
         const message = Lang.get("groupStartMessage")
-            .replace("{userid}", this.context?.getUser()?.getId())
-            .replace("{username}", this.context?.getUser()?.getFirstName() ?? this.context?.getUser()?.getUsername());
+            .replace("{userid}", contextUser.getId().toString())
+            .replace("{username}", username);
 
         return this.context?.getMessage()?.reply(message, { parse_mode : "HTML" });
     }
@@ -139,51 +143,52 @@ export default class Start extends Command {
     private async sendCaptcha(param: string): Promise<void> {
 
         const params = param.split("_");
-        const groupId = params[1] ?? null;
+        const chatId = params[1] ?? null;
         const language = params[2] ?? "us";
+        Lang.set(language);
 
         const userId = this.context?.getUser()?.getId();
-        if (!userId || !groupId) {
+        if (!userId || !chatId) {
             return Promise.resolve();
         }
 
-        const user = await UserHelper.getByTelegramId(userId);
-        const chat = await ChatHelper.getByTelegramId(parseInt(groupId));
-        if (!user?.id || !chat?.id) {
+        const userAndChat = await getUserAndChatByTelegramId(userId, Number(chatId));
+        if (!userAndChat) {
             return Promise.resolve();
         }
 
-        const relUserChat = new RelUsersChats();
-        relUserChat
-            .select()
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id)
-            .offset(0)
-            .limit(1);
-
-        const row = await relUserChat.execute<RelUserChatype[]>();
-        if (!row.length) {
+        if (userAndChat.checked) {
+            this.context?.getChat()?.sendMessage(Lang.get("captchaAlreadyChecked"));
             return Promise.resolve();
         }
 
         const code = this.generateCaptchaCode();
-        relUserChat
-            .update()
-            .set("captcha", code)
-            .where("user_id").equal(user.id)
-            .and("chat_id").equal(chat.id);
+        const prisma = new PrismaClient();
 
-        relUserChat.execute();
+        await prisma.rel_users_chats.update({
+            where: {
+                user_id_chat_id: {
+                    user_id: userAndChat.users.id,
+                    chat_id: userAndChat.chats.id
+                }
+            },
+            data: {
+                captcha: code
+            }
 
-        Lang.set(language);
+        }).catch(async (e: Error) => {
+            throw e;
+
+        }).finally(async () => {
+            prisma.$disconnect();
+        });
 
         const captcha = await this.generateCaptcha(code);
         const fileBlob = new Blob([captcha], { type : "image/png" });
-
         const username = process.env.TELEGRAM_USERNAME;
         const captchaButton: InlineKeyboardButton = {
             text: Lang.get("captchaRegenerate"),
-            url: `https://t.me/${username}?start=captcha_${chat.chat_id}_${language}`
+            url: `https://t.me/${username}?start=captcha_${userAndChat.chats.chat_id}_${language}`
         };
 
         const markup: InlineKeyboardMarkup = {
@@ -226,7 +231,7 @@ export default class Start extends Command {
     private generateCaptchaCode(): string {
 
         const chars = "abcdefghjkmnpqrstuvwxyz23456789";
-        let captcha = '';
+        let captcha = "";
 
         for (let i = 0; i < 6; i++) {
           captcha += chars.charAt(Math.floor(Math.random() * chars.length));

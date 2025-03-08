@@ -25,7 +25,7 @@ model bans {
 
 model chat_configs {
   id                    Int     @id @default(autoincrement()) @db.UnsignedInt
-  chat_id               Int     @db.UnsignedInt
+  chat_id               Int     @unique(map: "idx_uq_chat_id") @db.UnsignedInt
   greetings             Boolean @default(false)
   goodbye               Boolean @default(false)
   warn_name_changing    Boolean @default(false)
@@ -34,7 +34,7 @@ model chat_configs {
   captcha               Boolean @default(false)
   captcha_ban_seconds   Int     @default(300) @db.UnsignedInt
   warn_ask_to_ask       Boolean @default(false)
-  adashield             Int     @default(0) @db.UnsignedTinyInt
+  adashield             Boolean @default(true)
   warnings              Int     @default(3) @db.UnsignedInt
   chats                 chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_chat_configs_chat_id")
 
@@ -43,7 +43,7 @@ model chat_configs {
 
 model chat_messages {
   id        Int     @id @default(autoincrement()) @db.UnsignedInt
-  chat_id   Int     @db.UnsignedInt
+  chat_id   Int     @unique(map: "idx_uq_chat_id") @db.UnsignedInt
   greetings String? @db.Text
   chats     chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_message_chat_id")
 
@@ -66,8 +66,8 @@ model chats {
   language        String            @default("us") @db.VarChar(20)
   joined          Boolean           @default(true)
   bans            bans[]
-  chat_configs    chat_configs[]
-  chat_messages   chat_messages[]
+  chat_configs    chat_configs?
+  chat_messages   chat_messages?
   chat_rules      chat_rules?
   federations     federations?      @relation(fields: [federation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_chats_federation_id")
   macros          macros[]
@@ -77,7 +77,6 @@ model chats {
 
   @@index([federation_id], map: "idx_federation_id")
 }
-
 
 model federations {
   id                    Int                     @id @default(autoincrement()) @db.UnsignedInt
@@ -137,16 +136,17 @@ model messages {
 }
 
 model rel_users_chats {
-  id      Int     @id @default(autoincrement()) @db.UnsignedInt
-  user_id Int     @db.UnsignedInt
-  chat_id Int     @db.UnsignedInt
-  joined  Boolean @default(true)
-  captcha String? @db.Char(6)
-  checked Boolean @default(false)
-  date    Int     @db.UnsignedInt
-  ttl     Int?    @db.UnsignedInt
-  chats   chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_chat_id")
-  users   users   @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_user_id")
+  id        Int     @id @default(autoincrement()) @db.UnsignedInt
+  user_id   Int     @db.UnsignedInt
+  chat_id   Int     @db.UnsignedInt
+  joined    Boolean @default(true)
+  captcha   String? @db.Char(6)
+  checked   Boolean @default(false)
+  date      Int     @db.UnsignedInt
+  last_seen Int     @db.UnsignedInt
+  ttl       Int?    @db.UnsignedInt
+  chats     chats   @relation(fields: [chat_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_chat_id")
+  users     users   @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_users_chats_user_id")
 
   @@unique([user_id, chat_id], map: "idx_user_id_chat_id")
   @@index([chat_id], map: "idx_chat_id")
