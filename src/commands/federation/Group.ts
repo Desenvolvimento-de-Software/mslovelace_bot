@@ -123,7 +123,13 @@ export default class Group extends Federation {
             await prisma.chats.update({
                 where: { chat_id: this.context!.getChat()!.getId() },
                 data: { federation_id: federation.id }
-            });
+
+            }).catch((err) => {
+                Log.error(err.message, err.stack);
+
+            }).finally(async () => {
+                await prisma.$disconnect();
+            });;
 
             const message = Lang.get("federationJoinSuccess")
                 .replace("{federation}", federation.description ?? "");
@@ -166,6 +172,12 @@ export default class Group extends Federation {
             await prisma.chats.update({
                 where: { chat_id: this.context!.getChat()!.getId() },
                 data: { federation_id: null }
+
+            }).catch((err) => {
+                Log.error(err.message, err.stack);
+
+            }).finally(async () => {
+                await prisma.$disconnect();
             });
 
             this.context?.getMessage()?.reply(Lang.get("federationLeaveSuccess"));

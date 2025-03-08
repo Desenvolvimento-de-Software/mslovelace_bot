@@ -100,13 +100,14 @@ export default class Greetings extends Action {
             }
 
         }).then((response) => {
-            prisma.$disconnect();
             return response?.greetings?.length ? response.greetings : Lang.get("defaultGreetings");
 
         }).catch((err: Error) => {
             Log.save(err.toString());
-            prisma.$disconnect();
             return Lang.get("defaultGreetings");
+
+        }).finally(async () => {
+            await prisma.$disconnect();
         });
 
         text = text.replace("{userid}", this.userAndChat!.users.user_id.toString());

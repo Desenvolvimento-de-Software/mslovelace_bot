@@ -113,6 +113,7 @@ export async function createAndGetChat(chat: Chat): Promise<chats> {
 
     }).catch(async (e: Error) => {
         throw e;
+
     }).finally(() => {
         prisma.$disconnect();
     });

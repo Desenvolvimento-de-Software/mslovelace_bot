@@ -212,12 +212,13 @@ async function get(where: Parameters<typeof prisma.federations.findUnique>[0]['w
         { where: where }
 
     ).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result ?? null;

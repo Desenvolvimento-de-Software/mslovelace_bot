@@ -28,6 +28,15 @@ const prisma = new PrismaClient();
 export const getUserByTelegramId = async (telegramUserId: number): Promise<shield|null> => {
     const user = await prisma.shield.findUnique({
         where: { telegram_user_id: telegramUserId }
+
+    }).then(async (response) => {
+        return response;
+
+    }).catch(async (e: Error) => {
+        throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return user;
@@ -51,13 +60,14 @@ export const addUserToShield = async (userContext: User, reason: string): Promis
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
-    });;
+
+    }).finally(async () => {
+        prisma.$disconnect();
+    });
 };
 
 /**
@@ -124,13 +134,14 @@ const updateAdaShield = async (chatContext: Chat, status: boolean): Promise<bool
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
-    });;
+
+    }).finally(async () => {
+        prisma.$disconnect();
+    });
 
     return Promise.resolve(true);
 };
