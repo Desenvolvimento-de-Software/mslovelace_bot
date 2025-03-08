@@ -42,31 +42,32 @@ export default class AskToAsk extends Action {
         try {
 
             if (await this.context.getUser()?.isAdmin()) {
-                throw new Error();
+                return;
             }
 
             const chatId = this.context.getChat()?.getId();
             if (!chatId) {
-                throw new Error();
+                throw new Error("Chat not found.");
             }
 
             const chat = await getChatByTelegramId(chatId);
             if (!chat) {
-                throw new Error();
+                throw new Error(`Chat ${chatId} not found.`);
             }
 
             if (this.context.getMessage()?.getReplyToMessage()) {
-                throw new Error();
+                return
             }
 
             const text = this.context.getMessage()?.getText();
             if (!text || text.length > 50) {
-                throw new Error();
+                return;
             }
 
             Lang.set(chat.language || "en");
-            if (!text.match(Lang.get("askToAskRegex"))) {
-                throw new Error();
+            const regex = new RegExp(Lang.get("askToAskRegex"));
+            if (!regex.exec(text)) {
+                return;
             }
 
             this.context.getMessage()?.delete();
