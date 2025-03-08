@@ -28,8 +28,6 @@
     "canvas": "^3.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.21.2",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.13.0",
     "prisma": "^6.4.1"
   },
   "devDependencies": {
