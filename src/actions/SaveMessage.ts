@@ -69,6 +69,9 @@ export default class SaveMessage extends Action {
 
         }).catch((err) => {
             Log.save(err.message, err.trace);
+
+        }).finally(async () => {
+            await prisma.$disconnect();
         });
     }
 
@@ -175,6 +178,9 @@ export default class SaveMessage extends Action {
         }).catch((err) => {
             Log.save(err.message, err.trace);
             return null;
+
+        }).finally(async () => {
+            await prisma.$disconnect();
         });
     }
 }

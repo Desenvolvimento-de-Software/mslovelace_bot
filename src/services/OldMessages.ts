@@ -106,11 +106,12 @@ export const disableOldMessages = async (messages: MessageType[]): Promise<void>
     };
 
     await prisma.messages.updateMany(params).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 }

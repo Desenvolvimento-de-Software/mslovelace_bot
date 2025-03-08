@@ -97,12 +97,13 @@ export async function join(userId: number, chatId: number, checked: boolean, ttl
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result;
@@ -136,12 +137,13 @@ export async function leave(userId: number, chatId: number) {
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result;
@@ -170,11 +172,12 @@ export async function approveOnChat(userId: number, chatId: number): Promise<voi
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 }
