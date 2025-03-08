@@ -6,8 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "bun -r dotenv/config ./dist/index.js",
+    "watch": "bun --watch ./src/index.ts",
     "build": "tsc --project ./",
-    "watch": "bun --watch ./src/index.ts"
+    "node-start": "node -r dotenv/config ./dist/index.js",
+    "node-watch": "npx nodemon --watch './**/*.{ts,graphql}' --exec 'npm run node-watch-arg'",
+    "node-watch-arg": "node --experimental-specifier-resolution=node --loader ts-node/esm -r dotenv/config -r tsconfig-paths/register src/index.ts",
+    "node-dev": "tsc-watch --onSuccess \"npm run node-watch\""
   },
   "repository": {
     "type": "git",
@@ -20,11 +24,13 @@
   },
   "homepage": "https://github.com/Desenvolvimento-de-Software/mslovelace_bot",
   "dependencies": {
+    "@prisma/client": "6.4.1",
     "canvas": "^3.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.21.2",
     "mysql": "^2.18.1",
-    "mysql2": "^3.12.0"
+    "mysql2": "^3.13.0",
+    "prisma": "^6.4.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

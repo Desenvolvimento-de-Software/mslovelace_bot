@@ -10,15 +10,15 @@
  */
 
 import express from "express";
-import TelegramBotApi from "./library/telegram/TelegramBotApi";
-import SetMyCommands from "./library/telegram/resource/SetMyCommands";
-import Command from "./command/Command";
-import Iinterval from "interface/Iinterval";
-import Log from "./helper/Log";
-import { controllers } from "./config/controllers";
-import { commands as commandsConfig } from "./config/commands";
-import DeleteExpiredMessages from "interval/DeleteExpiredMessages";
-import KickUnverifiedUsers from "interval/KickUnverifiedUsers";
+import TelegramBotApi from "./libraries/telegram/TelegramBotApi";
+import SetMyCommands from "./libraries/telegram/resources/SetMyCommands";
+import Command from "./commands/Command";
+import Iinterval from "interfaces/Iinterval";
+import Log from "./helpers/Log";
+import { controllers } from "./configs/controllers";
+import { commands as commandsConfig } from "./configs/commands";
+import DeleteExpiredMessages from "intervals/DeleteExpiredMessages";
+import KickUnverifiedUsers from "intervals/KickUnverifiedUsers";
 
 export default class App {
 
