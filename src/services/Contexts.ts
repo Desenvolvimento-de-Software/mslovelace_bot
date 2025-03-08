@@ -48,12 +48,13 @@ export const getContextByUserAndChat = async (userContext: User, chatContext: Ch
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     if (!contextData) {

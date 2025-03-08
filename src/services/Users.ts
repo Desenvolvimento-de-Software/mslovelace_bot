@@ -89,12 +89,13 @@ export async function getUserAndChatByCaptcha(captcha: string): Promise<RelUserA
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result as RelUserAndChatType ?? null;
@@ -215,12 +216,13 @@ export async function ban(userId: number, chatId: number, federation_id: number|
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result ?? null;
@@ -240,12 +242,13 @@ async function get(where: PrismaClient['users']['findFirst']['arguments']['where
         where: where
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
+
+    }).finally(async () => {
+        prisma.$disconnect();
     });
 
     return result ?? null;

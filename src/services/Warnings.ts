@@ -47,13 +47,14 @@ export async function getUserWarnings(userContext: User, chatContext: Chat) {
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
-    });;
+
+    }).finally(async () => {
+        prisma.$disconnect();
+    });
 }
 
 /**
@@ -89,11 +90,12 @@ export async function addWarning(userContext: User, chatContext: Chat, reason: s
         }
 
     }).then(async (response) => {
-        prisma.$disconnect();
         return response;
 
     }).catch(async (e: Error) => {
-        prisma.$disconnect();
         throw e;
-    });;
+
+    }).finally(async () => {
+        prisma.$disconnect();
+    });
 }
