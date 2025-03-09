@@ -420,7 +420,7 @@ export default class ContextFactory {
             return false;
         }
 
-        if ("status" in newChatMember && newChatMember.status === "left") {
+        if ("status" in newChatMember && ["left", "kicked", "banned"].includes(newChatMember.status)) {
             return false;
         }
 
